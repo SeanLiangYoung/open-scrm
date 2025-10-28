@@ -1,0 +1,53 @@
+{
+  "code": "📦 源代码根目录 - 包含所有前端应用、后端服务和共享包",
+  "code/apps": "🎨 前端应用层 - 7个独立的前端应用",
+  "code/apps/official-website": "🌐 官方网站 (Nuxt 4) - 产品宣传、功能介绍、客户案例展示 - 端口:3000",
+  "code/apps/admin-platform": "⚙️ 管理平台 (Vue3) - 企业管理、权限配置、系统设置 - 端口:3001",
+  "code/apps/bi-platform": "📊 BI分析平台 (Vue3) - 数据概览、渠道分析、转化分析 - 端口:3002",
+  "code/apps/operation-platform": "💼 运营平台 (Vue3) - 获客管理、客户运营、SOP配置 - 端口:3003",
+  "code/apps/saas-admin": "🔧 SaaS管理平台 (Vue3) - 租户管理、套餐管理、系统监控 - 端口:3004",
+  "code/apps/finance-platform": "💰 财务平台 (Vue3) - 订单管理、收款管理、财务报表 - 端口:3005",
+  "code/apps/mobile-app": "📱 移动端应用 (UniApp + NutUI) - 客户管理、待办任务、移动办公",
+  
+  "code/services": "🔌 后端微服务层 - 10个独立的微服务",
+  "code/services/gateway-service": "🚪 网关服务 (Midway) - API网关、路由转发、认证鉴权、限流熔断 - 端口:7000",
+  "code/services/auth-service": "🔐 认证授权服务 (Midway) - 用户认证、权限管理、JWT签发 - 端口:7001",
+  "code/services/customer-service": "👥 客户管理服务 (Midway) - 客户信息、标签管理、客户画像 - 端口:7002",
+  "code/services/acquisition-service": "🎯 获客服务 (Midway) - 多渠道获客、活码管理、内容发布 - 端口:7003",
+  "code/services/operation-service": "🤖 客户运营服务 (Midway) - 客户运营、SOP管理、消息群发 - 端口:7004",
+  "code/services/asset-service": "💎 资产管理服务 (Midway) - 客户资产、智能预警、数据统计 - 端口:7005",
+  "code/services/analytics-service": "📈 数据分析服务 (Midway) - 数据分析、BI报表、指标计算 - 端口:7006",
+  "code/services/integration-service": "🔗 第三方集成服务 (Midway) - 企微/抖音/小红书集成 - 端口:7007",
+  "code/services/message-service": "📬 消息推送服务 (Midway) - 消息推送、通知管理、模板管理 - 端口:7008",
+  "code/services/finance-service": "💳 财务服务 (Midway) - 订单管理、支付对接、财务结算 - 端口:7009",
+  
+  "code/packages": "📚 共享包 - 前后端共享的代码模块",
+  "code/packages/shared-types": "📝 共享类型定义 - TypeScript类型、接口、枚举定义",
+  "code/packages/shared-utils": "🛠️ 共享工具函数 - 通用工具方法、辅助函数",
+  "code/packages/shared-constants": "🔢 共享常量 - 全局常量、配置常量",
+  "code/packages/ui-components": "🎨 共享UI组件 - 跨应用复用的Vue组件",
+  "code/packages/server-common": "⚡ 后端公共模块 - 微服务共享的装饰器、拦截器、工具",
+  
+  "code/scripts": "📜 脚本目录 - 构建、部署、数据库初始化等脚本",
+  "code/docs": "📖 项目文档 - API文档、架构设计、开发指南",
+  "code/docs/api": "📡 API文档目录",
+  "code/docs/architecture": "🏗️ 架构设计文档目录",
+  "code/docs/development": "💻 开发文档目录",
+  "code/.github": "🤖 GitHub配置 - CI/CD工作流",
+  "code/.github/workflows": "⚙️ GitHub Actions工作流配置",
+  
+  "mvp": "📋 需求与规划文档目录",
+  "mvp/需求规格说明书.md": "📄 需求规格说明书 - 完整的系统需求文档 (v2.0)",
+  "mvp/技术选型.md": "🔧 技术选型文档 - 技术栈选择和架构设计说明",
+  "mvp/参考资料.md": "📚 参考资料 - 小裂变SCRM参考资料",
+  
+  "code/package.json": "📦 根项目配置 - Monorepo依赖和脚本管理",
+  "code/pnpm-workspace.yaml": "🔧 PNPM工作区配置 - Monorepo工作区定义",
+  "code/tsconfig.json": "📘 TypeScript配置 - 全局TS编译选项",
+  "code/turbo.json": "⚡ Turborepo配置 - 构建缓存和任务编排",
+  "code/.gitignore": "🚫 Git忽略规则 - 版本控制忽略文件配置",
+  "code/docker-compose.yml": "🐳 Docker Compose配置 - 开发环境容器编排",
+  "code/README.md": "📖 项目总览文档 - 项目介绍、快速开始、开发指南",
+  
+  "参考资料": "📚 外部参考资料目录"
+}

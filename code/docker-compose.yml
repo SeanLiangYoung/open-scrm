@@ -1,0 +1,112 @@
+# Docker Compose配置 - 开发环境
+version: '3.8'
+
+services:
+  # MySQL 8.0
+  mysql:
+    image: mysql:8.0
+    container_name: scrm-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: scrm_dev
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - scrm-network
+    restart: unless-stopped
+
+  # Redis 7.0
+  redis:
+    image: redis:7.0-alpine
+    container_name: scrm-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - scrm-network
+    restart: unless-stopped
+
+  # MongoDB 6.0
+  mongodb:
+    image: mongo:6.0
+    container_name: scrm-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+      TZ: Asia/Shanghai
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - scrm-network
+    restart: unless-stopped
+
+  # RabbitMQ 3.x
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: scrm-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+      TZ: Asia/Shanghai
+    ports:
+      - "5672:5672"   # AMQP端口
+      - "15672:15672" # 管理界面
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - scrm-network
+    restart: unless-stopped
+
+  # Prometheus (可选)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: scrm-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./scripts/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - scrm-network
+    restart: unless-stopped
+
+  # Grafana (可选)
+  grafana:
+    image: grafana/grafana:latest
+    container_name: scrm-grafana
+    ports:
+      - "3100:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin123
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - scrm-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+networks:
+  scrm-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+  redis-data:
+  mongo-data:
+  rabbitmq-data:
+  prometheus-data:
+  grafana-data:
+

@@ -1,0 +1,36 @@
+{
+  "name": "scrm-system",
+  "version": "1.0.0",
+  "private": true,
+  "description": "企业SCRM私域运营系统",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:web": "pnpm --filter \"./apps/**\" dev",
+    "dev:service": "pnpm --filter \"./services/**\" dev",
+    "build": "turbo run build",
+    "build:web": "pnpm --filter \"./apps/**\" build",
+    "build:service": "pnpm --filter \"./services/**\" build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,vue,js,jsx,json,md}\"",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "prettier": "^3.0.3",
+    "turbo": "^1.10.14",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.9.0"
+}
+
