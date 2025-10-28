@@ -112,6 +112,12 @@ Test-Package "gateway-service" "services/gateway-service" "Service"
 Test-Package "auth-service" "services/auth-service" "Service"
 Test-Package "customer-service" "services/customer-service" "Service"
 Test-Package "integration-service" "services/integration-service" "Service"
+Test-Package "message-service" "services/message-service" "Service"
+Test-Package "operation-service" "services/operation-service" "Service"
+Test-Package "acquisition-service" "services/acquisition-service" "Service"
+Test-Package "analytics-service" "services/analytics-service" "Service"
+Test-Package "asset-service" "services/asset-service" "Service"
+Test-Package "finance-service" "services/finance-service" "Service"
 
 Pop-Location
 

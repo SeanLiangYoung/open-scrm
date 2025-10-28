@@ -74,6 +74,12 @@ Test-Build "gateway-service" "services/gateway-service" "Service"
 Test-Build "auth-service" "services/auth-service" "Service"
 Test-Build "customer-service" "services/customer-service" "Service"
 Test-Build "integration-service" "services/integration-service" "Service"
+Test-Build "message-service" "services/message-service" "Service"
+Test-Build "operation-service" "services/operation-service" "Service"
+Test-Build "acquisition-service" "services/acquisition-service" "Service"
+Test-Build "analytics-service" "services/analytics-service" "Service"
+Test-Build "asset-service" "services/asset-service" "Service"
+Test-Build "finance-service" "services/finance-service" "Service"
 
 Pop-Location
 

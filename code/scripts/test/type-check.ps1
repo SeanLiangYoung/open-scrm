@@ -74,6 +74,12 @@ Test-TypeCheck "gateway-service" "services/gateway-service" "Service"
 Test-TypeCheck "auth-service" "services/auth-service" "Service"
 Test-TypeCheck "customer-service" "services/customer-service" "Service"
 Test-TypeCheck "integration-service" "services/integration-service" "Service"
+Test-TypeCheck "message-service" "services/message-service" "Service"
+Test-TypeCheck "operation-service" "services/operation-service" "Service"
+Test-TypeCheck "acquisition-service" "services/acquisition-service" "Service"
+Test-TypeCheck "analytics-service" "services/analytics-service" "Service"
+Test-TypeCheck "asset-service" "services/asset-service" "Service"
+Test-TypeCheck "finance-service" "services/finance-service" "Service"
 
 Pop-Location
 
