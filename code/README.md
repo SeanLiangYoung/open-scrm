@@ -217,13 +217,30 @@ pnpm format
 
 # 类型检查
 pnpm type-check
+```
 
-# 单元测试
+### 测试命令
+
+```bash
+# 运行完整测试
 pnpm test
 
-# E2E测试
-pnpm test:e2e
+# 仅测试构建
+pnpm test:build
+
+# 仅测试类型检查
+pnpm test:type
+
+# 生成测试报告
+pnpm test:report
+
+# 详细输出
+pnpm test:verbose
 ```
+
+**完整测试指南**: 查看 [TESTING.md](./TESTING.md)  
+**测试脚本文档**: [scripts/test/README.md](./scripts/test/README.md)  
+**测试报告目录**: [docs/tests/](./docs/tests/)
 
 ### 提交规范
 

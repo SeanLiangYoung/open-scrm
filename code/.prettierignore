@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+
+# Production
+dist/
+build/
+.output/
+.nuxt/
+
+# Misc
+coverage/
+.turbo/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+

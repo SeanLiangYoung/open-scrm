@@ -1,0 +1,43 @@
+{
+  "name": "@scrm/integration-service",
+  "version": "1.0.0",
+  "description": "SCRM Integration Service - 第三方平台集成服务",
+  "private": true,
+  "scripts": {
+    "dev": "cross-env NODE_ENV=local mw dev",
+    "build": "mw build",
+    "start": "node ./bootstrap.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@midwayjs/bootstrap": "^3.14.0",
+    "@midwayjs/core": "^3.14.0",
+    "@midwayjs/decorator": "^3.14.0",
+    "@midwayjs/info": "^3.14.0",
+    "@midwayjs/koa": "^3.14.0",
+    "@midwayjs/logger": "^3.1.0",
+    "@midwayjs/typeorm": "^3.14.0",
+    "@midwayjs/validate": "^3.14.0",
+    "@midwayjs/redis": "^3.14.0",
+    "@midwayjs/axios": "^3.14.0",
+    "@scrm/shared-types": "workspace:*",
+    "@scrm/shared-constants": "workspace:*",
+    "@scrm/shared-utils": "workspace:*",
+    "@scrm/server-common": "workspace:*",
+    "typeorm": "^0.3.17",
+    "mysql2": "^3.6.0",
+    "axios": "^1.6.0",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "@midwayjs/cli": "^2.0.7",
+    "@types/node": "^20.0.0",
+    "@types/crypto-js": "^4.2.0",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

@@ -1,0 +1,32 @@
+{
+  "name": "@scrm/server-common",
+  "version": "1.0.0",
+  "description": "后端公共模块包",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "scrm",
+    "server",
+    "common",
+    "typescript"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@midwayjs/core": "^3.14.0",
+    "@midwayjs/decorator": "^3.14.0",
+    "@scrm/shared-constants": "workspace:*",
+    "@scrm/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@midwayjs/koa": "^3.14.0",
+    "@types/node": "^18.0.0",
+    "typescript": "^5.2.2"
+  }
+}

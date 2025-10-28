@@ -1,0 +1,49 @@
+{
+  "name": "@scrm/auth-service",
+  "version": "1.0.0",
+  "description": "认证授权服务",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development mw dev",
+    "build": "mw build",
+    "start": "NODE_ENV=production node ./bootstrap.js",
+    "clean": "rm -rf dist",
+    "test": "npm run test",
+    "lint": "eslint . --ext .ts",
+    "type-check": "tsc --noEmit",
+    "migration:generate": "typeorm migration:generate",
+    "migration:run": "typeorm migration:run",
+    "migration:revert": "typeorm migration:revert"
+  },
+  "dependencies": {
+    "@midwayjs/bootstrap": "^3.14.0",
+    "@midwayjs/core": "^3.14.0",
+    "@midwayjs/decorator": "^3.14.0",
+    "@midwayjs/info": "^3.14.0",
+    "@midwayjs/koa": "^3.14.0",
+    "@midwayjs/logger": "^3.1.0",
+    "@midwayjs/typeorm": "^3.14.0",
+    "@midwayjs/validate": "^3.14.0",
+    "@midwayjs/jwt": "^3.14.0",
+    "@midwayjs/redis": "^3.14.0",
+    "@koa/cors": "^4.0.0",
+    "@scrm/shared-types": "workspace:*",
+    "@scrm/shared-constants": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "koa": "^2.14.2",
+    "mysql2": "^3.6.5",
+    "typeorm": "^0.3.17"
+  },
+  "devDependencies": {
+    "@midwayjs/cli": "^2.0.7",
+    "@midwayjs/mock": "^3.14.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/koa": "^2.13.12",
+    "@types/node": "^18.0.0",
+    "cross-env": "^7.0.3",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

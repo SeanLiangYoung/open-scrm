@@ -1,0 +1,24 @@
+{
+  "name": "@scrm/shared-utils",
+  "version": "1.0.0",
+  "description": "共享工具函数包",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": ["scrm", "utils", "typescript"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dayjs": "^1.11.10"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^18.0.0"
+  }
+}
+
