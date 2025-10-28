@@ -1,0 +1,25 @@
+# Start Message Service
+$ErrorActionPreference = "Stop"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
+$ServicePath = Join-Path $ProjectRoot "services\message-service"
+
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host "  Message Service (Port: 7006)" -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+
+if (-not (Test-Path $ServicePath)) {
+    Write-Host "[ERROR] Service directory not found: $ServicePath" -ForegroundColor Red
+    exit 1
+}
+
+Push-Location $ServicePath
+try {
+    Write-Host "[START] Starting message-service..." -ForegroundColor Green
+    pnpm dev
+} finally {
+    Pop-Location
+}
+

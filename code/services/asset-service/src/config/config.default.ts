@@ -3,6 +3,9 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 
 export default {
+  // 应用密钥配置（用于cookie签名等）
+  keys: process.env.APP_KEYS || 'asset_service_secret_key_please_change_in_production',
+
   // Koa配置
   koa: {
     port: 7005,

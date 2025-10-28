@@ -1,9 +1,12 @@
 import { MidwayConfig } from '@midwayjs/core';
 
 export default {
+  // 应用密钥配置（用于cookie签名等）
+  keys: process.env.APP_KEYS || 'gateway_service_secret_key_please_change_in_production',
+
   // Koa配置
   koa: {
-    port: 7000
+    port: 7001,
   },
 
   // JWT配置
