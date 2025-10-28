@@ -191,7 +191,7 @@ open-scrm/
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-username/open-scrm.git
+git clone https://github.com/SeanLiangYoung/open-scrm.git
 cd open-scrm
 
 # 2. 安装 pnpm (如果没有)
@@ -392,7 +392,7 @@ vim .env.local
 
 ### 问题反馈
 
-如果你发现了 Bug 或有功能建议，请通过 [Issues](https://github.com/your-username/open-scrm/issues) 告诉我们。
+如果你发现了 Bug 或有功能建议，请通过 [Issues](https://github.com/SeanLiangYoung/open-scrm/issues) 告诉我们。
 
 ---
 
@@ -441,9 +441,9 @@ vim .env.local
 
 ## 📞 联系我们
 
-- 项目主页: https://github.com/your-username/open-scrm
-- 问题反馈: https://github.com/your-username/open-scrm/issues
-- 讨论区: https://github.com/your-username/open-scrm/discussions
+- 项目主页: https://github.com/SeanLiangYoung/open-scrm
+- 问题反馈: https://github.com/SeanLiangYoung/open-scrm/issues
+- 讨论区: https://github.com/SeanLiangYoung/open-scrm/discussions
 - 邮箱: contact@open-scrm.com
 
 ---
