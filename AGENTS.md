@@ -36,19 +36,15 @@ cd services/gateway-service && NODE_ENV=development npx mw dev # port 7001
 
 ### Known Gotchas
 
-1. **Port mapping inconsistency**: The README says gateway=7000, auth=7001, but the actual configs are **auth-service=7000, gateway-service=7001** (swapped). Always check `src/config/config.default.ts` for the real port.
+1. **Port mapping**: All service ports are now standardized — see `code/docs/开发计划.md` for the definitive port table. gateway=7000, auth=7001, customer=7002, etc.
 
-2. **ESLint config issue**: `pnpm lint` fails because `.eslintrc.js` references `@vue/typescript/recommended` in Vue file overrides, but the `@vue/eslint-config-typescript` package is not installed. This is a pre-existing issue. TypeScript type-checking (`pnpm type-check`) works fine.
+2. **DB credentials**: All services use `root/root123/scrm_dev` (matches docker-compose). When DB is fresh from docker-compose, tables from `init-db.sql` are auto-created.
 
-3. **Password hash mismatch**: The bcrypt hash in `scripts/init-db.sql` does not match the documented password `Admin@123`. To fix, update the DB directly:
-   ```bash
-   NEW_HASH=$(cd /workspace/code/services/auth-service && node -e "const bcrypt = require('bcrypt'); bcrypt.hash('Admin@123', 12).then(h => console.log(h))")
-   sudo docker exec scrm-mysql mysql -u root -proot123 scrm_dev -e "UPDATE user SET password='$NEW_HASH' WHERE username='admin';"
-   ```
+3. **Default admin login**: username=`admin`, password=`Admin@123`.
 
-4. **Service DB credential inconsistency**: `auth-service` uses `root/root123/scrm_dev` (matches docker-compose), but other services like `customer-service` use `scrm/scrm_password/scrm_customer` by default. For those services, set env vars or create the DB user/databases manually.
+4. **admin-platform frontend**: Run `cd code/apps/admin-platform && pnpm dev` (port 3001). Vite proxy forwards `/api` to gateway on port 7000.
 
-5. **Test scripts are PowerShell**: The `pnpm test` scripts in `package.json` use `.ps1` PowerShell scripts (`chcp 65001 && powershell ...`), which don't work on Linux. Run type-check and build directly instead: `pnpm type-check && pnpm build`.
+5. **Chinese encoding in DB responses**: The `realName` field for the admin user shows garbled text in API responses due to mysql charset inheritance — this is cosmetic and doesn't affect functionality.
 
 ### Hello World Test
 
