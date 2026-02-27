@@ -14,7 +14,7 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
   resolve() {
     return async (ctx: Context, next: NextFunction) => {
       // 白名单路径 - 不需要认证
-      const whitelist = ['/api/v1/auth/login', '/api/v1/auth/register', '/health', '/metrics'];
+      const whitelist = ['/api/v1/auth/login', '/api/v1/auth/register', '/health', '/metrics', '/api/health-check'];
 
       // 检查是否在白名单中
       if (whitelist.some(path => ctx.path.startsWith(path))) {

@@ -30,6 +30,16 @@ const router = createRouter({
           name: 'Roles',
           component: () => import('@/views/Roles.vue'),
         },
+        {
+          path: 'settings',
+          name: 'Settings',
+          component: () => import('@/views/SystemSettings.vue'),
+        },
+        {
+          path: 'monitor',
+          name: 'Monitor',
+          component: () => import('@/views/ServiceMonitor.vue'),
+        },
       ],
     },
   ],

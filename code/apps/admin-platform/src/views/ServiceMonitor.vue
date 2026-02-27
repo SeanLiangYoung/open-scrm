@@ -77,29 +77,30 @@ async function checkService(svc: ServiceInfo) {
   svc.status = 'checking';
   const start = Date.now();
   try {
-    await api.get(`/api/health/${svc.port}`, { timeout: 3000 });
-    svc.status = 'ok';
-    svc.responseTime = Date.now() - start;
-  } catch {
-    try {
-      const res = await fetch(`http://localhost:${svc.port}/health`, { signal: AbortSignal.timeout(3000) });
-      if (res.ok) { svc.status = 'ok'; svc.responseTime = Date.now() - start; }
-      else { svc.status = 'down'; svc.responseTime = -1; }
-    } catch {
+    const res = await fetch(`/api/health-check?port=${svc.port}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (res.ok) {
+      svc.status = 'ok';
+      svc.responseTime = Date.now() - start;
+    } else {
       svc.status = 'down';
       svc.responseTime = -1;
     }
+  } catch {
+    svc.status = 'down';
+    svc.responseTime = -1;
   }
 }
 
 async function checkAll() {
   refreshing.value = true;
-  await Promise.allSettled(services.value.map(s => checkService(s)));
+  for (const svc of services.value) {
+    await checkService(svc);
+  }
   refreshing.value = false;
 }
-
-// Temporarily comment out auto-check to prevent logout on mount
-// onMounted(checkAll);
 </script>
 
 <style scoped>

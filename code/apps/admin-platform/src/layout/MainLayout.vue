@@ -23,6 +23,14 @@
           <el-icon><Key /></el-icon>
           <span>角色权限</span>
         </el-menu-item>
+        <el-menu-item index="/settings">
+          <el-icon><Setting /></el-icon>
+          <span>系统设置</span>
+        </el-menu-item>
+        <el-menu-item index="/monitor">
+          <el-icon><Monitor /></el-icon>
+          <span>服务监控</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -56,7 +64,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Odometer, User, UserFilled, Key } from '@element-plus/icons-vue';
+import { Odometer, User, UserFilled, Key, Setting, Monitor } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 
 const route = useRoute();
@@ -68,6 +76,8 @@ const pageTitle = computed(() => {
     '/': '仪表盘',
     '/users': '用户管理',
     '/roles': '角色权限',
+    '/settings': '系统设置',
+    '/monitor': '服务监控',
   };
   return titles[route.path] || 'SCRM';
 });
