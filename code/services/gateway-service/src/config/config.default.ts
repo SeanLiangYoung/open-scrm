@@ -47,6 +47,14 @@ export default {
         target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
       },
       {
+        path: '/api/v1/tags/*',
+        target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
+      },
+      {
+        path: '/api/v1/tags',
+        target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
+      },
+      {
         path: '/api/v1/acquisition/*',
         target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
       },

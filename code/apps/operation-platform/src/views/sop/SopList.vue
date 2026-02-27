@@ -52,7 +52,7 @@ async function fetchSopList() {
   loading.value = true;
   try {
     const res = await api.get('/api/sop/templates');
-    const data = res.data?.data || res.data;
+    const data = res.data;
     sopList.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
   } catch { ElMessage.error('获取 SOP 列表失败'); } finally { loading.value = false; }
 }

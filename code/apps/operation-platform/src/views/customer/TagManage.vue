@@ -72,8 +72,7 @@ async function fetchTags() {
   try {
     const res = await api.get('/api/v1/tags');
     const data = res.data;
-    const items = data.items || data.data?.items || data.data || data;
-    tags.value = Array.isArray(items) ? items : [];
+    tags.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
   } catch { ElMessage.error('获取标签列表失败'); } finally { loading.value = false; }
 }
 

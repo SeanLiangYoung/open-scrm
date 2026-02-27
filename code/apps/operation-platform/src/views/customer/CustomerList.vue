@@ -108,8 +108,9 @@ async function fetchCustomers() {
     if (keyword.value) params.keyword = keyword.value;
     if (statusFilter.value !== undefined) params.status = statusFilter.value;
     const res = await api.get('/api/v1/customers', { params });
-    customers.value = res.data.items || res.data;
-    total.value = res.data.total || customers.value.length;
+    const data = res.data;
+    customers.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
+    total.value = data?.total || customers.value.length;
   } catch { ElMessage.error('获取客户列表失败'); } finally { loading.value = false; }
 }
 

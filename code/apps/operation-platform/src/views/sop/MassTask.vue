@@ -68,7 +68,11 @@ const taskStatusType = (s: string): any => ({ pending: 'info', running: '', comp
 
 async function fetchTasks() {
   loading.value = true;
-  try { const res = await api.get('/api/mass-task/list', { params: { corpId: 1 } }); tasks.value = res.data.items || res.data || []; } catch { ElMessage.error('获取任务列表失败'); } finally { loading.value = false; }
+  try {
+    const res = await api.get('/api/mass-task/list');
+    const data = res.data;
+    tasks.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
+  } catch { ElMessage.error('获取任务列表失败'); } finally { loading.value = false; }
 }
 
 function showCreate() { Object.assign(form, { name: '', targetType: 'customer', content: '' }); dialogVisible.value = true; }

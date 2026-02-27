@@ -89,7 +89,11 @@ async function fetchDetail() {
 }
 
 async function fetchTags() {
-  try { const res = await api.get('/api/v1/tags'); allTags.value = res.data.items || res.data || []; } catch {}
+  try {
+    const res = await api.get('/api/v1/tags');
+    const data = res.data;
+    allTags.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
+  } catch {}
 }
 
 function showTagDialog() { selectedTagIds.value = []; tagDialogVisible.value = true; }
