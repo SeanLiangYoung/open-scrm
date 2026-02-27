@@ -9,12 +9,12 @@
 
     <el-table :data="sopList" v-loading="loading" stripe>
       <el-table-column prop="id" label="ID" width="70" />
-      <el-table-column prop="name" label="SOP 名称" min-width="180" />
-      <el-table-column prop="type" label="类型" width="100">
-        <template #default="{ row }"><el-tag size="small">{{ row.type === 'customer' ? '客户SOP' : '群SOP' }}</el-tag></template>
+      <el-table-column prop="templateName" label="SOP 名称" min-width="180" />
+      <el-table-column prop="templateType" label="类型" width="100">
+        <template #default="{ row }"><el-tag size="small">{{ (row.templateType || row.type) === 1 || (row.templateType || row.type) === 'customer' ? '客户SOP' : '群SOP' }}</el-tag></template>
       </el-table-column>
-      <el-table-column prop="trigger_type" label="触发方式" width="120">
-        <template #default="{ row }">{{ triggerLabel(row.trigger_type || row.triggerType) }}</template>
+      <el-table-column prop="triggerType" label="触发方式" width="120">
+        <template #default="{ row }">{{ triggerLabel(row.triggerType || row.trigger_type) }}</template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
@@ -44,15 +44,16 @@ import api from '@/utils/api';
 const loading = ref(false);
 const sopList = ref<any[]>([]);
 
-const triggerLabel = (t: string) => ({ manual: '手动触发', auto: '自动触发', schedule: '定时触发' }[t] || t);
+const triggerLabel = (t: any) => ({ 1: '添加好友', 2: '打标签', 3: '进群触发', 4: '手动触发', manual: '手动触发', auto: '自动触发', schedule: '定时触发' }[t] || String(t));
 const statusLabel = (s: number) => ['草稿', '启用', '停用'][s] || '未知';
 const statusType = (s: number): any => ['info', 'success', 'danger'][s] || 'info';
 
 async function fetchSopList() {
   loading.value = true;
   try {
-    const res = await api.get('/api/sop/templates', { params: { corpId: 1 } });
-    sopList.value = res.data.items || res.data || [];
+    const res = await api.get('/api/sop/templates');
+    const data = res.data?.data || res.data;
+    sopList.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
   } catch { ElMessage.error('获取 SOP 列表失败'); } finally { loading.value = false; }
 }
 

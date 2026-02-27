@@ -78,108 +78,127 @@ VALUES
 ON DUPLICATE KEY UPDATE `role_name` = `role_name`;
 
 -- =============================================
--- 客户管理模块
+-- 客户管理模块（匹配 customer-service 实体定义）
 -- =============================================
 
--- 客户表
 CREATE TABLE IF NOT EXISTS `customer` (
   `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `corp_id` BIGINT UNSIGNED NOT NULL COMMENT '企业ID',
-  `name` VARCHAR(100) NOT NULL COMMENT '客户名称',
-  `avatar` VARCHAR(255) COMMENT '头像URL',
-  `gender` TINYINT DEFAULT 0 COMMENT '性别: 0-未知 1-男 2-女',
-  `mobile` VARCHAR(20) COMMENT '手机号',
-  `email` VARCHAR(100) COMMENT '邮箱',
-  `wework_external_userid` VARCHAR(64) COMMENT '企微外部联系人ID',
-  `source` VARCHAR(50) COMMENT '来源渠道',
-  `status` TINYINT DEFAULT 1 COMMENT '状态: 0-流失 1-正常 2-待跟进',
-  `owner_id` BIGINT UNSIGNED COMMENT '负责人ID',
-  `remark` TEXT COMMENT '备注',
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `external_userid` VARCHAR(100) NOT NULL DEFAULT '' COMMENT '企微外部联系人ID',
+  `name` VARCHAR(100),
+  `mobile` VARCHAR(20),
+  `avatar` VARCHAR(255),
+  `type` TINYINT DEFAULT 1 COMMENT '1-微信 2-企微',
+  `gender` TINYINT DEFAULT 0 COMMENT '0-未知 1-男 2-女',
+  `unionid` VARCHAR(100),
+  `province` VARCHAR(50),
+  `city` VARCHAR(50),
+  `follow_user_id` BIGINT UNSIGNED COMMENT '跟进员工ID',
+  `add_time` DATETIME,
+  `channel` VARCHAR(50) COMMENT '添加渠道',
+  `status` TINYINT DEFAULT 1 COMMENT '0-已删除 1-正常 2-流失',
+  `remark` TEXT,
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `idx_corp_id` (`corp_id`),
-  KEY `idx_owner_id` (`owner_id`),
+  KEY `idx_follow_user_id` (`follow_user_id`),
   KEY `idx_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户表';
 
--- 标签表
-CREATE TABLE IF NOT EXISTS `tag` (
+CREATE TABLE IF NOT EXISTS `customer_tag` (
   `id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `corp_id` BIGINT UNSIGNED NOT NULL COMMENT '企业ID',
-  `name` VARCHAR(50) NOT NULL COMMENT '标签名',
-  `group_name` VARCHAR(50) COMMENT '标签组',
-  `color` VARCHAR(20) DEFAULT '#409EFF' COMMENT '颜色',
-  `type` TINYINT DEFAULT 0 COMMENT '类型: 0-手动 1-自动',
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `tag_name` VARCHAR(50) NOT NULL,
+  `tag_type` TINYINT DEFAULT 1 COMMENT '1-来源 2-行为 3-兴趣 4-价值',
+  `tag_color` VARCHAR(10),
+  `parent_id` INT UNSIGNED DEFAULT 0,
+  `sort` INT DEFAULT 0,
+  `is_auto` TINYINT DEFAULT 0,
+  `status` TINYINT DEFAULT 1 COMMENT '0-禁用 1-启用',
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
   KEY `idx_corp_id` (`corp_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='标签表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户标签表';
 
--- 客户标签关联表
-CREATE TABLE IF NOT EXISTS `customer_tag` (
+CREATE TABLE IF NOT EXISTS `customer_tag_relation` (
   `customer_id` BIGINT UNSIGNED NOT NULL,
   `tag_id` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`customer_id`, `tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户标签关联表';
 
 -- =============================================
--- SOP 运营模块
+-- SOP 运营模块（匹配 operation-service 实体定义）
 -- =============================================
 
--- SOP模板表
 CREATE TABLE IF NOT EXISTS `sop_template` (
-  `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `corp_id` BIGINT UNSIGNED NOT NULL COMMENT '企业ID',
-  `name` VARCHAR(100) NOT NULL COMMENT '模板名称',
-  `description` TEXT COMMENT '描述',
-  `type` VARCHAR(20) DEFAULT 'customer' COMMENT '类型: customer/group',
-  `trigger_type` VARCHAR(30) DEFAULT 'manual' COMMENT '触发方式: manual/auto/schedule',
-  `status` TINYINT DEFAULT 0 COMMENT '状态: 0-草稿 1-启用 2-停用',
-  `creator_id` BIGINT UNSIGNED COMMENT '创建人ID',
+  `id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `template_name` VARCHAR(100) NOT NULL,
+  `template_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-客户SOP 2-群SOP',
+  `trigger_type` TINYINT NOT NULL DEFAULT 4 COMMENT '1-添加好友 2-打标签 3-进群 4-手动触发',
+  `trigger_condition` JSON,
+  `description` TEXT,
+  `status` TINYINT DEFAULT 1 COMMENT '0-禁用 1-启用',
+  `create_user_id` BIGINT UNSIGNED,
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  KEY `idx_corp_id` (`corp_id`),
-  KEY `idx_status` (`status`)
+  KEY `idx_corp_id` (`corp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='SOP模板表';
 
--- SOP步骤表
 CREATE TABLE IF NOT EXISTS `sop_step` (
-  `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `template_id` BIGINT UNSIGNED NOT NULL COMMENT '所属模板ID',
-  `step_order` INT NOT NULL COMMENT '步骤顺序',
-  `name` VARCHAR(100) NOT NULL COMMENT '步骤名称',
-  `action_type` VARCHAR(30) NOT NULL COMMENT '动作类型: send_message/add_tag/send_friend_circle',
-  `action_content` JSON COMMENT '动作内容JSON',
-  `delay_minutes` INT DEFAULT 0 COMMENT '延迟分钟数',
-  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `template_id` INT UNSIGNED NOT NULL,
+  `step_order` INT NOT NULL,
+  `step_name` VARCHAR(100) NOT NULL,
+  `step_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-发消息 2-打标签 3-推送素材 4-分配客户 5-提醒员工',
+  `delay_time` INT DEFAULT 0,
+  `delay_unit` VARCHAR(10) DEFAULT 'minute',
+  `action_type` TINYINT,
+  `action_content` JSON,
+  `status` TINYINT DEFAULT 1,
   KEY `idx_template_id` (`template_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='SOP步骤表';
 
--- SOP执行记录表
 CREATE TABLE IF NOT EXISTS `sop_execution` (
   `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-  `template_id` BIGINT UNSIGNED NOT NULL,
-  `customer_id` BIGINT UNSIGNED COMMENT '客户ID',
-  `current_step` INT DEFAULT 1,
-  `status` VARCHAR(20) DEFAULT 'running' COMMENT '状态: running/completed/paused/failed',
-  `started_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `completed_at` DATETIME,
-  KEY `idx_template_id` (`template_id`),
-  KEY `idx_status` (`status`)
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `template_id` INT UNSIGNED NOT NULL,
+  `template_name` VARCHAR(100),
+  `target_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-客户 2-群',
+  `customer_id` BIGINT UNSIGNED,
+  `group_id` BIGINT UNSIGNED,
+  `current_step` INT DEFAULT 0,
+  `total_steps` INT DEFAULT 0,
+  `status` TINYINT DEFAULT 0 COMMENT '0-执行中 1-已完成 2-已暂停 3-已失败',
+  `start_time` DATETIME,
+  `complete_time` DATETIME,
+  `error_message` VARCHAR(500),
+  `execution_log` JSON,
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_template_id` (`template_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='SOP执行记录表';
 
--- 群发任务表
 CREATE TABLE IF NOT EXISTS `mass_task` (
   `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
   `corp_id` BIGINT UNSIGNED NOT NULL,
-  `name` VARCHAR(100) NOT NULL COMMENT '任务名称',
-  `content` JSON COMMENT '发送内容',
-  `target_type` VARCHAR(20) DEFAULT 'customer' COMMENT '目标: customer/group',
-  `target_count` INT DEFAULT 0 COMMENT '目标数量',
-  `sent_count` INT DEFAULT 0 COMMENT '已发送数量',
-  `status` VARCHAR(20) DEFAULT 'pending' COMMENT '状态: pending/running/completed/cancelled',
-  `creator_id` BIGINT UNSIGNED,
-  `scheduled_at` DATETIME COMMENT '计划执行时间',
+  `task_name` VARCHAR(100) NOT NULL,
+  `task_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-群发消息 2-批量打标签 3-批量分配',
+  `target_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-客户 2-员工 3-群',
+  `target_ids` JSON,
+  `target_count` INT DEFAULT 0,
+  `message_content` TEXT,
+  `message_type` TINYINT,
+  `action_data` JSON,
+  `scheduled_time` DATETIME,
+  `status` TINYINT DEFAULT 0 COMMENT '0-待执行 1-执行中 2-已完成 3-已失败 4-已取消',
+  `success_count` INT DEFAULT 0,
+  `fail_count` INT DEFAULT 0,
+  `start_time` DATETIME,
+  `complete_time` DATETIME,
+  `error_message` VARCHAR(500),
+  `create_user_id` BIGINT UNSIGNED,
   `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `idx_corp_id` (`corp_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='群发任务表';
 
@@ -221,42 +240,42 @@ CREATE TABLE IF NOT EXISTS `platform_account` (
 -- =============================================
 
 -- 示例客户
-INSERT INTO `customer` (`corp_id`, `name`, `gender`, `mobile`, `source`, `status`, `owner_id`) VALUES
-(1, '张三', 1, '13800001001', 'douyin', 1, 1),
-(1, '李四', 2, '13800001002', 'xiaohongshu', 2, 1),
-(1, '王五', 1, '13800001003', 'wechat', 1, 1),
-(1, '赵六', 2, '13800001004', 'douyin', 1, 1),
-(1, '钱七', 1, '13800001005', 'offline', 2, 1),
-(1, '孙八', 2, '13800001006', 'xiaohongshu', 1, 1),
-(1, '周九', 1, '13800001007', 'wechat', 1, 1),
-(1, '吴十', 2, '13800001008', 'douyin', 0, 1)
+INSERT INTO `customer` (`corp_id`, `external_userid`, `name`, `gender`, `mobile`, `channel`, `status`, `follow_user_id`) VALUES
+(1, 'ext_001', '张三', 1, '13800001001', 'douyin', 1, 1),
+(1, 'ext_002', '李四', 2, '13800001002', 'xiaohongshu', 1, 1),
+(1, 'ext_003', '王五', 1, '13800001003', 'wechat', 1, 1),
+(1, 'ext_004', '赵六', 2, '13800001004', 'douyin', 1, 1),
+(1, 'ext_005', '钱七', 1, '13800001005', 'offline', 2, 1),
+(1, 'ext_006', '孙八', 2, '13800001006', 'xiaohongshu', 1, 1),
+(1, 'ext_007', '周九', 1, '13800001007', 'wechat', 1, 1),
+(1, 'ext_008', '吴十', 2, '13800001008', 'douyin', 0, 1)
 ON DUPLICATE KEY UPDATE `name` = `name`;
 
 -- 示例标签
-INSERT INTO `tag` (`corp_id`, `name`, `group_name`, `color`) VALUES
-(1, '高意向', '意向度', '#67C23A'),
-(1, '中意向', '意向度', '#E6A23C'),
-(1, '低意向', '意向度', '#F56C6C'),
-(1, '抖音来源', '渠道', '#409EFF'),
-(1, '小红书来源', '渠道', '#E6A23C'),
-(1, 'VIP客户', '等级', '#F56C6C'),
-(1, '新客户', '阶段', '#909399'),
-(1, '已转化', '阶段', '#67C23A')
-ON DUPLICATE KEY UPDATE `name` = `name`;
+INSERT INTO `customer_tag` (`corp_id`, `tag_name`, `tag_type`, `tag_color`, `status`) VALUES
+(1, '高意向', 4, '#67C23A', 1),
+(1, '中意向', 4, '#E6A23C', 1),
+(1, '低意向', 4, '#F56C6C', 1),
+(1, '抖音来源', 1, '#409EFF', 1),
+(1, '小红书来源', 1, '#E6A23C', 1),
+(1, 'VIP客户', 4, '#F56C6C', 1),
+(1, '新客户', 2, '#909399', 1),
+(1, '已转化', 2, '#67C23A', 1)
+ON DUPLICATE KEY UPDATE `tag_name` = `tag_name`;
 
 -- 示例SOP模板
-INSERT INTO `sop_template` (`corp_id`, `name`, `description`, `type`, `trigger_type`, `status`, `creator_id`) VALUES
-(1, '新客欢迎SOP', '新客户添加后自动发送欢迎消息并打标签', 'customer', 'auto', 1, 1),
-(1, '7天跟进SOP', '客户添加7天后未转化的跟进流程', 'customer', 'schedule', 1, 1),
-(1, '社群运营SOP', '新群成员入群欢迎+引导流程', 'group', 'auto', 0, 1)
-ON DUPLICATE KEY UPDATE `name` = `name`;
+INSERT INTO `sop_template` (`corp_id`, `template_name`, `template_type`, `trigger_type`, `description`, `status`, `create_user_id`) VALUES
+(1, '新客欢迎SOP', 1, 1, '新客户添加后自动发送欢迎消息并打标签', 1, 1),
+(1, '7天跟进SOP', 1, 4, '客户添加7天后未转化的跟进流程', 1, 1),
+(1, '社群运营SOP', 2, 3, '新群成员入群欢迎+引导流程', 0, 1)
+ON DUPLICATE KEY UPDATE `template_name` = `template_name`;
 
 -- SOP步骤
-INSERT INTO `sop_step` (`template_id`, `step_order`, `name`, `action_type`, `action_content`, `delay_minutes`) VALUES
-(1, 1, '发送欢迎消息', 'send_message', '{"text": "您好！欢迎关注我们，很高兴认识您~"}', 0),
-(1, 2, '打标签', 'add_tag', '{"tagName": "新客户"}', 5),
-(1, 3, '发送产品介绍', 'send_message', '{"text": "这是我们的产品介绍，希望对您有帮助"}', 60),
-(2, 1, '发送跟进消息', 'send_message', '{"text": "您好，最近有什么可以帮到您的吗？"}', 0),
-(2, 2, '发送优惠信息', 'send_message', '{"text": "我们近期有特别优惠活动，感兴趣可以了解一下"}', 1440)
-ON DUPLICATE KEY UPDATE `name` = `name`;
+INSERT INTO `sop_step` (`template_id`, `step_order`, `step_name`, `step_type`, `delay_time`, `delay_unit`, `action_type`, `action_content`) VALUES
+(1, 1, '发送欢迎消息', 1, 0, 'minute', 1, '{"text": "您好！欢迎关注我们"}'),
+(1, 2, '打标签', 2, 5, 'minute', 2, '{"tagName": "新客户"}'),
+(1, 3, '发送产品介绍', 1, 60, 'minute', 1, '{"text": "这是我们的产品介绍"}'),
+(2, 1, '发送跟进消息', 1, 0, 'minute', 1, '{"text": "您好，最近有什么可以帮到您的吗？"}'),
+(2, 2, '发送优惠信息', 1, 1440, 'minute', 1, '{"text": "我们近期有特别优惠活动"}')
+ON DUPLICATE KEY UPDATE `step_name` = `step_name`;
 

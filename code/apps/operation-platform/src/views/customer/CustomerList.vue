@@ -22,9 +22,9 @@
           <template #default="{ row }">{{ ['未知','男','女'][row.gender] }}</template>
         </el-table-column>
         <el-table-column prop="mobile" label="手机号" width="140" />
-        <el-table-column prop="source" label="来源" width="120">
+        <el-table-column prop="channel" label="来源" width="120">
           <template #default="{ row }">
-            <el-tag size="small" :type="sourceTagType(row.source)">{{ sourceLabel(row.source) }}</el-tag>
+            <el-tag size="small" :type="sourceTagType(row.channel || row.source)">{{ sourceLabel(row.channel || row.source) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
@@ -130,7 +130,12 @@ function editCustomer(row: any) {
 async function handleSubmit() {
   submitting.value = true;
   try {
-    const data = { ...form, corpId: 1 };
+    const data: any = { ...form, corpId: 1 };
+    if (!editingId.value) {
+      data.externalUserid = `ext_${Date.now()}`;
+      data.channel = form.source;
+      data.followUserId = 1;
+    }
     if (editingId.value) await api.put(`/api/v1/customers/${editingId.value}`, data);
     else await api.post('/api/v1/customers', data);
     ElMessage.success(editingId.value ? '更新成功' : '创建成功');
