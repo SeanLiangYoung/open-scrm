@@ -12,6 +12,7 @@
         <el-sub-menu index="sop-group">
           <template #title><el-icon><List /></el-icon><span>运营工具</span></template>
           <el-menu-item index="/sop">SOP 管理</el-menu-item>
+          <el-menu-item index="/sop/executions">执行记录</el-menu-item>
           <el-menu-item index="/mass-task">群发任务</el-menu-item>
         </el-sub-menu>
       </el-menu>
@@ -39,7 +40,7 @@ const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const titles: Record<string, string> = { '/': '数据看板', '/customers': '客户列表', '/tags': '标签管理', '/sop': 'SOP 管理', '/mass-task': '群发任务' };
+const titles: Record<string, string> = { '/': '数据看板', '/customers': '客户列表', '/tags': '标签管理', '/sop': 'SOP 管理', '/sop/executions': '执行记录', '/mass-task': '群发任务' };
 const pageTitle = computed(() => titles[route.path] || 'SCRM 运营平台');
 
 function handleCmd(cmd: string) { if (cmd === 'logout') { authStore.logout(); router.push('/login'); } }

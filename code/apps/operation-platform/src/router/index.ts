@@ -22,6 +22,7 @@ const router = createRouter({
         { path: 'sop', name: 'SopList', component: () => import('@/views/sop/SopList.vue') },
         { path: 'sop/create', name: 'SopCreate', component: () => import('@/views/sop/SopEdit.vue') },
         { path: 'sop/:id/edit', name: 'SopEdit', component: () => import('@/views/sop/SopEdit.vue') },
+        { path: 'sop/executions', name: 'SopExecutions', component: () => import('@/views/sop/SopExecutions.vue') },
         { path: 'mass-task', name: 'MassTask', component: () => import('@/views/sop/MassTask.vue') },
       ],
     },
