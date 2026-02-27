@@ -59,6 +59,22 @@ export default {
         target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
       },
       {
+        path: '/api/channel-code/*',
+        target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
+      },
+      {
+        path: '/api/channel-code',
+        target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
+      },
+      {
+        path: '/api/platform-account/*',
+        target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
+      },
+      {
+        path: '/api/platform-account',
+        target: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003'
+      },
+      {
         path: '/api/v1/operation/*',
         target: process.env.OPERATION_SERVICE_URL || 'http://localhost:7004'
       },
