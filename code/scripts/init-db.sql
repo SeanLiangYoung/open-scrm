@@ -1,5 +1,9 @@
 -- 数据库初始化脚本
 
+-- 设置连接字符集
+SET NAMES utf8mb4;
+SET CHARACTER SET utf8mb4;
+
 -- 创建数据库
 CREATE DATABASE IF NOT EXISTS `scrm_dev` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
