@@ -91,23 +91,23 @@ const formatDate = (d: string) => d ? new Date(d).toLocaleString('zh-CN') : '-';
 async function fetchNotifications() {
   loading.value = true;
   try {
-    const res = await api.get('/api/notification/list', { params: { userId: 1 } });
+    const res = await api.get('/api/notification/list');
     const data = res.data;
     notifications.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
   } catch {} finally { loading.value = false; }
 
   try {
-    const res = await api.get('/api/notification/unread/count', { params: { userId: 1 } });
-    unreadCount.value = res.data?.count || res.data || 0;
+    const res = await api.get('/api/notification/unread/count');
+    unreadCount.value = typeof res.data === 'number' ? res.data : (res.data?.count || 0);
   } catch { unreadCount.value = 0; }
 }
 
 async function markRead(id: number) {
-  try { await api.put('/api/notification/read', { notificationIds: [id], userId: 1 }); fetchNotifications(); } catch {}
+  try { await api.put('/api/notification/read', { notificationIds: [id] }); fetchNotifications(); } catch {}
 }
 
 async function markAllRead() {
-  try { await api.put('/api/notification/read/all', { userId: 1 }); ElMessage.success('全部标记为已读'); fetchNotifications(); } catch {}
+  try { await api.put('/api/notification/read/all'); ElMessage.success('全部标记为已读'); fetchNotifications(); } catch {}
 }
 
 async function deleteNotify(id: number) {
