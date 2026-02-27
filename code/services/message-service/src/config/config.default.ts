@@ -6,7 +6,7 @@ export default {
 
   // Koa配置
   koa: {
-    port: 7006,
+    port: 7008,
   },
 
   // TypeORM配置
@@ -17,8 +17,8 @@ export default {
         host: process.env.DB_HOST || 'localhost',
         port: parseInt(process.env.DB_PORT || '3306'),
         username: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || 'root',
-        database: process.env.DB_DATABASE || 'open_scrm',
+        password: process.env.DB_PASSWORD || 'root123',
+        database: process.env.DB_DATABASE || 'scrm_dev',
         synchronize: false,
         logging: process.env.NODE_ENV === 'local',
         entities: ['**/entity/*.entity{.ts,.js}'],

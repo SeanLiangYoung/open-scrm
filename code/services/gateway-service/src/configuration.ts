@@ -8,14 +8,7 @@ import * as axios from '@midwayjs/axios';
 import { join } from 'path';
 
 @Configuration({
-  imports: [
-    koa,
-    validate,
-    info,
-    jwt,
-    redis,
-    axios
-  ],
+  imports: [koa, validate, info, jwt, redis, axios],
   importConfigs: [join(__dirname, './config')]
 })
 export class MainConfiguration {
@@ -27,4 +20,3 @@ export class MainConfiguration {
     console.log('✅ Gateway Service is ready');
   }
 }
-

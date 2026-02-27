@@ -8,14 +8,7 @@ import * as redis from '@midwayjs/redis';
 import { join } from 'path';
 
 @Configuration({
-  imports: [
-    koa,
-    validate,
-    info,
-    typeorm,
-    jwt,
-    redis
-  ],
+  imports: [koa, validate, info, typeorm, jwt, redis],
   importConfigs: [join(__dirname, './config')]
 })
 export class MainConfiguration {
@@ -27,4 +20,3 @@ export class MainConfiguration {
     console.log('✅ Auth Service is ready on port', this.app.getConfig('koa.port'));
   }
 }
-

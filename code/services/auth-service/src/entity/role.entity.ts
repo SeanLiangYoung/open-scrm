@@ -20,4 +20,3 @@ export class RoleEntity {
   @CreateDateColumn({ name: 'create_time' })
   createTime: Date;
 }
-

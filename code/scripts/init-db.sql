@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS `role_permission` (
 
 -- 插入默认管理员用户 (密码: Admin@123)
 INSERT INTO `user` (`corp_id`, `username`, `password`, `real_name`, `is_admin`, `status`) 
-VALUES (1, 'admin', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5lxlexRJZgP.u', '系统管理员', 1, 1)
+VALUES (1, 'admin', '$2b$12$Vr7iDIPkR7e.QsfWs/iyQujwrS/Quwygpzi0zfJIrUOizIKb8jS9W', '系统管理员', 1, 1)
 ON DUPLICATE KEY UPDATE `username` = `username`;
 
 -- 插入默认角色

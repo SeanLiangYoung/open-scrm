@@ -6,7 +6,7 @@ export default {
 
   // Koa配置
   koa: {
-    port: 7001,
+    port: 7000
   },
 
   // JWT配置
@@ -36,6 +36,10 @@ export default {
     routes: [
       {
         path: '/api/v1/auth/*',
+        target: process.env.AUTH_SERVICE_URL || 'http://localhost:7001'
+      },
+      {
+        path: '/api/v1/users/*',
         target: process.env.AUTH_SERVICE_URL || 'http://localhost:7001'
       },
       {
@@ -79,4 +83,3 @@ export default {
     duration: 60000 // 时间窗口(毫秒)
   }
 } as MidwayConfig;
-

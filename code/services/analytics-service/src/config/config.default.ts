@@ -6,7 +6,7 @@ export default {
 
   // Koa配置
   koa: {
-    port: 7008,
+    port: 7006,
   },
 
   // TypeORM配置
@@ -17,8 +17,8 @@ export default {
         host: process.env.DB_HOST || 'localhost',
         port: parseInt(process.env.DB_PORT || '3306'),
         username: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || 'root',
-        database: process.env.DB_DATABASE || 'open_scrm',
+        password: process.env.DB_PASSWORD || 'root123',
+        database: process.env.DB_DATABASE || 'scrm_dev',
         synchronize: false,
         logging: process.env.NODE_ENV === 'local',
         entities: ['**/entity/*.entity{.ts,.js}'],
@@ -52,7 +52,7 @@ export default {
     // 依赖服务地址
     services: {
       customer: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002',
-      message: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7006',
+      message: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008',
       operation: process.env.OPERATION_SERVICE_URL || 'http://localhost:7004',
       acquisition: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003',
     },
