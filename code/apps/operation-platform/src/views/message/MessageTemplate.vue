@@ -34,13 +34,21 @@
     </el-table>
 
     <el-dialog v-model="dialogVisible" :title="editingId ? '编辑模板' : '新建模板'" width="520px">
-      <el-form :model="form" label-width="80px">
+      <el-form :model="form" label-width="90px">
         <el-form-item label="模板名称"><el-input v-model="form.templateName" /></el-form-item>
-        <el-form-item label="类型">
+        <el-form-item label="模板类型">
           <el-select v-model="form.templateType" style="width:100%">
             <el-option label="文本消息" :value="1" />
             <el-option label="图文消息" :value="2" />
             <el-option label="小程序" :value="3" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="消息类型">
+          <el-select v-model="form.messageType" style="width:100%">
+            <el-option label="企业微信" :value="1" />
+            <el-option label="站内通知" :value="2" />
+            <el-option label="短信" :value="3" />
+            <el-option label="邮件" :value="4" />
           </el-select>
         </el-form-item>
         <el-form-item label="内容"><el-input v-model="form.content" type="textarea" :rows="4" placeholder="消息内容，支持变量如 {{name}}" /></el-form-item>
@@ -64,7 +72,7 @@ const submitting = ref(false);
 const templates = ref<any[]>([]);
 const dialogVisible = ref(false);
 const editingId = ref<number | null>(null);
-const form = reactive({ templateName: '', templateType: 1, content: '' });
+const form = reactive({ templateName: '', templateType: 1, messageType: 1, content: '' });
 
 const typeLabel = (t: number) => ({ 1: '文本', 2: '图文', 3: '小程序' }[t] || '其他');
 
@@ -77,18 +85,18 @@ async function fetchTemplates() {
   } catch {} finally { loading.value = false; }
 }
 
-function showCreate() { editingId.value = null; Object.assign(form, { templateName: '', templateType: 1, content: '' }); dialogVisible.value = true; }
+function showCreate() { editingId.value = null; Object.assign(form, { templateName: '', templateType: 1, messageType: 1, content: '' }); dialogVisible.value = true; }
 function editTemplate(row: any) {
   editingId.value = row.id;
-  Object.assign(form, { templateName: row.templateName || row.template_name || '', templateType: row.templateType || row.template_type || 1, content: row.content || '' });
+  Object.assign(form, { templateName: row.templateName || row.template_name || '', templateType: row.templateType || row.template_type || 1, messageType: row.messageType || row.message_type || 1, content: row.content || '' });
   dialogVisible.value = true;
 }
 
 async function handleSubmit() {
   submitting.value = true;
   try {
-    if (editingId.value) await api.put(`/api/message/template/${editingId.value}`, { ...form, corpId: 1 });
-    else await api.post('/api/message/template', { ...form, corpId: 1 });
+    if (editingId.value) await api.put(`/api/message/template/${editingId.value}`, form);
+    else await api.post('/api/message/template', form);
     ElMessage.success(editingId.value ? '更新成功' : '创建成功');
     dialogVisible.value = false;
     fetchTemplates();
