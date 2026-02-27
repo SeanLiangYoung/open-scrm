@@ -6,7 +6,7 @@ export default {
 
   // Koa配置
   koa: {
-    port: 7000,
+    port: 7001
   },
 
   // TypeORM配置
@@ -38,7 +38,7 @@ export default {
   redis: {
     client: {
       host: process.env.REDIS_HOST || '127.0.0.1',
-      port: parseInt(process.env.REDIS_PASSWORD || '6379'),
+      port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD || '',
       db: 0
     }
@@ -55,4 +55,3 @@ export default {
     saltRounds: 12
   }
 } as MidwayConfig;
-

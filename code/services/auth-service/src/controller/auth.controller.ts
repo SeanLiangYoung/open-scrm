@@ -43,4 +43,3 @@ export class AuthController {
     return { message: '登出成功' };
   }
 }
-

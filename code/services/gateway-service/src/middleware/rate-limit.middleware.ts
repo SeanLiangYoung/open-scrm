@@ -58,4 +58,3 @@ export class RateLimitMiddleware implements IMiddleware<Context, NextFunction> {
     return 'rateLimit';
   }
 }
-
