@@ -12,6 +12,11 @@
         <el-menu-item index="/channels">
           <el-icon><Promotion /></el-icon><span>渠道管理</span>
         </el-menu-item>
+        <el-sub-menu index="msg-group">
+          <template #title><el-icon><ChatDotRound /></el-icon><span>消息中心</span></template>
+          <el-menu-item index="/message-templates">消息模板</el-menu-item>
+          <el-menu-item index="/notifications">通知中心</el-menu-item>
+        </el-sub-menu>
         <el-sub-menu index="sop-group">
           <template #title><el-icon><List /></el-icon><span>运营工具</span></template>
           <el-menu-item index="/sop">SOP 管理</el-menu-item>
@@ -36,14 +41,14 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Odometer, User, UserFilled, List, Promotion } from '@element-plus/icons-vue';
+import { Odometer, User, UserFilled, List, Promotion, ChatDotRound } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const titles: Record<string, string> = { '/': '数据看板', '/customers': '客户列表', '/tags': '标签管理', '/channels': '渠道管理', '/sop': 'SOP 管理', '/sop/executions': '执行记录', '/mass-task': '群发任务' };
+const titles: Record<string, string> = { '/': '数据看板', '/customers': '客户列表', '/tags': '标签管理', '/channels': '渠道管理', '/message-templates': '消息模板', '/notifications': '通知中心', '/sop': 'SOP 管理', '/sop/executions': '执行记录', '/mass-task': '群发任务' };
 const pageTitle = computed(() => titles[route.path] || 'SCRM 运营平台');
 
 function handleCmd(cmd: string) { if (cmd === 'logout') { authStore.logout(); router.push('/login'); } }

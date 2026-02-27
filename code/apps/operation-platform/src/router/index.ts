@@ -25,6 +25,8 @@ const router = createRouter({
         { path: 'sop/executions', name: 'SopExecutions', component: () => import('@/views/sop/SopExecutions.vue') },
         { path: 'mass-task', name: 'MassTask', component: () => import('@/views/sop/MassTask.vue') },
         { path: 'channels', name: 'Channels', component: () => import('@/views/acquisition/ChannelManage.vue') },
+        { path: 'message-templates', name: 'MessageTemplates', component: () => import('@/views/message/MessageTemplate.vue') },
+        { path: 'notifications', name: 'Notifications', component: () => import('@/views/message/NotificationCenter.vue') },
       ],
     },
   ],

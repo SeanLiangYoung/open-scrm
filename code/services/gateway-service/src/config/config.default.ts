@@ -103,6 +103,22 @@ export default {
         target: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008'
       },
       {
+        path: '/api/message/*',
+        target: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008'
+      },
+      {
+        path: '/api/message',
+        target: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008'
+      },
+      {
+        path: '/api/notification/*',
+        target: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008'
+      },
+      {
+        path: '/api/notification',
+        target: process.env.MESSAGE_SERVICE_URL || 'http://localhost:7008'
+      },
+      {
         path: '/api/v1/finance/*',
         target: process.env.FINANCE_SERVICE_URL || 'http://localhost:7009'
       }
