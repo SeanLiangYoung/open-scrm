@@ -25,6 +25,21 @@ const router = createRouter({
           name: 'Users',
           component: () => import('@/views/Users.vue'),
         },
+        {
+          path: 'roles',
+          name: 'Roles',
+          component: () => import('@/views/Roles.vue'),
+        },
+        {
+          path: 'settings',
+          name: 'Settings',
+          component: () => import('@/views/SystemSettings.vue'),
+        },
+        {
+          path: 'monitor',
+          name: 'Monitor',
+          component: () => import('@/views/ServiceMonitor.vue'),
+        },
       ],
     },
   ],
