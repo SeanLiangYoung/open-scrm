@@ -19,6 +19,10 @@
           <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
+        <el-menu-item index="/roles">
+          <el-icon><Key /></el-icon>
+          <span>角色权限</span>
+        </el-menu-item>
       </el-menu>
     </el-aside>
 
@@ -52,7 +56,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Odometer, User, UserFilled } from '@element-plus/icons-vue';
+import { Odometer, User, UserFilled, Key } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 
 const route = useRoute();
@@ -63,6 +67,7 @@ const pageTitle = computed(() => {
   const titles: Record<string, string> = {
     '/': '仪表盘',
     '/users': '用户管理',
+    '/roles': '角色权限',
   };
   return titles[route.path] || 'SCRM';
 });
