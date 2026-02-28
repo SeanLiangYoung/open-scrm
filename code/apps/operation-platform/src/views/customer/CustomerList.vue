@@ -75,6 +75,19 @@
         <el-button type="primary" :loading="submitting" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="importDialogVisible" title="导入客户" width="520px">
+      <el-alert type="info" :closable="false" style="margin-bottom:16px">
+        <template #title>
+          请粘贴 CSV 格式数据，第一行为标题行。支持字段：姓名,性别,手机号,渠道
+        </template>
+      </el-alert>
+      <el-input v-model="importText" type="textarea" :rows="8" placeholder="姓名,性别,手机号,渠道&#10;测试客户A,男,13900001111,抖音&#10;测试客户B,女,13900002222,微信" />
+      <template #footer>
+        <el-button @click="importDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleImport">导入</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -191,21 +204,6 @@ async function handleImport() {
 
 onMounted(fetchCustomers);
 </script>
-
-    <el-dialog v-model="importDialogVisible" title="导入客户" width="520px">
-      <el-alert type="info" :closable="false" style="margin-bottom:16px">
-        <template #title>
-          请粘贴 CSV 格式数据，第一行为标题行。支持字段：姓名,性别,手机号,渠道
-        </template>
-      </el-alert>
-      <el-input v-model="importText" type="textarea" :rows="8" placeholder="姓名,性别,手机号,渠道&#10;测试客户A,男,13900001111,抖音&#10;测试客户B,女,13900002222,微信" />
-      <template #footer>
-        <el-button @click="importDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleImport">导入</el-button>
-      </template>
-    </el-dialog>
-  </div>
-</template>
 
 <style scoped>
 .card-header { display: flex; justify-content: space-between; align-items: center; }
