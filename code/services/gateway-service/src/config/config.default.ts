@@ -51,6 +51,14 @@ export default {
         target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
       },
       {
+        path: '/api/v1/follow-ups/*',
+        target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
+      },
+      {
+        path: '/api/v1/follow-ups',
+        target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
+      },
+      {
         path: '/api/v1/tags',
         target: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002'
       },
