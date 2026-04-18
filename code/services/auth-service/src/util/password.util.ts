@@ -1,5 +1,6 @@
 import { Provide, Config } from '@midwayjs/core';
 import * as bcrypt from 'bcrypt';
+import { checkPasswordStrength } from './password-strength.util';
 
 @Provide()
 export class PasswordUtil {
@@ -27,17 +28,6 @@ export class PasswordUtil {
     isValid: boolean;
     message: string;
   } {
-    // 至少8位，包含大小写字母、数字和特殊字符
-    const strongPasswordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (!strongPasswordRegex.test(password)) {
-      return {
-        isValid: false,
-        message: '密码至少8位，需包含大小写字母、数字和特殊字符'
-      };
-    }
-
-    return { isValid: true, message: '密码强度合格' };
+    return checkPasswordStrength(password);
   }
 }
