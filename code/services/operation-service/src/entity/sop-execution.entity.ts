@@ -20,7 +20,7 @@ export class SopExecutionEntity {
   @Column({ name: 'template_name', type: 'varchar', length: 100, nullable: true, comment: 'SOP模板名称' })
   templateName: string;
 
-  @Column({ name: 'target_type', type: 'tinyint', comment: '目标类型: 1-客户 2-群' })
+  @Column({ name: 'target_type', type: 'smallint', comment: '目标类型: 1-客户 2-群' })
   targetType: number;
 
   @Column({ name: 'customer_id', type: 'bigint', unsigned: true, nullable: true, comment: '客户ID' })
@@ -35,13 +35,13 @@ export class SopExecutionEntity {
   @Column({ name: 'total_steps', type: 'int', default: 0, comment: '总步骤数' })
   totalSteps: number;
 
-  @Column({ type: 'tinyint', default: 0, comment: '状态: 0-执行中 1-已完成 2-已暂停 3-已失败' })
+  @Column({ type: 'smallint', default: 0, comment: '状态: 0-执行中 1-已完成 2-已暂停 3-已失败' })
   status: number;
 
-  @Column({ name: 'start_time', type: 'datetime', nullable: true, comment: '开始时间' })
+  @Column({ name: 'start_time', type: 'timestamp', nullable: true, comment: '开始时间' })
   startTime: Date;
 
-  @Column({ name: 'complete_time', type: 'datetime', nullable: true, comment: '完成时间' })
+  @Column({ name: 'complete_time', type: 'timestamp', nullable: true, comment: '完成时间' })
   completeTime: Date;
 
   @Column({ name: 'error_message', type: 'varchar', length: 500, nullable: true, comment: '错误信息' })

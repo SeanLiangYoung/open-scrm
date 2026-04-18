@@ -21,10 +21,10 @@ export class CustomerEntity {
   @Column({ type: 'varchar', length: 255, nullable: true })
   avatar: string;
 
-  @Column({ type: 'tinyint', default: 1, comment: '1-微信 2-企微' })
+  @Column({ type: 'smallint', default: 1, comment: '1-微信 2-企微' })
   type: number;
 
-  @Column({ type: 'tinyint', nullable: true, comment: '0-未知 1-男 2-女' })
+  @Column({ type: 'smallint', nullable: true, comment: '0-未知 1-男 2-女' })
   gender: number;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
@@ -39,13 +39,13 @@ export class CustomerEntity {
   @Column({ name: 'follow_user_id', type: 'bigint', unsigned: true, nullable: true, comment: '跟进员工ID' })
   followUserId: number;
 
-  @Column({ name: 'add_time', type: 'datetime', nullable: true })
+  @Column({ name: 'add_time', type: 'timestamp', nullable: true })
   addTime: Date;
 
   @Column({ type: 'varchar', length: 50, nullable: true, comment: '添加渠道' })
   channel: string;
 
-  @Column({ type: 'tinyint', default: 1, comment: '0-已删除 1-正常 2-流失' })
+  @Column({ type: 'smallint', default: 1, comment: '0-已删除 1-正常 2-流失' })
   status: number;
 
   @Column({ type: 'text', nullable: true, comment: '备注' })

@@ -20,7 +20,7 @@ export class InvoiceEntity {
   @Column({ name: 'invoice_no', type: 'varchar', length: 64, nullable: true, comment: '发票号码' })
   invoiceNo: string;
 
-  @Column({ name: 'invoice_type', type: 'tinyint', comment: '发票类型: 1-普通发票 2-增值税专用发票' })
+  @Column({ name: 'invoice_type', type: 'smallint', comment: '发票类型: 1-普通发票 2-增值税专用发票' })
   invoiceType: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, comment: '开票金额' })
@@ -51,10 +51,10 @@ export class InvoiceEntity {
   @Column({ name: 'buyer_account', type: 'varchar', length: 64, nullable: true, comment: '购买方账号' })
   buyerAccount: string;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 1-待开票 2-已开票 3-已作废' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 1-待开票 2-已开票 3-已作废' })
   status: number;
 
-  @Column({ name: 'issue_time', type: 'datetime', nullable: true, comment: '开票时间' })
+  @Column({ name: 'issue_time', type: 'timestamp', nullable: true, comment: '开票时间' })
   issueTime: Date;
 
   @Column({ name: 'invoice_url', type: 'varchar', length: 500, nullable: true, comment: '发票文件URL' })

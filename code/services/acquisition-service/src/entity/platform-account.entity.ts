@@ -27,10 +27,10 @@ export class PlatformAccountEntity {
   @Column({ name: 'refresh_token', type: 'varchar', length: 500, nullable: true, comment: '刷新令牌' })
   refreshToken: string;
 
-  @Column({ name: 'expires_time', type: 'datetime', nullable: true, comment: '过期时间' })
+  @Column({ name: 'expires_time', type: 'timestamp', nullable: true, comment: '过期时间' })
   expiresTime: Date;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 0-禁用 1-启用 2-已过期' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 0-禁用 1-启用 2-已过期' })
   status: number;
 
   @CreateDateColumn({ name: 'create_time' })

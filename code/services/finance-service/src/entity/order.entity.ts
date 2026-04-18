@@ -20,7 +20,7 @@ export class OrderEntity {
   @Column({ name: 'product_name', type: 'varchar', length: 255, comment: '产品名称' })
   productName: string;
 
-  @Column({ name: 'product_type', type: 'tinyint', comment: '产品类型: 1-套餐 2-增值服务' })
+  @Column({ name: 'product_type', type: 'smallint', comment: '产品类型: 1-套餐 2-增值服务' })
   productType: number;
 
   @Column({ type: 'decimal', precision: 10, scale: 2, comment: '订单金额' })
@@ -32,16 +32,16 @@ export class OrderEntity {
   @Column({ name: 'actual_amount', type: 'decimal', precision: 10, scale: 2, comment: '实付金额' })
   actualAmount: number;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 1-待支付 2-已支付 3-已取消 4-已退款' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 1-待支付 2-已支付 3-已取消 4-已退款' })
   status: number;
 
-  @Column({ name: 'pay_time', type: 'datetime', nullable: true, comment: '支付时间' })
+  @Column({ name: 'pay_time', type: 'timestamp', nullable: true, comment: '支付时间' })
   payTime: Date;
 
-  @Column({ name: 'cancel_time', type: 'datetime', nullable: true, comment: '取消时间' })
+  @Column({ name: 'cancel_time', type: 'timestamp', nullable: true, comment: '取消时间' })
   cancelTime: Date;
 
-  @Column({ name: 'expire_time', type: 'datetime', nullable: true, comment: '过期时间' })
+  @Column({ name: 'expire_time', type: 'timestamp', nullable: true, comment: '过期时间' })
   expireTime: Date;
 
   @Column({ type: 'json', nullable: true, comment: '订单详情' })

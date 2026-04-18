@@ -39,7 +39,7 @@ export class ChannelCodeEntity {
   @Column({ name: 'add_count', type: 'int', default: 0, comment: '添加客户数' })
   addCount: number;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 0-禁用 1-启用' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 0-禁用 1-启用' })
   status: number;
 
   @CreateDateColumn({ name: 'create_time' })

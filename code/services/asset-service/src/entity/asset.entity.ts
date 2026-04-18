@@ -20,7 +20,7 @@ export class AssetEntity {
   @Column({ type: 'varchar', length: 255, comment: '素材名称' })
   name: string;
 
-  @Column({ type: 'tinyint', comment: '类型: 1-图片 2-视频 3-文件' })
+  @Column({ type: 'smallint', comment: '类型: 1-图片 2-视频 3-文件' })
   type: number;
 
   @Column({ name: 'file_url', type: 'varchar', length: 500, comment: '文件URL' })

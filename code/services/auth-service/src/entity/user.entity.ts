@@ -38,10 +38,10 @@ export class UserEntity {
   @Column({ name: 'wework_userid', length: 64, nullable: true })
   weworkUserid: string;
 
-  @Column({ type: 'tinyint', default: 1 })
+  @Column({ type: 'smallint', default: 1 })
   status: number; // 0-禁用 1-正常
 
-  @Column({ name: 'is_admin', type: 'tinyint', default: 0 })
+  @Column({ name: 'is_admin', type: 'smallint', default: 0 })
   isAdmin: number;
 
   @Column({ name: 'last_login_time', nullable: true })

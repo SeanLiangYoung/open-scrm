@@ -16,7 +16,7 @@ export class NotificationEntity {
   @Column({ name: 'user_id', type: 'bigint', unsigned: true, comment: '用户ID' })
   userId: number;
 
-  @Column({ name: 'notification_type', type: 'tinyint', comment: '通知类型: 1-系统 2-业务 3-警告' })
+  @Column({ name: 'notification_type', type: 'smallint', comment: '通知类型: 1-系统 2-业务 3-警告' })
   notificationType: number;
 
   @Column({ type: 'varchar', length: 200, comment: '通知标题' })
@@ -31,13 +31,13 @@ export class NotificationEntity {
   @Column({ type: 'json', nullable: true, comment: '扩展数据' })
   extra: any;
 
-  @Column({ name: 'is_read', type: 'tinyint', default: 0, comment: '是否已读: 0-未读 1-已读' })
+  @Column({ name: 'is_read', type: 'smallint', default: 0, comment: '是否已读: 0-未读 1-已读' })
   isRead: number;
 
-  @Column({ name: 'read_time', type: 'datetime', nullable: true, comment: '阅读时间' })
+  @Column({ name: 'read_time', type: 'timestamp', nullable: true, comment: '阅读时间' })
   readTime: Date;
 
-  @Column({ name: 'expire_time', type: 'datetime', nullable: true, comment: '过期时间' })
+  @Column({ name: 'expire_time', type: 'timestamp', nullable: true, comment: '过期时间' })
   expireTime: Date;
 
   @CreateDateColumn({ name: 'create_time' })

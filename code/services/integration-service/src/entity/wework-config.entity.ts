@@ -26,7 +26,7 @@ export class WeworkConfigEntity {
   @Column({ name: 'encoding_aes_key', type: 'varchar', length: 100, nullable: true, comment: '回调EncodingAESKey' })
   encodingAesKey: string;
 
-  @Column({ type: 'tinyint', default: 1, comment: '0-禁用 1-启用' })
+  @Column({ type: 'smallint', default: 1, comment: '0-禁用 1-启用' })
   status: number;
 
   @CreateDateColumn({ name: 'create_time' })

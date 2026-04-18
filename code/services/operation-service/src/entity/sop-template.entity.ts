@@ -14,10 +14,10 @@ export class SopTemplateEntity {
   @Column({ name: 'template_name', type: 'varchar', length: 100, comment: '模板名称' })
   templateName: string;
 
-  @Column({ name: 'template_type', type: 'tinyint', comment: '模板类型: 1-客户SOP 2-群SOP' })
+  @Column({ name: 'template_type', type: 'smallint', comment: '模板类型: 1-客户SOP 2-群SOP' })
   templateType: number;
 
-  @Column({ name: 'trigger_type', type: 'tinyint', comment: '触发类型: 1-添加好友 2-打标签 3-进群 4-手动触发' })
+  @Column({ name: 'trigger_type', type: 'smallint', comment: '触发类型: 1-添加好友 2-打标签 3-进群 4-手动触发' })
   triggerType: number;
 
   @Column({ name: 'trigger_condition', type: 'json', nullable: true, comment: '触发条件JSON' })
@@ -26,7 +26,7 @@ export class SopTemplateEntity {
   @Column({ type: 'text', nullable: true, comment: 'SOP描述' })
   description: string;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 0-禁用 1-启用' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 0-禁用 1-启用' })
   status: number;
 
   @Column({ name: 'create_user_id', type: 'bigint', unsigned: true, nullable: true, comment: '创建人ID' })

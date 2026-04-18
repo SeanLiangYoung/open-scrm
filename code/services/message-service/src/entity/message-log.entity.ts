@@ -16,10 +16,10 @@ export class MessageLogEntity {
   @Column({ name: 'template_id', type: 'int', unsigned: true, nullable: true, comment: '模板ID' })
   templateId: number;
 
-  @Column({ name: 'message_type', type: 'tinyint', comment: '消息类型: 1-企业微信 2-站内通知 3-短信 4-邮件' })
+  @Column({ name: 'message_type', type: 'smallint', comment: '消息类型: 1-企业微信 2-站内通知 3-短信 4-邮件' })
   messageType: number;
 
-  @Column({ name: 'target_type', type: 'tinyint', comment: '接收方类型: 1-客户 2-员工 3-群' })
+  @Column({ name: 'target_type', type: 'smallint', comment: '接收方类型: 1-客户 2-员工 3-群' })
   targetType: number;
 
   @Column({ name: 'target_id', type: 'bigint', unsigned: true, comment: '接收方ID' })
@@ -34,10 +34,10 @@ export class MessageLogEntity {
   @Column({ type: 'json', nullable: true, comment: '扩展数据' })
   extra: any;
 
-  @Column({ name: 'send_status', type: 'tinyint', default: 0, comment: '发送状态: 0-待发送 1-发送成功 2-发送失败' })
+  @Column({ name: 'send_status', type: 'smallint', default: 0, comment: '发送状态: 0-待发送 1-发送成功 2-发送失败' })
   sendStatus: number;
 
-  @Column({ name: 'send_time', type: 'datetime', nullable: true, comment: '发送时间' })
+  @Column({ name: 'send_time', type: 'timestamp', nullable: true, comment: '发送时间' })
   sendTime: Date;
 
   @Column({ name: 'fail_reason', type: 'varchar', length: 500, nullable: true, comment: '失败原因' })

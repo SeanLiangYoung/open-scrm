@@ -19,7 +19,7 @@ export class ContentEntity {
   @Column({ type: 'varchar', length: 20, comment: '平台' })
   platform: string;
 
-  @Column({ name: 'content_type', type: 'tinyint', comment: '内容类型: 1-图文 2-视频' })
+  @Column({ name: 'content_type', type: 'smallint', comment: '内容类型: 1-图文 2-视频' })
   contentType: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true, comment: '标题' })
@@ -37,10 +37,10 @@ export class ContentEntity {
   @Column({ type: 'json', nullable: true, comment: '话题标签' })
   topics: any;
 
-  @Column({ type: 'tinyint', default: 0, comment: '状态: 0-草稿 1-已发布 2-失败' })
+  @Column({ type: 'smallint', default: 0, comment: '状态: 0-草稿 1-已发布 2-失败' })
   status: number;
 
-  @Column({ name: 'publish_time', type: 'datetime', nullable: true, comment: '发布时间' })
+  @Column({ name: 'publish_time', type: 'timestamp', nullable: true, comment: '发布时间' })
   publishTime: Date;
 
   @Column({ name: 'platform_content_id', type: 'varchar', length: 100, nullable: true, comment: '平台内容ID' })

@@ -26,13 +26,13 @@ export class PaymentEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2, comment: '支付金额' })
   amount: number;
 
-  @Column({ type: 'tinyint', default: 1, comment: '状态: 1-待支付 2-支付成功 3-支付失败 4-已退款' })
+  @Column({ type: 'smallint', default: 1, comment: '状态: 1-待支付 2-支付成功 3-支付失败 4-已退款' })
   status: number;
 
-  @Column({ name: 'pay_time', type: 'datetime', nullable: true, comment: '支付时间' })
+  @Column({ name: 'pay_time', type: 'timestamp', nullable: true, comment: '支付时间' })
   payTime: Date;
 
-  @Column({ name: 'refund_time', type: 'datetime', nullable: true, comment: '退款时间' })
+  @Column({ name: 'refund_time', type: 'timestamp', nullable: true, comment: '退款时间' })
   refundTime: Date;
 
   @Column({ name: 'refund_amount', type: 'decimal', precision: 10, scale: 2, default: 0, comment: '退款金额' })
