@@ -27,6 +27,7 @@ scripts/
 │   ├── full-test.ps1             # 完整测试脚本
 │   └── README.md                 # 测试脚本说明
 ├── init-db.sql                   # 数据库初始化脚本
+├── install-superpowers-codex.sh  # Codex Superpowers 安装脚本
 ├── prometheus.yml                # Prometheus 配置
 └── README.md                     # 本文件
 ```
@@ -142,6 +143,16 @@ pnpm run test:build
 # 仅类型检查
 pnpm run test:type
 ```
+
+## 🔌 Codex Superpowers（可选）
+
+若使用 Codex 并希望启用 [Superpowers](https://github.com/obra/superpowers)，可在**本机终端**执行（需写入 `~/.codex`，IDE 沙箱无法代劳）：
+
+```bash
+bash code/scripts/install-superpowers-codex.sh
+```
+
+该脚本会：克隆 superpowers 到 `~/.codex/superpowers`、创建 `~/.codex/skills`、在 `~/.codex/AGENTS.md` 中加入 Superpowers 说明，并按官方 [INSTALL.md](https://raw.githubusercontent.com/obra/superpowers/refs/heads/main/.codex/INSTALL.md) 完成配置与校验。
 
 ## 💾 数据库脚本
 
