@@ -18,6 +18,7 @@ test.describe('Sprint 2 — 集成服务经网关探测', () => {
       status: 'ok',
       service: 'integration-service',
       database: 'connected',
+      redis: 'connected',
     });
   });
 });

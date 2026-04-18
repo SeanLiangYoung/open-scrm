@@ -13,7 +13,7 @@
     "build:service": "pnpm --filter \"./services/**\" build",
     "build:docker": "turbo run build --filter=\"./packages/**\" --filter=\"./services/**\"",
     "test": "bash ./scripts/test/full-test.sh",
-    "test:unit": "turbo run test --filter=@scrm/shared-utils --filter=@scrm/gateway-service --filter=@scrm/auth-service",
+    "test:unit": "turbo run test --filter=@scrm/shared-utils --filter=@scrm/gateway-service --filter=@scrm/auth-service --filter=@scrm/integration-service",
     "test:e2e": "bash ./e2e/run-full-e2e.sh",
     "test:e2e:playwright": "pnpm --filter @scrm/e2e exec playwright test",
     "test:e2e:api": "PLAYWRIGHT_SKIP_WEBSERVER=1 pnpm --filter @scrm/e2e exec playwright test --project=sprint1-api --project=sprint2-integration",

@@ -29,7 +29,7 @@ run_test() {
 
 echo "🧪 Phase 0: Unit Tests (Vitest)"
 echo "------------------------------------------"
-run_test "Vitest (shared-utils, gateway, auth)" "pnpm test:unit"
+run_test "Vitest (shared-utils, gateway, auth, integration)" "pnpm test:unit"
 
 echo ""
 echo "📦 Phase 1: Shared Packages Build"
