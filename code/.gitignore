@@ -64,6 +64,5 @@ unpackage/
 *.db
 *.sqlite
 
-# Docker
-.dockerignore
+# Docker (keep .dockerignore tracked for build context)
 
