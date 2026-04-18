@@ -13,16 +13,15 @@ export default {
   typeorm: {
     dataSource: {
       default: {
-        type: 'mysql',
+        type: 'postgres',
         host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT || '3306'),
-        username: process.env.DB_USER || 'root',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        username: process.env.DB_USERNAME || process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD || 'root123',
         database: process.env.DB_DATABASE || 'scrm_dev',
         synchronize: process.env.NODE_ENV === 'local',
         logging: process.env.NODE_ENV === 'local',
         entities: ['**/entity/*.entity{.ts,.js}'],
-        charset: 'utf8mb4',
         timezone: '+08:00',
       },
     },
@@ -63,6 +62,12 @@ export default {
   cors: {
     origin: '*',
     allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH,OPTIONS',
+  },
+
+  /** 与 SCRM 客户表 corp_id 对齐的租户 ID；企微同步写入客户库时使用 */
+  integration: {
+    customerServiceUrl: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002',
+    scrmCorpId: parseInt(process.env.SCRM_TENANT_ID || '1', 10),
   },
 } as MidwayConfig;
 

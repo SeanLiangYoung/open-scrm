@@ -1,4 +1,4 @@
--- 数据库初始化脚本
+-- 数据库初始化脚本（MySQL 历史参考；当前开发环境请使用 PostgreSQL + init-db.pg.sql）
 
 -- 设置连接字符集
 SET NAMES utf8mb4;

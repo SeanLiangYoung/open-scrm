@@ -2,20 +2,20 @@
 version: '3.8'
 
 services:
-  # MySQL 8.0
-  mysql:
-    image: mysql:8.0
-    container_name: scrm-mysql
+  # PostgreSQL 16（应用默认连接见各服务 config.default.ts / 环境变量）
+  postgres:
+    image: postgres:16-alpine
+    container_name: scrm-postgres
     environment:
-      MYSQL_ROOT_PASSWORD: root123
-      MYSQL_DATABASE: scrm_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root123
+      POSTGRES_DB: scrm_dev
       TZ: Asia/Shanghai
     ports:
-      - "3306:3306"
+      - "5432:5432"
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --character-set-client-handshake=FALSE --init-connect='SET NAMES utf8mb4'
+      - postgres-data:/var/lib/postgresql/data
+      - ./scripts/init-db.pg.sql:/docker-entrypoint-initdb.d/01-init.sql
     networks:
       - scrm-network
     restart: unless-stopped
@@ -103,7 +103,7 @@ networks:
     driver: bridge
 
 volumes:
-  mysql-data:
+  postgres-data:
   redis-data:
   mongo-data:
   rabbitmq-data:

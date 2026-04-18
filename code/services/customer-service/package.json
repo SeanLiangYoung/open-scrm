@@ -24,7 +24,7 @@
     "@scrm/shared-utils": "workspace:*",
     "@scrm/server-common": "workspace:*",
     "typeorm": "^0.3.17",
-    "mysql2": "^3.6.0",
+    "pg": "^8.13.1",
     "class-validator": "^0.14.0",
     "class-transformer": "^0.5.1"
   },

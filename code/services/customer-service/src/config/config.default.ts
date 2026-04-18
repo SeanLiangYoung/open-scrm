@@ -13,16 +13,15 @@ export default {
   typeorm: {
     dataSource: {
       default: {
-        type: 'mysql',
+        type: 'postgres',
         host: process.env.DB_HOST || 'localhost',
-        port: parseInt(process.env.DB_PORT || '3306'),
-        username: process.env.DB_USER || 'root',
+        port: parseInt(process.env.DB_PORT || '5432'),
+        username: process.env.DB_USERNAME || process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD || 'root123',
         database: process.env.DB_DATABASE || 'scrm_dev',
         synchronize: process.env.NODE_ENV === 'local', // 仅开发环境自动同步
         logging: process.env.NODE_ENV === 'local',
         entities: ['**/entity/*.entity{.ts,.js}'],
-        charset: 'utf8mb4',
         timezone: '+08:00',
       },
     },

@@ -94,7 +94,7 @@ scrm-system/
 
 - **Node.js**: 18.x LTS
 - **pnpm**: 8.x+
-- **MySQL**: 8.0+
+- **PostgreSQL**: 14+（推荐 16）
 - **Redis**: 7.0+
 - **MongoDB**: 6.0+
 - **RabbitMQ**: 3.x+
@@ -114,10 +114,16 @@ pnpm install
 **1. 启动数据库 (Docker Compose)**
 
 ```bash
-docker-compose up -d
+docker compose up -d postgres redis
 ```
 
-**2. 初始化数据库**
+首次启动会在 PostgreSQL 容器中执行 `scripts/init-db.pg.sql`（仅新数据卷执行一次），创建库表并写入默认管理员等种子数据。
+
+**2. 使用本机已有 PostgreSQL 时**
+
+创建数据库 `scrm_dev`，并将 `scripts/init-db.pg.sql` 导入；通过环境变量连接：`DB_HOST`、`DB_PORT`（默认 `5432`）、`DB_USERNAME`/`DB_USER`、`DB_PASSWORD`、`DB_DATABASE`。
+
+**3. 迁移脚本（若使用 TypeORM migration，而非仅依赖 init SQL）**
 
 ```bash
 cd services/auth-service
@@ -125,7 +131,7 @@ pnpm migration:run
 pnpm seed
 ```
 
-**3. 启动后端服务**
+**4. 启动后端服务**
 
 ```bash
 # 启动所有服务
@@ -136,7 +142,7 @@ cd services/gateway-service
 pnpm dev
 ```
 
-**4. 启动前端应用**
+**5. 启动前端应用**
 
 ```bash
 # 启动所有前端应用
