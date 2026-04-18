@@ -33,8 +33,8 @@
     <el-card style="margin-top: 20px">
       <template #header>基础设施</template>
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="MySQL">
-          <el-tag type="success" size="small">运行中</el-tag> localhost:3306
+        <el-descriptions-item label="PostgreSQL">
+          <el-tag type="success" size="small">运行中</el-tag> localhost:5432
         </el-descriptions-item>
         <el-descriptions-item label="Redis">
           <el-tag type="success" size="small">运行中</el-tag> localhost:6379
