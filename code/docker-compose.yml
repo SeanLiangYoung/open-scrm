@@ -40,8 +40,9 @@ services:
       POSTGRES_PASSWORD: root123
       POSTGRES_DB: scrm_dev
       TZ: Asia/Shanghai
+    # 宿主机若已有 PostgreSQL 占用 5432，映射到 5433 供本机工具连接；容器内仍为 5432
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./scripts/init-db.pg.sql:/docker-entrypoint-initdb.d/01-init.sql
@@ -190,6 +191,11 @@ services:
       - '7003:7003'
     environment:
       <<: *backend-env
+      # 本地 Docker 无真实 OSS 时满足 @midwayjs/oss 校验；真实环境请改为自己的 endpoint/bucket/密钥
+      OSS_ENDPOINT: https://oss-cn-hangzhou.aliyuncs.com
+      OSS_BUCKET: docker-dev-placeholder
+      OSS_ACCESS_KEY_ID: docker-dev-placeholder
+      OSS_ACCESS_KEY_SECRET: docker-dev-placeholder
     networks:
       - scrm-network
     depends_on:
@@ -232,6 +238,10 @@ services:
       - '7005:7005'
     environment:
       <<: *backend-env
+      OSS_ENDPOINT: https://oss-cn-hangzhou.aliyuncs.com
+      OSS_BUCKET: docker-dev-placeholder
+      OSS_ACCESS_KEY_ID: docker-dev-placeholder
+      OSS_ACCESS_KEY_SECRET: docker-dev-placeholder
     networks:
       - scrm-network
     depends_on:
@@ -336,8 +346,9 @@ services:
     container_name: scrm-gateway-service
     working_dir: /app/services/gateway-service
     command: ['node', 'bootstrap.js']
+    # 宿主机 7000 常被 macOS AirPlay 占用；开发环境映射到 17000，容器内仍为 7000
     ports:
-      - '7000:7000'
+      - '17000:7000'
     environment:
       <<: *gateway-env
     networks:

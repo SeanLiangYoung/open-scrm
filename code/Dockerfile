@@ -5,13 +5,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-cert
 WORKDIR /app
 RUN corepack enable && corepack prepare pnpm@8.9.0 --activate
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json tsconfig.json ./
 COPY packages ./packages
 COPY services ./services
 COPY apps ./apps
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm run build:service
+# 须包含 packages（如 server-common），否则仅 build:service 会缺少 workspace 编译产物
+RUN pnpm run build:docker
 
 ENV NODE_ENV=production
 # 由 docker-compose 覆盖
