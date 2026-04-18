@@ -7,7 +7,8 @@
     "dev": "cross-env NODE_ENV=local mw dev",
     "build": "mw build",
     "start": "node ./bootstrap.js",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
     "@midwayjs/bootstrap": "^3.14.0",
@@ -34,7 +35,8 @@
     "@types/node": "^20.0.0",
     "@types/crypto-js": "^4.2.0",
     "cross-env": "^7.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=18.0.0"

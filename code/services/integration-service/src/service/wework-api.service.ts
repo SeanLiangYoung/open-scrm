@@ -5,7 +5,10 @@ import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { WeworkConfigEntity } from '../entity/wework-config.entity';
 import { CreateWeworkConfigDto, UpdateWeworkConfigDto } from '../dto/wework-config.dto';
-import * as crypto from 'crypto';
+import {
+  decryptWeworkMessage,
+  verifyWeworkCallbackSignature,
+} from '../util/wework-msg-crypt.util';
 
 /**
  * 企业微信API服务
@@ -317,20 +320,14 @@ export class WeworkApiService {
    * 验证回调URL
    */
   verifyCallbackUrl(signature: string, timestamp: string, nonce: string, token: string): boolean {
-    const arr = [token, timestamp, nonce].sort();
-    const str = arr.join('');
-    const sha1 = crypto.createHash('sha1');
-    sha1.update(str);
-    return sha1.digest('hex') === signature;
+    return verifyWeworkCallbackSignature(token, timestamp, nonce, signature);
   }
 
   /**
    * 解密回调消息
    */
   decryptMessage(encryptedMsg: string, encodingAesKey: string, corpId: string): string {
-    // 实现AES解密逻辑
-    // 这里简化处理，实际需要完整的加解密实现
-    return encryptedMsg;
+    return decryptWeworkMessage(encryptedMsg, encodingAesKey, corpId);
   }
 }
 
