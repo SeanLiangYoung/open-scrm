@@ -7,7 +7,7 @@
     "build": "mw build",
     "start": "NODE_ENV=production node ./bootstrap.js",
     "clean": "rm -rf dist",
-    "test": "npm run test",
+    "test": "vitest run",
     "lint": "eslint . --ext .ts",
     "type-check": "tsc --noEmit"
   },
@@ -37,7 +37,8 @@
     "@types/koa__cors": "^4.0.0",
     "@types/node": "^18.0.0",
     "cross-env": "^7.0.3",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=18.0.0"

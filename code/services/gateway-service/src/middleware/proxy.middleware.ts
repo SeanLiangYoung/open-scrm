@@ -2,23 +2,22 @@ import { Config, Inject, Middleware } from '@midwayjs/core';
 import { Context, NextFunction } from '@midwayjs/koa';
 import { IMiddleware } from '@midwayjs/core';
 import { HttpService } from '@midwayjs/axios';
-
-interface RouteConfig {
-  path: string;
-  target: string;
-}
+import {
+  findMatchingGatewayRoute,
+  type GatewayRouteConfig,
+} from '../utils/route-match';
 
 @Middleware()
 export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
   @Config('gateway.routes')
-  routes: RouteConfig[];
+  routes: GatewayRouteConfig[];
 
   @Inject()
   httpService: HttpService;
 
   resolve() {
     return async (ctx: Context, next: NextFunction) => {
-      const matchedRoute = this.findMatchingRoute(ctx.path);
+      const matchedRoute = findMatchingGatewayRoute(this.routes, ctx.path);
 
       if (!matchedRoute) {
         return await next();
@@ -82,13 +81,6 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
         }
       }
     };
-  }
-
-  private findMatchingRoute(path: string): RouteConfig | undefined {
-    return this.routes.find(route => {
-      const routePath = route.path.replace('/*', '');
-      return path.startsWith(routePath);
-    });
   }
 
   static getName(): string {
