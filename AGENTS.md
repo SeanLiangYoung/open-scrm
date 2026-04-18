@@ -33,7 +33,7 @@
 Open SCRM is a pnpm + Turborepo monorepo located in `/workspace/code/`. It contains:
 - **10 backend microservices** (`services/`) using Midway.js 3.x (Koa-based) + TypeORM + PostgreSQL + Redis
 - **4 shared packages** (`packages/`) — must be built before services can run
-- **4 frontend apps** (`apps/`) — stubs only (no source code yet)
+- **4 frontend apps** (`apps/`) — **admin-platform** and **operation-platform** are actively developed (Vue 3); **official-website** and **mobile-app** are mostly scaffold / README 级别
 
 ### Infrastructure: Docker Services
 
@@ -54,11 +54,12 @@ pnpm build                # build all packages + services (turbo)
 pnpm type-check           # TypeScript type checking (turbo)
 ```
 
-To start individual services:
+To start individual services (ports are **container / local mw dev** defaults):
 ```bash
-cd services/auth-service && NODE_ENV=development npx mw dev    # port 7000
-cd services/gateway-service && NODE_ENV=development npx mw dev # port 7001
+cd services/gateway-service && NODE_ENV=development npx mw dev  # port 7000 — API 入口
+cd services/auth-service && NODE_ENV=development npx mw dev     # port 7001
 ```
+Docker Compose maps the gateway to host **17000**→container **7000** (see `code/docker-compose.yml`). Use `http://localhost:17000` for E2E when using that stack.
 
 ### Known Gotchas
 
@@ -68,15 +69,18 @@ cd services/gateway-service && NODE_ENV=development npx mw dev # port 7001
 
 3. **Default admin login**: username=`admin`, password=`Admin@123`.
 
-4. **admin-platform frontend**: Run `cd code/apps/admin-platform && pnpm dev` (port 3001). Vite proxy forwards `/api` to gateway on port 7000.
+4. **admin-platform frontend**: Run `cd code/apps/admin-platform && pnpm dev` (port 3001). Vite proxy forwards `/api` to the gateway URL in `VITE_GATEWAY_URL` (default `http://localhost:7000`; match Docker host port **17000** when using Compose).
 
 5. **Legacy MySQL**: The repo previously used MySQL; `scripts/init-db.sql` is retained for reference only. Runtime DB is PostgreSQL.
 
 ### Hello World Test
 
-After starting auth-service:
+Start **gateway-service** (and **auth-service** behind it). Then call login **through the gateway**:
 ```bash
 curl -X POST http://localhost:7000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username": "admin", "password": "Admin@123"}'
 ```
+(If you only use Docker Compose for the gateway, use `http://localhost:17000` instead of `7000`.)
+
+**Canonical iteration & harness docs** (tests, E2E, sprint notes): `code/docs/迭代计划-E2E.md`, `code/docs/harness/README.md`.

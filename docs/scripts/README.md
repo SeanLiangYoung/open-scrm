@@ -263,13 +263,13 @@ pnpm run start:integration  # 启动集成服务（如需企微消息）
 
 1. 检查服务是否启动：`.\scripts\check-services.ps1`
 2. 检查防火墙设置
-3. 检查健康检查接口：`http://localhost:7001/health`
+3. 检查健康检查接口：网关 `http://localhost:7000/health`（Docker 映射宿主机时常为 **17000**）
 
 ### 停止脚本无效
 
 ```powershell
 # 手动查找并终止进程
-netstat -ano | findstr "7001"
+netstat -ano | findstr "7000"
 taskkill /PID <进程ID> /F
 ```
 

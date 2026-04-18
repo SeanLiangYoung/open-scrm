@@ -34,5 +34,5 @@
 
 ## 4. 风险与依赖
 
-- E2E 依赖 **MySQL 中有 admin 用户**；密码须与策略一致（当前默认 `Admin@123`）。
+- E2E 依赖 **PostgreSQL** 中已初始化 admin 用户（`init-db.pg.sql`）；密码须与策略一致（当前默认 `Admin@123`）。
 - 运营端客户/SOP 接口依赖 **customer-service、operation-service**；未启动时页面可能报错，与「主路径可走通」冲突时需先起服务。

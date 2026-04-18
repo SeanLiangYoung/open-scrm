@@ -5,8 +5,8 @@
 ## 1. 前置
 
 - Node.js ≥ 18，pnpm ≥ 8
-- Docker：启动 MySQL 8 + Redis 7（见仓库根 `docker-compose` 或 `AGENTS.md`）
-- 数据库：`scrm_dev`，账号以 `环境配置说明.md` / `init-db.sql` 为准
+- Docker：启动 **PostgreSQL** + Redis 7（见 `code/docker-compose.yml` 或 `AGENTS.md`）
+- 数据库：`scrm_dev`，初始化见 `code/scripts/init-db.pg.sql`；账号以 `docs/guides/环境配置说明.md` 为准
 
 ## 2. 安装与类型检查（`code/` 目录）
 

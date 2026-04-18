@@ -4,7 +4,7 @@
 **创建日期:** 2026-04-16  
 **适用范围:** `code/` 目录（pnpm + Turborepo 单体仓库）
 
-本文档与 [开发计划.md](./开发计划.md) 互补：前者记录历史阶段与规范，**本文档定义每个迭代的最终效果与端到端（E2E）验证流程**。迭代默认 **2 周**；若团队并行多条线，可按文末依赖关系调整顺序。
+本文档与仓库根目录 [开发计划.md](../../docs/开发计划.md) 互补：前者记录历史阶段与规范，**本文档定义每个迭代的最终效果与端到端（E2E）验证流程**。迭代默认 **2 周**；若团队并行多条线，可按文末依赖关系调整顺序。代码与文档入口总览见 [代码现状与文档索引.md](./代码现状与文档索引.md)。
 
 ---
 
@@ -24,8 +24,10 @@
 | integration-service | 7007 | 同上 |
 | message-service | 7008 | 同上 |
 | finance-service | 7009 | 同上 |
-| admin-platform（Vite） | 3001 | `/api` 代理至 `http://localhost:7000` |
-| operation-platform（Vite） | 3003 | `/api` 代理至 `http://localhost:7000` |
+| admin-platform（Vite） | 3001 | `/api` 代理至 `VITE_GATEWAY_URL`（默认 `http://localhost:7000`） |
+| operation-platform（Vite） | 3003 | 同上 |
+
+使用 **Docker Compose** 启动网关时，宿主机通常为 **`http://localhost:17000`**（映射容器内 7000），E2E 与 `VITE_GATEWAY_URL` 需与此一致。
 
 ### 1.2 E2E 的两种形态
 
@@ -40,8 +42,8 @@
 
 1. 依赖已安装：`pnpm install`
 2. 类型检查通过：`pnpm type-check`（或团队约定的 CI 等价命令）
-3. MySQL / Redis 已按项目说明启动，库 `scrm_dev` 可用
-4. 默认管理员（以当前 `init-db.sql` / 文档为准）：用户名 `admin`，密码 `Admin@123`（若变更以环境说明为准）
+3. **PostgreSQL** 与 **Redis** 已按项目说明启动，库 `scrm_dev` 可用（初始化脚本见 `code/scripts/init-db.pg.sql`）
+4. 默认管理员：用户名 `admin`，密码 `Admin@123`（若变更以环境说明为准）
 
 ---
 
@@ -273,10 +275,12 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[docs/harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` 说明  
-- **[docs/harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
-- **[docs/harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
-- **[docs/harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — 一页纸启动与验证  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` 说明  
+- **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
+- **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
+- **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
+- **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
+- **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸  
 
 ---
 
@@ -286,3 +290,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 |------|------|------|
 | 1.0 | 2026-04-16 | 初版：六迭代效果 + E2E 流程 |
 | 1.1 | 2026-04-18 | 增加 Harness 文档索引与 Sprint 1 落地 |
+| 1.2 | 2026-04-19 | PostgreSQL/Docker 端口说明；Sprint 2 Harness 链接；开发计划链接修正 |

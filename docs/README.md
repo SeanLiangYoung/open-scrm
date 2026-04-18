@@ -45,6 +45,8 @@ docs/
 - [需求规格说明书](./mvp/需求规格说明书.md)
 - [技术选型](./mvp/技术选型.md)
 
+> 说明：`mvp/` 中部分早期架构图仍写 MySQL；**当前运行时主库为 PostgreSQL 16**（见 `code/docker-compose.yml` 与 [`code/docs/代码现状与文档索引.md`](../code/docs/代码现状与文档索引.md)）。
+
 ### 指南（`guides/`）
 
 - [快速开始](./guides/快速开始.md)
@@ -55,6 +57,9 @@ docs/
 
 - [Monorepo 说明](./code/README.md)（对应仓库 `code/`）
 - [脚本目录](./scripts/README.md)（对应 `code/scripts/`）
+- **[代码现状与文档索引](../code/docs/代码现状与文档索引.md)** — `code/` 运行时事实、端口、测试命令与文档阅读顺序
+- **[可执行迭代计划（含 E2E）](../code/docs/迭代计划-E2E.md)** — Sprint 约定与端到端验证
+- **[Harness 测试节奏](../code/docs/harness/README.md)** — `test:unit`、`test:e2e`、`test:e2e:sprint2`
 
 ### 模块文档
 
