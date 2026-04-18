@@ -47,10 +47,47 @@ export class ChannelCodeService {
   }
 
   private async generateWeworkQRCode(code: ChannelCodeEntity): Promise<string> {
-    // TODO: 调用 integration-service 生成企微活码
-    // 临时使用普通二维码
-    const url = `https://example.com/channel/${code.id}`;
-    return await QRCode.toDataURL(url);
+    const base = this.servicesConfig.integration;
+    const staff = (code.staffIds || []).map((id: number | string) => String(id));
+    if (!staff.length) {
+      const fallback = `https://example.com/channel/${code.id}`;
+      return await QRCode.toDataURL(fallback);
+    }
+
+    try {
+      const res = await this.httpService.post(
+        `${base}/api/wework/contact-way`,
+        {
+          user: staff,
+          remark: code.codeName,
+          state: `ch_${code.id}_${code.channel}`,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'x-corp-id': String(code.corpId),
+            'x-user-id': '1',
+          },
+        }
+      );
+
+      const data = res.data as {
+        success?: boolean;
+        data?: { configId?: string; qrCode?: string };
+        message?: string;
+      };
+      if (data?.success && data.data?.qrCode) {
+        if (data.data.configId) {
+          code.configId = data.data.configId;
+        }
+        return data.data.qrCode;
+      }
+      throw new Error(data?.message || 'integration 未返回 qrCode');
+    } catch (e: any) {
+      console.error('企微活码生成失败，回退为占位二维码:', e?.message || e);
+      const fallback = `https://example.com/channel/${code.id}`;
+      return await QRCode.toDataURL(fallback);
+    }
   }
 
   async queryChannelCodes(corpId: number, query: QueryChannelCodeDto) {

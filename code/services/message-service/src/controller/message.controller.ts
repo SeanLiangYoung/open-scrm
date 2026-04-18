@@ -15,6 +15,7 @@ import {
   SendByTemplateDto 
 } from '../dto/send-message.dto';
 import { QueryMessageLogDto, RetryMessageDto } from '../dto/message-log.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 /**
  * 消息控制器
@@ -39,9 +40,8 @@ export class MessageController {
   @Post('/template')
   @Validate()
   async createTemplate(@Body() dto: CreateMessageTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const template = await this.messageTemplateService.createTemplate(corpId, userId, dto);
     return {
       success: true,
@@ -56,8 +56,8 @@ export class MessageController {
   @Put('/template/:id')
   @Validate()
   async updateTemplate(@Param('id') id: string, @Body() dto: UpdateMessageTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const template = await this.messageTemplateService.updateTemplate(parseInt(id), corpId, dto);
     return {
       success: true,
@@ -71,8 +71,8 @@ export class MessageController {
    */
   @Del('/template/:id')
   async deleteTemplate(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     await this.messageTemplateService.deleteTemplate(parseInt(id), corpId);
     return {
       success: true,
@@ -85,8 +85,8 @@ export class MessageController {
    */
   @Get('/template/:id')
   async getTemplate(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const template = await this.messageTemplateService.getTemplate(parseInt(id), corpId);
     return {
       success: true,
@@ -100,8 +100,8 @@ export class MessageController {
   @Get('/templates')
   @Validate()
   async queryTemplates(@Query() query: QueryMessageTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageTemplateService.queryTemplates(corpId, query);
     return {
       success: true,
@@ -115,8 +115,8 @@ export class MessageController {
   @Post('/send')
   @Validate()
   async sendMessage(@Body() dto: SendMessageDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageSendService.sendMessage(corpId, dto);
     return {
       success: true,
@@ -131,8 +131,8 @@ export class MessageController {
   @Post('/send/batch')
   @Validate()
   async batchSendMessage(@Body() dto: BatchSendMessageDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageSendService.batchSendMessage(corpId, dto);
     return {
       success: true,
@@ -147,8 +147,8 @@ export class MessageController {
   @Post('/send/template')
   @Validate()
   async sendByTemplate(@Body() dto: SendByTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageSendService.sendByTemplate(corpId, dto);
     return {
       success: true,
@@ -177,8 +177,8 @@ export class MessageController {
   @Get('/logs')
   @Validate()
   async queryLogs(@Query() query: QueryMessageLogDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageLogService.queryLogs(corpId, query);
     return {
       success: true,
@@ -191,8 +191,8 @@ export class MessageController {
    */
   @Get('/log/:id')
   async getLog(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const log = await this.messageLogService.getLog(parseInt(id), corpId);
     return {
       success: true,
@@ -205,8 +205,8 @@ export class MessageController {
    */
   @Get('/statistics')
   async getStatistics(@Query('startTime') startTime?: string, @Query('endTime') endTime?: string) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.messageLogService.getStatistics(
       corpId,
       startTime ? new Date(startTime) : undefined,

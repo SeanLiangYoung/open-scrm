@@ -1,6 +1,7 @@
 import { Controller, Get, Query, Inject } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
+import { getTenantContext } from '@scrm/server-common';
 import { DailyStatService } from '../service/daily-stat.service';
 import { ChannelStatService } from '../service/channel-stat.service';
 import { StaffStatService } from '../service/staff-stat.service';
@@ -28,7 +29,7 @@ export class AnalyticsController {
   @Get('/overview')
   @Validate()
   async getOverview(@Query() query: OverviewStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const overview = await this.dailyStatService.getOverview(corpId, query.date);
     return {
@@ -39,7 +40,7 @@ export class AnalyticsController {
 
   @Get('/trend')
   async getTrend(@Query('days') days?: number) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
     const trendDays = days ? parseInt(String(days)) : 7;
 
     const trend = await this.dailyStatService.getTrend(corpId, trendDays);
@@ -52,7 +53,7 @@ export class AnalyticsController {
   @Get('/daily')
   @Validate()
   async queryDailyStat(@Query() query: QueryDailyStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const stats = await this.dailyStatService.queryDailyStat(corpId, query);
     return {
@@ -64,7 +65,7 @@ export class AnalyticsController {
   @Get('/channel')
   @Validate()
   async queryChannelStat(@Query() query: QueryChannelStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const stats = await this.channelStatService.queryChannelStat(corpId, query);
     return {
@@ -75,7 +76,7 @@ export class AnalyticsController {
 
   @Get('/channel/ranking')
   async getChannelRanking(@Query() query: QueryChannelStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const ranking = await this.channelStatService.getChannelRanking(
       corpId,
@@ -91,7 +92,7 @@ export class AnalyticsController {
   @Get('/staff')
   @Validate()
   async queryStaffStat(@Query() query: QueryStaffStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.staffStatService.queryStaffStat(corpId, query);
     return {
@@ -102,7 +103,7 @@ export class AnalyticsController {
 
   @Get('/staff/ranking')
   async getStaffRanking(@Query() query: QueryChannelStatDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const ranking = await this.staffStatService.getStaffRanking(
       corpId,

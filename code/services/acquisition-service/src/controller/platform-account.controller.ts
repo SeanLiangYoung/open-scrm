@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { PlatformAccountService } from '../service/platform-account.service';
 import { CreatePlatformAccountDto, QueryPlatformAccountDto } from '../dto/platform-account.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/platform-account')
 export class PlatformAccountController {
@@ -15,7 +16,7 @@ export class PlatformAccountController {
   @Post('/')
   @Validate()
   async createAccount(@Body() dto: CreatePlatformAccountDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const account = await this.platformAccountService.createAccount(corpId, dto);
     return {
@@ -28,7 +29,7 @@ export class PlatformAccountController {
   @Get('/list')
   @Validate()
   async queryAccounts(@Query() query: QueryPlatformAccountDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.platformAccountService.queryAccounts(corpId, query);
     return {

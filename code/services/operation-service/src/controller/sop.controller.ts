@@ -14,6 +14,7 @@ import {
   QuerySopExecutionDto,
   ControlExecutionDto,
 } from '../dto/sop-execution.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 /**
  * SOP控制器
@@ -35,8 +36,7 @@ export class SopController {
   @Post('/template')
   @Validate()
   async createTemplate(@Body() dto: CreateSopTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
+    const { corpId, userId } = getTenantContext(this.ctx);
 
     const template = await this.sopTemplateService.createTemplate(corpId, userId, dto);
     return {
@@ -52,7 +52,7 @@ export class SopController {
   @Put('/template/:id')
   @Validate()
   async updateTemplate(@Param('id') id: string, @Body() dto: UpdateSopTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const template = await this.sopTemplateService.updateTemplate(parseInt(id), corpId, dto);
     return {
@@ -67,7 +67,7 @@ export class SopController {
    */
   @Del('/template/:id')
   async deleteTemplate(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.sopTemplateService.deleteTemplate(parseInt(id), corpId);
     return {
@@ -81,7 +81,7 @@ export class SopController {
    */
   @Get('/template/:id')
   async getTemplate(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const template = await this.sopTemplateService.getTemplate(parseInt(id), corpId);
     return {
@@ -96,7 +96,7 @@ export class SopController {
   @Get('/templates')
   @Validate()
   async queryTemplates(@Query() query: QuerySopTemplateDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.sopTemplateService.queryTemplates(corpId, query);
     return {
@@ -137,7 +137,7 @@ export class SopController {
   @Post('/execute')
   @Validate()
   async triggerExecution(@Body() dto: TriggerSopExecutionDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.sopExecutionService.triggerExecution(corpId, dto);
     return {
@@ -153,7 +153,7 @@ export class SopController {
   @Get('/executions')
   @Validate()
   async queryExecutions(@Query() query: QuerySopExecutionDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.sopExecutionService.queryExecutions(corpId, query);
     return {
@@ -168,7 +168,7 @@ export class SopController {
   @Post('/execution/control')
   @Validate()
   async controlExecution(@Body() dto: ControlExecutionDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.sopExecutionService.controlExecution(
       corpId,

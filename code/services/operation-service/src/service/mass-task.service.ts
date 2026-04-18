@@ -103,6 +103,15 @@ export class MassTaskService {
     }
   }
 
+  /** 调用下游服务时携带租户，与网关转发规则一致 */
+  private taskRequestHeaders(task: MassTaskEntity): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'x-corp-id': String(task.corpId),
+      'x-user-id': String(task.createUserId ?? 1),
+    };
+  }
+
   /**
    * 批量发送消息
    */
@@ -117,7 +126,6 @@ export class MassTaskService {
       const batch = targetIds.slice(i, i + batchSize);
 
       try {
-        // TODO: 调用 message-service
         const response = await this.httpService.post(
           `${this.servicesConfig.message}/api/message/send/batch`,
           {
@@ -125,7 +133,8 @@ export class MassTaskService {
             targetType: task.targetType,
             targetIds: batch,
             content: task.messageContent,
-          }
+          },
+          { headers: this.taskRequestHeaders(task) }
         );
 
         if (response.data.success) {
@@ -150,18 +159,65 @@ export class MassTaskService {
    * 批量打标签
    */
   private async batchAddTags(task: MassTaskEntity) {
-    // TODO: 调用 customer-service
-    console.log('批量打标签:', task);
-    return { success: task.targetCount, failed: 0 };
+    const tagIds: number[] = task.actionData?.tagIds ?? [];
+    if (!tagIds.length) {
+      throw new Error('批量打标签需在 actionData 中配置 tagIds');
+    }
+
+    const base = this.servicesConfig.customer;
+    const headers = this.taskRequestHeaders(task);
+    const targetIds = task.targetIds as number[];
+    let success = 0;
+    let failed = 0;
+
+    for (const customerId of targetIds) {
+      try {
+        await this.httpService.post(
+          `${base}/api/v1/customers/${customerId}/tags`,
+          { tagIds },
+          { headers }
+        );
+        success++;
+      } catch (e: any) {
+        console.error('批量打标签失败:', customerId, e?.message);
+        failed++;
+      }
+    }
+
+    return { success, failed };
   }
 
   /**
    * 批量分配
    */
   private async batchAssign(task: MassTaskEntity) {
-    // TODO: 调用 customer-service
-    console.log('批量分配:', task);
-    return { success: task.targetCount, failed: 0 };
+    const staffId =
+      task.actionData?.followUserId ?? task.actionData?.staffId;
+    if (staffId == null || !Number.isFinite(Number(staffId))) {
+      throw new Error('批量分配需在 actionData 中配置 followUserId 或 staffId');
+    }
+
+    const base = this.servicesConfig.customer;
+    const headers = this.taskRequestHeaders(task);
+    const targetIds = task.targetIds as number[];
+    let success = 0;
+    let failed = 0;
+
+    for (const customerId of targetIds) {
+      try {
+        await this.httpService.put(
+          `${base}/api/v1/customers/${customerId}`,
+          { followUserId: Number(staffId) },
+          { headers }
+        );
+        success++;
+      } catch (e: any) {
+        console.error('批量分配失败:', customerId, e?.message);
+        failed++;
+      }
+    }
+
+    return { success, failed };
   }
 
   /**

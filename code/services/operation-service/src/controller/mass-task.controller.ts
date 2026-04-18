@@ -7,6 +7,7 @@ import {
   QueryMassTaskDto,
   ExecuteMassTaskDto,
 } from '../dto/mass-task.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 /**
  * 群发任务控制器
@@ -25,8 +26,7 @@ export class MassTaskController {
   @Post('/')
   @Validate()
   async createTask(@Body() dto: CreateMassTaskDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
+    const { corpId, userId } = getTenantContext(this.ctx);
 
     const task = await this.massTaskService.createTask(corpId, userId, dto);
     return {
@@ -42,7 +42,7 @@ export class MassTaskController {
   @Post('/execute')
   @Validate()
   async executeTask(@Body() dto: ExecuteMassTaskDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.massTaskService.executeTask(dto.taskId, corpId);
     return {
@@ -57,7 +57,7 @@ export class MassTaskController {
    */
   @Post('/:id/cancel')
   async cancelTask(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.massTaskService.cancelTask(parseInt(id), corpId);
     return {
@@ -73,7 +73,7 @@ export class MassTaskController {
   @Get('/list')
   @Validate()
   async queryTasks(@Query() query: QueryMassTaskDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.massTaskService.queryTasks(corpId, query);
     return {

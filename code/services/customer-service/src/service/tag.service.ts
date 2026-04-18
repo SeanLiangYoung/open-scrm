@@ -4,6 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { TagEntity } from '../entity/tag.entity';
 import { CreateTagDto } from '../dto/create-tag.dto';
 import { Context } from '@midwayjs/koa';
+import { getTenantContext } from '@scrm/server-common';
 
 @Provide()
 export class TagService {
@@ -17,7 +18,7 @@ export class TagService {
    * 创建标签
    */
   async create(dto: CreateTagDto): Promise<TagEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     // 检查标签名是否已存在
     const existing = await this.tagRepository.findOne({
@@ -43,7 +44,7 @@ export class TagService {
    * 更新标签
    */
   async update(id: number, dto: Partial<CreateTagDto>): Promise<TagEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const tag = await this.tagRepository.findOne({
       where: { id, corpId },
@@ -75,7 +76,7 @@ export class TagService {
    * 删除标签
    */
   async delete(id: number): Promise<void> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const tag = await this.tagRepository.findOne({
       where: { id, corpId },
@@ -92,7 +93,7 @@ export class TagService {
    * 获取标签详情
    */
   async findById(id: number): Promise<TagEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const tag = await this.tagRepository.findOne({
       where: { id, corpId },
@@ -109,7 +110,7 @@ export class TagService {
    * 获取标签列表
    */
   async findAll(params?: { keyword?: string; tagType?: number; status?: number }) {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
     const { keyword, tagType, status } = params || {};
 
     const where: any = { corpId };
@@ -141,7 +142,7 @@ export class TagService {
    * 获取标签树（按父子关系）
    */
   async getTagTree() {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const allTags = await this.tagRepository.find({
       where: { corpId },
@@ -183,7 +184,7 @@ export class TagService {
    * 批量创建标签
    */
   async batchCreate(dtos: CreateTagDto[]): Promise<TagEntity[]> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const tags = dtos.map(dto =>
       this.tagRepository.create({

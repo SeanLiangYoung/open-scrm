@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { AssetService } from '../service/asset.service';
 import { CreateAssetDto, UpdateAssetDto, QueryAssetDto, RecordAssetUsageDto } from '../dto/asset.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/asset')
 export class AssetController {
@@ -14,8 +15,7 @@ export class AssetController {
 
   @Post('/upload')
   async uploadAsset(@Files() files: any, @Fields() fields: any) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
+    const { corpId, userId } = getTenantContext(this.ctx);
 
     if (!files || files.length === 0) {
       return {
@@ -50,7 +50,7 @@ export class AssetController {
   @Put('/:id')
   @Validate()
   async updateAsset(@Query('id') id: string, @Body() dto: UpdateAssetDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.assetService.updateAsset(corpId, parseInt(id), dto);
     return {
@@ -61,7 +61,7 @@ export class AssetController {
 
   @Del('/:id')
   async deleteAsset(@Query('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.assetService.deleteAsset(corpId, parseInt(id));
     return {
@@ -73,7 +73,7 @@ export class AssetController {
   @Get('/list')
   @Validate()
   async queryAssets(@Query() query: QueryAssetDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.assetService.queryAssets(corpId, query);
     return {
@@ -84,7 +84,7 @@ export class AssetController {
 
   @Get('/:id')
   async getAsset(@Query('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const asset = await this.assetService.getAssetById(corpId, parseInt(id));
     return {
@@ -96,8 +96,7 @@ export class AssetController {
   @Post('/usage')
   @Validate()
   async recordUsage(@Body() dto: RecordAssetUsageDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
+    const { corpId, userId } = getTenantContext(this.ctx);
 
     await this.assetService.recordUsage(corpId, dto, userId);
     return {

@@ -5,6 +5,7 @@ import { Context } from '@midwayjs/koa';
 import { PaymentEntity } from '../entity/payment.entity';
 import { OrderService } from './order.service';
 import { CreatePaymentDto, PaymentCallbackDto, RefundDto } from '../dto/payment.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Provide()
 export class PaymentService {
@@ -18,7 +19,8 @@ export class PaymentService {
   orderService!: OrderService;
 
   async createPayment(dto: CreatePaymentDto): Promise<PaymentEntity> {
-    const order = await this.orderService.getOrderById(1, dto.orderId); // TODO: 获取真实corpId
+    const { corpId } = getTenantContext(this.ctx);
+    const order = await this.orderService.getOrderById(corpId, dto.orderId);
     
     if (!order) {
       throw new Error('订单不存在');
@@ -62,7 +64,8 @@ export class PaymentService {
   }
 
   async refund(dto: RefundDto): Promise<void> {
-    const order = await this.orderService.getOrderById(1, dto.orderId); // TODO: 获取真实corpId
+    const { corpId } = getTenantContext(this.ctx);
+    const order = await this.orderService.getOrderById(corpId, dto.orderId);
     
     if (!order) {
       throw new Error('订单不存在');

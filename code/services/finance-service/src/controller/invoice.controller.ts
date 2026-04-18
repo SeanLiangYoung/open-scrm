@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { InvoiceService } from '../service/invoice.service';
 import { CreateInvoiceDto, QueryInvoiceDto } from '../dto/invoice.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/invoice')
 export class InvoiceController {
@@ -15,7 +16,7 @@ export class InvoiceController {
   @Post('/')
   @Validate()
   async createInvoice(@Body() dto: CreateInvoiceDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const invoice = await this.invoiceService.createInvoice(corpId, dto);
     return {
@@ -27,7 +28,7 @@ export class InvoiceController {
 
   @Put('/:id/issue')
   async issueInvoice(@Query('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.invoiceService.issueInvoice(corpId, parseInt(id));
     return {
@@ -39,7 +40,7 @@ export class InvoiceController {
   @Get('/list')
   @Validate()
   async queryInvoices(@Query() query: QueryInvoiceDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.invoiceService.queryInvoices(corpId, query);
     return {

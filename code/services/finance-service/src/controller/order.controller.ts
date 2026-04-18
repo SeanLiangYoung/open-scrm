@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { OrderService } from '../service/order.service';
 import { CreateOrderDto, QueryOrderDto, CancelOrderDto } from '../dto/order.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/order')
 export class OrderController {
@@ -15,8 +16,7 @@ export class OrderController {
   @Post('/')
   @Validate()
   async createOrder(@Body() dto: CreateOrderDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
+    const { corpId, userId } = getTenantContext(this.ctx);
 
     const order = await this.orderService.createOrder(corpId, dto, userId);
     return {
@@ -29,7 +29,7 @@ export class OrderController {
   @Get('/list')
   @Validate()
   async queryOrders(@Query() query: QueryOrderDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.orderService.queryOrders(corpId, query);
     return {
@@ -40,7 +40,7 @@ export class OrderController {
 
   @Get('/:id')
   async getOrder(@Query('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const order = await this.orderService.getOrderById(corpId, parseInt(id));
     return {
@@ -52,7 +52,7 @@ export class OrderController {
   @Put('/:id/cancel')
   @Validate()
   async cancelOrder(@Query('id') id: string, @Body() dto: CancelOrderDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.orderService.cancelOrder(corpId, parseInt(id), dto);
     return {

@@ -264,6 +264,40 @@ export class WeworkApiService {
   }
 
   /**
+   * 创建「联系我」二维码（渠道活码场景）
+   * @see https://developer.work.weixin.qq.com/document/path/92228
+   */
+  async addContactWay(
+    corpId: string,
+    payload: {
+      user: string[];
+      remark?: string;
+      state?: string;
+      skip_verify?: boolean;
+    }
+  ): Promise<{ configId: string; qrCode: string }> {
+    const accessToken = await this.getAccessToken(corpId, 'customer');
+    const url = `${this.weworkConfig.apiBaseUrl}/cgi-bin/externalcontact/add_contact_way?access_token=${accessToken}`;
+    const body = {
+      type: 1,
+      scene: 2,
+      style: 1,
+      remark: payload.remark || '',
+      skip_verify: payload.skip_verify ?? false,
+      state: payload.state || '',
+      user: payload.user,
+    };
+    const response = await this.httpService.post(url, body);
+    if (response.data.errcode !== 0) {
+      throw new Error(`add_contact_way 失败: ${response.data.errmsg}`);
+    }
+    return {
+      configId: response.data.config_id,
+      qrCode: response.data.qr_code,
+    };
+  }
+
+  /**
    * 发送客户消息
    */
   async sendExternalContactMessage(corpId: string, message: any) {

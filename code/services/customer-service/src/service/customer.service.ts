@@ -7,6 +7,7 @@ import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { QueryCustomerDto } from '../dto/query-customer.dto';
 import { Context } from '@midwayjs/koa';
+import { getTenantContext } from '@scrm/server-common';
 
 @Provide()
 export class CustomerService {
@@ -23,7 +24,7 @@ export class CustomerService {
    * 创建客户
    */
   async create(dto: CreateCustomerDto): Promise<CustomerEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1; // 从上下文获取企业ID
+    const { corpId } = getTenantContext(this.ctx);
 
     // 检查是否已存在
     const existing = await this.customerRepository.findOne({
@@ -56,7 +57,7 @@ export class CustomerService {
    * 更新客户
    */
   async update(id: number, dto: UpdateCustomerDto): Promise<CustomerEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const customer = await this.customerRepository.findOne({
       where: { id, corpId },
@@ -74,7 +75,7 @@ export class CustomerService {
    * 删除客户（软删除）
    */
   async delete(id: number): Promise<void> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const customer = await this.customerRepository.findOne({
       where: { id, corpId },
@@ -89,10 +90,20 @@ export class CustomerService {
   }
 
   /**
+   * 按企微外部联系人 ID 查询（不存在则返回 null）
+   */
+  async findByExternalUserid(externalUserid: string): Promise<CustomerEntity | null> {
+    const { corpId } = getTenantContext(this.ctx);
+    return await this.customerRepository.findOne({
+      where: { corpId, externalUserid },
+    });
+  }
+
+  /**
    * 获取客户详情
    */
   async findById(id: number): Promise<CustomerEntity> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const customer = await this.customerRepository.findOne({
       where: { id, corpId },
@@ -110,7 +121,7 @@ export class CustomerService {
    * 查询客户列表
    */
   async findAll(dto: QueryCustomerDto) {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
     const { page = 1, pageSize = 20, keyword, status, type, followUserId, channel, tagIds, startTime, endTime } = dto;
 
     const queryBuilder = this.customerRepository
@@ -179,7 +190,7 @@ export class CustomerService {
    * 为客户添加标签
    */
   async addTags(customerId: number, tagIds: number[]): Promise<void> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const customer = await this.customerRepository.findOne({
       where: { id: customerId, corpId },
@@ -211,7 +222,7 @@ export class CustomerService {
    * 移除客户标签
    */
   async removeTags(customerId: number, tagIds: number[]): Promise<void> {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const customer = await this.customerRepository.findOne({
       where: { id: customerId, corpId },
@@ -230,7 +241,7 @@ export class CustomerService {
    * 获取客户统计
    */
   async getStatistics() {
-    const corpId = this.ctx.state.user?.corpId || 1;
+    const { corpId } = getTenantContext(this.ctx);
 
     const total = await this.customerRepository.count({ where: { corpId } });
     const active = await this.customerRepository.count({ where: { corpId, status: 1 } });

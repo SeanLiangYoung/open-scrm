@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { ChannelCodeService } from '../service/channel-code.service';
 import { CreateChannelCodeDto, QueryChannelCodeDto } from '../dto/channel-code.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/channel-code')
 export class ChannelCodeController {
@@ -15,7 +16,7 @@ export class ChannelCodeController {
   @Post('/')
   @Validate()
   async createChannelCode(@Body() dto: CreateChannelCodeDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const code = await this.channelCodeService.createChannelCode(corpId, dto);
     return {
@@ -28,7 +29,7 @@ export class ChannelCodeController {
   @Get('/list')
   @Validate()
   async queryChannelCodes(@Query() query: QueryChannelCodeDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const result = await this.channelCodeService.queryChannelCodes(corpId, query);
     return {

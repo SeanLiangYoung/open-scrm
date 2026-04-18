@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { NotificationService } from '../service/notification.service';
 import { CreateNotificationDto, QueryNotificationDto, MarkReadDto } from '../dto/notification.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 /**
  * 通知控制器
@@ -21,8 +22,8 @@ export class NotificationController {
   @Post('/')
   @Validate()
   async createNotification(@Body() dto: CreateNotificationDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    
+    const { corpId } = getTenantContext(this.ctx);
+
     const result = await this.notificationService.createNotification(corpId, dto);
     return {
       success: true,
@@ -37,9 +38,8 @@ export class NotificationController {
   @Get('/list')
   @Validate()
   async queryNotifications(@Query() query: QueryNotificationDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const result = await this.notificationService.queryNotifications(userId, corpId, query);
     return {
       success: true,
@@ -53,9 +53,8 @@ export class NotificationController {
   @Put('/read')
   @Validate()
   async markAsRead(@Body() dto: MarkReadDto) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const result = await this.notificationService.markAsRead(userId, corpId, dto.notificationIds);
     return {
       success: true,
@@ -69,9 +68,8 @@ export class NotificationController {
    */
   @Put('/read/all')
   async markAllAsRead() {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const result = await this.notificationService.markAllAsRead(userId, corpId);
     return {
       success: true,
@@ -85,9 +83,8 @@ export class NotificationController {
    */
   @Get('/unread/count')
   async getUnreadCount() {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const count = await this.notificationService.getUnreadCount(userId, corpId);
     return {
       success: true,
@@ -100,9 +97,8 @@ export class NotificationController {
    */
   @Del('/:id')
   async deleteNotification(@Param('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
-    const userId = 1; // TODO: 从JWT获取
-    
+    const { corpId, userId } = getTenantContext(this.ctx);
+
     const result = await this.notificationService.deleteNotification(parseInt(id), userId, corpId);
     return {
       success: true,

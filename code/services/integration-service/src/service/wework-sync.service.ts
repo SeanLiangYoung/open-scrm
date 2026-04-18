@@ -1,6 +1,8 @@
-import { Provide, Inject } from '@midwayjs/core';
+import { Provide, Inject, Config } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
-import { Repository, MoreThanOrEqual } from 'typeorm';
+import { Repository } from 'typeorm';
+import { HttpService } from '@midwayjs/axios';
+import { RedisService } from '@midwayjs/redis';
 import { WeworkApiService } from './wework-api.service';
 import { SyncLogEntity } from '../entity/sync-log.entity';
 import { QuerySyncLogDto } from '../dto/sync.dto';
@@ -12,6 +14,15 @@ import { QuerySyncLogDto } from '../dto/sync.dto';
 export class WeworkSyncService {
   @Inject()
   weworkApiService!: WeworkApiService;
+
+  @Inject()
+  httpService!: HttpService;
+
+  @Inject()
+  redisService!: RedisService;
+
+  @Config('integration')
+  integrationConfig: { customerServiceUrl: string; scrmCorpId: number };
 
   @InjectEntityModel(SyncLogEntity)
   syncLogRepository!: Repository<SyncLogEntity>;
@@ -121,9 +132,14 @@ export class WeworkSyncService {
 
     try {
       const departments = await this.weworkApiService.getDepartmentList(corpId);
-      
-      // TODO: 调用 user-service 保存部门数据
-      
+
+      await this.redisService.set(
+        `wework:sync:departments:${corpId}`,
+        JSON.stringify(departments),
+        'EX',
+        86400 * 7
+      );
+
       syncLog.status = 1;
       syncLog.totalCount = departments.length;
       syncLog.successCount = departments.length;
@@ -159,15 +175,20 @@ export class WeworkSyncService {
     await this.syncLogRepository.save(syncLog);
 
     try {
-      let totalUsers = 0;
       const departments = await this.weworkApiService.getDepartmentList(corpId);
-      
+      const allUsers: unknown[] = [];
       for (const dept of departments) {
         const users = await this.weworkApiService.getDepartmentUsers(corpId, dept.id);
-        totalUsers += users.length;
-        
-        // TODO: 调用 user-service 保存员工数据
+        allUsers.push(...users);
       }
+      const totalUsers = allUsers.length;
+
+      await this.redisService.set(
+        `wework:sync:users:${corpId}`,
+        JSON.stringify(allUsers),
+        'EX',
+        86400 * 7
+      );
 
       syncLog.status = 1;
       syncLog.totalCount = totalUsers;
@@ -263,34 +284,48 @@ export class WeworkSyncService {
     await this.syncLogRepository.save(syncLog);
 
     try {
-      let totalCustomers = 0;
-      
-      // TODO: 从 user-service 获取所有员工ID
-      // 暂时使用空数组
-      const userIds: string[] = [];
+      const departments = await this.weworkApiService.getDepartmentList(corpId);
+      const staffUserIds = new Set<string>();
+      for (const dept of departments) {
+        const users = await this.weworkApiService.getDepartmentUsers(corpId, dept.id);
+        for (const u of users) {
+          if (u?.userid) {
+            staffUserIds.add(u.userid);
+          }
+        }
+      }
 
-      for (const userId of userIds) {
+      let totalCustomers = 0;
+      let failCount = 0;
+
+      for (const staffUserId of staffUserIds) {
         try {
-          const externalUserIds = await this.weworkApiService.getExternalContactList(corpId, userId);
-          
+          const externalUserIds = await this.weworkApiService.getExternalContactList(
+            corpId,
+            staffUserId
+          );
           for (const externalUserId of externalUserIds) {
             try {
-              const customer = await this.weworkApiService.getExternalContactDetail(corpId, externalUserId);
+              const externalContact = await this.weworkApiService.getExternalContactDetail(
+                corpId,
+                externalUserId
+              );
+              await this.upsertCustomerFromWework(externalContact);
               totalCustomers++;
-              
-              // TODO: 调用 customer-service 保存客户数据
             } catch (error: any) {
-              console.error(`同步客户${externalUserId}失败:`, error);
+              failCount++;
+              console.error(`同步客户 ${externalUserId} 失败:`, error?.message || error);
             }
           }
         } catch (error: any) {
-          console.error(`同步用户${userId}的客户失败:`, error);
+          console.error(`同步员工 ${staffUserId} 下客户列表失败:`, error?.message || error);
         }
       }
 
       syncLog.status = 1;
-      syncLog.totalCount = totalCustomers;
+      syncLog.totalCount = totalCustomers + failCount;
       syncLog.successCount = totalCustomers;
+      syncLog.failCount = failCount;
       syncLog.endTime = new Date();
       await this.syncLogRepository.save(syncLog);
 
@@ -301,6 +336,63 @@ export class WeworkSyncService {
       syncLog.errorMessage = error.message;
       await this.syncLogRepository.save(syncLog);
       throw error;
+    }
+  }
+
+  /**
+   * 将企微外部联系人写入 SCRM customer-service（按 externalUserid 幂等）
+   */
+  private async upsertCustomerFromWework(externalContact: Record<string, unknown>): Promise<void> {
+    const base = this.integrationConfig.customerServiceUrl;
+    const scrmCorpId = this.integrationConfig.scrmCorpId ?? 1;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'x-corp-id': String(scrmCorpId),
+      'x-user-id': '1',
+    };
+
+    const externalUserid = externalContact.external_userid as string;
+    if (!externalUserid) {
+      throw new Error('缺少 external_userid');
+    }
+
+    const lookupRes = await this.httpService.get(`${base}/api/v1/customers/lookup`, {
+      params: { externalUserid },
+      headers,
+    });
+
+    const body = lookupRes.data as { code?: number; data?: { id?: number } | null };
+    const existing = body?.data;
+
+    const patch = {
+      name: (externalContact.name as string) || '',
+      avatar: (externalContact.avatar as string) || '',
+      gender:
+        externalContact.gender !== undefined && externalContact.gender !== null
+          ? Number(externalContact.gender)
+          : undefined,
+      remark: (externalContact.remark as string) || '',
+      channel: 'wework_sync',
+    };
+
+    if (existing?.id) {
+      await this.httpService.put(`${base}/api/v1/customers/${existing.id}`, patch, {
+        headers,
+      });
+    } else {
+      await this.httpService.post(
+        `${base}/api/v1/customers`,
+        {
+          externalUserid,
+          name: patch.name,
+          avatar: patch.avatar || undefined,
+          gender: patch.gender,
+          type: 2,
+          channel: patch.channel,
+          remark: patch.remark || undefined,
+        },
+        { headers }
+      );
     }
   }
 

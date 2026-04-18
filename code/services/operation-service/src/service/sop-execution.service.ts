@@ -24,8 +24,12 @@ export class SopExecutionService {
   @Inject()
   httpService!: HttpService;
 
-  @Config('operation')
-  operationConfig: any;
+  @Config('operation.services')
+  servicesConfig: {
+    customer: string;
+    message: string;
+    integration: string;
+  };
 
   /**
    * 触发SOP执行
@@ -159,46 +163,145 @@ export class SopExecutionService {
     }
   }
 
+  private execHeaders(execution: SopExecutionEntity): Record<string, string> {
+    return {
+      'Content-Type': 'application/json',
+      'x-corp-id': String(execution.corpId),
+      'x-user-id': '1',
+    };
+  }
+
+  /** 解析步骤配置（支持 JSON 对象或 JSON 字符串） */
+  private parseStepAction(step: any): Record<string, any> {
+    const raw = step?.actionContent;
+    if (raw == null) {
+      return {};
+    }
+    if (typeof raw === 'string') {
+      try {
+        const parsed = JSON.parse(raw);
+        return typeof parsed === 'object' && parsed !== null ? parsed : { content: raw };
+      } catch {
+        return { content: raw };
+      }
+    }
+    if (typeof raw === 'object') {
+      return raw;
+    }
+    return { content: String(raw) };
+  }
+
   /**
    * 发送消息
    */
   private async sendMessage(execution: SopExecutionEntity, step: any) {
     const targetId = execution.customerId || execution.groupId;
-    
-    // TODO: 调用 message-service
-    console.log('发送消息:', { targetId, content: step.actionContent });
+    if (!targetId) {
+      throw new Error('SOP 步骤「发消息」需要客户或群目标');
+    }
+    const act = this.parseStepAction(step);
+    const content = act.content ?? act.text ?? '';
+    if (!content) {
+      throw new Error('SOP 步骤缺少消息内容（actionContent.content）');
+    }
+    await this.httpService.post(
+      `${this.servicesConfig.message}/api/message/send`,
+      {
+        messageType: act.messageType ?? 1,
+        targetType: execution.targetType,
+        targetIds: targetId,
+        content,
+        extra: act.extra,
+      },
+      { headers: this.execHeaders(execution) }
+    );
   }
 
   /**
    * 打标签
    */
   private async addTag(execution: SopExecutionEntity, step: any) {
-    // TODO: 调用 customer-service
-    console.log('打标签:', { customerId: execution.customerId, tags: step.actionContent });
+    if (!execution.customerId) {
+      throw new Error('SOP 步骤「打标签」仅支持客户目标');
+    }
+    const act = this.parseStepAction(step);
+    const tagIds = act.tagIds ?? act.tags;
+    if (!Array.isArray(tagIds) || tagIds.length === 0) {
+      throw new Error('SOP 步骤缺少 tagIds（数组）');
+    }
+    await this.httpService.post(
+      `${this.servicesConfig.customer}/api/v1/customers/${execution.customerId}/tags`,
+      { tagIds },
+      { headers: this.execHeaders(execution) }
+    );
   }
 
   /**
    * 推送素材
    */
-  private async pushMaterial(_execution: SopExecutionEntity, step: any) {
-    // TODO: 实现素材推送
-    console.log('推送素材:', step.actionContent);
+  private async pushMaterial(execution: SopExecutionEntity, step: any) {
+    const act = this.parseStepAction(step);
+    const url = act.url || act.assetUrl || act.link;
+    const text = act.content || (url ? `素材链接：${url}` : '');
+    if (!text) {
+      throw new Error('推送素材需要 actionContent.url 或 content');
+    }
+    const targetId = execution.customerId || execution.groupId;
+    if (!targetId) {
+      throw new Error('推送素材需要客户或群目标');
+    }
+    await this.httpService.post(
+      `${this.servicesConfig.message}/api/message/send`,
+      {
+        messageType: act.messageType ?? 1,
+        targetType: execution.targetType,
+        targetIds: targetId,
+        content: text,
+        extra: act.extra,
+      },
+      { headers: this.execHeaders(execution) }
+    );
   }
 
   /**
    * 分配客户
    */
-  private async assignCustomer(_execution: SopExecutionEntity, step: any) {
-    // TODO: 调用 customer-service
-    console.log('分配客户:', step.actionContent);
+  private async assignCustomer(execution: SopExecutionEntity, step: any) {
+    if (!execution.customerId) {
+      throw new Error('SOP 步骤「分配客户」需要客户目标');
+    }
+    const act = this.parseStepAction(step);
+    const followUserId = act.followUserId ?? act.staffId;
+    if (followUserId == null || !Number.isFinite(Number(followUserId))) {
+      throw new Error('SOP 步骤缺少 followUserId 或 staffId');
+    }
+    await this.httpService.put(
+      `${this.servicesConfig.customer}/api/v1/customers/${execution.customerId}`,
+      { followUserId: Number(followUserId) },
+      { headers: this.execHeaders(execution) }
+    );
   }
 
   /**
    * 提醒员工
    */
-  private async notifyEmployee(_execution: SopExecutionEntity, step: any) {
-    // TODO: 调用 message-service
-    console.log('提醒员工:', step.actionContent);
+  private async notifyEmployee(execution: SopExecutionEntity, step: any) {
+    const act = this.parseStepAction(step);
+    const userIds = act.userIds ?? (act.userId != null ? [act.userId] : []);
+    if (!Array.isArray(userIds) || userIds.length === 0) {
+      throw new Error('提醒员工需要 actionContent.userIds 或 userId');
+    }
+    await this.httpService.post(
+      `${this.servicesConfig.message}/api/notification/`,
+      {
+        userIds,
+        notificationType: act.notificationType ?? 1,
+        title: act.title || 'SOP 提醒',
+        content: act.content || act.text || '',
+        linkUrl: act.linkUrl,
+      },
+      { headers: this.execHeaders(execution) }
+    );
   }
 
   /**

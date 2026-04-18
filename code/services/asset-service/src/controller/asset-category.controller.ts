@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { AssetCategoryService } from '../service/asset-category.service';
 import { CreateCategoryDto, UpdateCategoryDto } from '../dto/asset-category.dto';
+import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/asset-category')
 export class AssetCategoryController {
@@ -15,7 +16,7 @@ export class AssetCategoryController {
   @Post('/')
   @Validate()
   async createCategory(@Body() dto: CreateCategoryDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const category = await this.assetCategoryService.createCategory(corpId, dto);
     return {
@@ -28,7 +29,7 @@ export class AssetCategoryController {
   @Put('/:id')
   @Validate()
   async updateCategory(@Query('id') id: string, @Body() dto: UpdateCategoryDto) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.assetCategoryService.updateCategory(corpId, parseInt(id), dto);
     return {
@@ -39,7 +40,7 @@ export class AssetCategoryController {
 
   @Del('/:id')
   async deleteCategory(@Query('id') id: string) {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     await this.assetCategoryService.deleteCategory(corpId, parseInt(id));
     return {
@@ -50,7 +51,7 @@ export class AssetCategoryController {
 
   @Get('/tree')
   async getCategoryTree() {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const tree = await this.assetCategoryService.getCategoryTree(corpId);
     return {
@@ -61,7 +62,7 @@ export class AssetCategoryController {
 
   @Get('/list')
   async getCategoryList() {
-    const corpId = 1; // TODO: 从JWT获取
+    const { corpId } = getTenantContext(this.ctx);
 
     const list = await this.assetCategoryService.getCategoryList(corpId);
     return {

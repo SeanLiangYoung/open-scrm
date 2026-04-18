@@ -162,6 +162,41 @@ export class WeworkController {
   }
 
   /**
+   * 创建渠道活码（联系我二维码）
+   */
+  @Post('/contact-way')
+  async createContactWay(
+    @Body()
+    body: {
+      user: string[];
+      remark?: string;
+      state?: string;
+      skip_verify?: boolean;
+    }
+  ) {
+    const config = await this.weworkApiService.getConfig();
+    if (!config) {
+      return { success: false, message: '企业微信配置不存在' };
+    }
+    if (!body.user?.length) {
+      return { success: false, message: 'user 不能为空' };
+    }
+    const result = await this.weworkApiService.addContactWay(config.corpId, {
+      user: body.user,
+      remark: body.remark,
+      state: body.state,
+      skip_verify: body.skip_verify,
+    });
+    return {
+      success: true,
+      data: {
+        configId: result.configId,
+        qrCode: result.qrCode,
+      },
+    };
+  }
+
+  /**
    * 同步客户数据
    */
   @Post('/sync/customers')

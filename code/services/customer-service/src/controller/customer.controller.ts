@@ -51,6 +51,21 @@ export class CustomerController {
   }
 
   /**
+   * 按 externalUserid 查询（供集成服务同步去重）
+   */
+  @Get('/lookup')
+  async lookupByExternal(@Query('externalUserid') externalUserid: string) {
+    if (!externalUserid) {
+      return { code: 400, message: '缺少 externalUserid', data: null };
+    }
+    const customer = await this.customerService.findByExternalUserid(externalUserid);
+    return {
+      code: 200,
+      data: customer,
+    };
+  }
+
+  /**
    * 获取客户详情
    */
   @Get('/:id')

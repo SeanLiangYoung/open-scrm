@@ -19,4 +19,5 @@ export * from './decorator/require-role.decorator';
 // 工具类
 export * from './util/response.util';
 export * from './util/pagination.util';
+export * from './util/tenant-context';
 
