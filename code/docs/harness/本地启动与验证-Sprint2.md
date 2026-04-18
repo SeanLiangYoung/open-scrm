@@ -42,7 +42,12 @@ curl -s http://127.0.0.1:7000/api/v1/integration/health
 
 ```bash
 pnpm test:unit
-pnpm --filter @scrm/e2e exec playwright test --project=sprint2-integration
+pnpm test:e2e:sprint2
 ```
 
-（完整 E2E 见 [README.md](./README.md)。）
+`test:e2e:sprint2` 会检查 `GATEWAY_URL`（默认 `http://127.0.0.1:17000`）上网关 `/health` 可达，再跑 Playwright `sprint2-integration`。完整带前端的 E2E 见 [README.md](./README.md)。
+
+## 5. 故障排查
+
+- **Docker 更新代码后务必重建镜像**：`docker compose build integration-service && docker compose up -d integration-service`（否则仍为旧 `dist`，健康检查字段不一致）。
+- **502 / 网关代理错误**：多为 integration 未监听（容器重启循环）；`docker logs scrm-integration-service` 查看是否仍有 `*.spec.ts` 被打进产物（应已排除）。

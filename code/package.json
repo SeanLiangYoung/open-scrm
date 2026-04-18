@@ -17,6 +17,7 @@
     "test:e2e": "bash ./e2e/run-full-e2e.sh",
     "test:e2e:playwright": "pnpm --filter @scrm/e2e exec playwright test",
     "test:e2e:api": "PLAYWRIGHT_SKIP_WEBSERVER=1 pnpm --filter @scrm/e2e exec playwright test --project=sprint1-api --project=sprint2-integration",
+    "test:e2e:sprint2": "bash ./e2e/run-sprint2-api.sh",
     "test:build": "bash ./scripts/test/build-test.sh",
     "test:type": "bash ./scripts/test/type-check.sh",
     "test:report": "bash ./scripts/test/full-test.sh",

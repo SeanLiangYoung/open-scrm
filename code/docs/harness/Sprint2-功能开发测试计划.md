@@ -15,6 +15,12 @@
 
 **本仓库已落地（2026-04-18）**：S2-F1（增强）、S2-F2、S2-F3、S2-F5。S2-F4 以既有 `getAccessToken` 缓存路径为主，未单独加并发压测用例。S2-F6 为长期约束，需在 Code Review 中持续检查。
 
+### S2 E2E 未通过的常见原因（已排查）
+
+1. **integration 容器/进程起不来**：`mw build` 曾把 `src/**/*.spec.ts` 打进 `dist/`，运行时加载了 Vitest 导致崩溃。已在 `integration-service/tsconfig.json` 中 **`exclude: ["**/*.spec.ts"]`**（与 gateway/auth 一致），**改代码后需重新 `docker compose build integration-service` 或本地 `mw build`**。
+2. **响应缺少 `redis` 字段**：多为旧镜像/旧进程；重建后 `/api/v1/integration/health` 会返回 `redis: connected|disconnected`。
+3. **仅跑 API E2E**：`cd code && pnpm test:e2e:sprint2`（不必先起前端）；完整 `pnpm test:e2e` 仍见 [README](./README.md)。
+
 ## 2. 开发计划（Harness 顺序）
 
 1. **冻结契约**：`/api/v1/integration/health` JSON 形状（含 `redis`）；网关路由 `/api/v1/integration/*` 不变。

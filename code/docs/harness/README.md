@@ -14,6 +14,7 @@
 
 - **单元测试**：`pnpm test:unit`（Vitest：`shared-utils`、`gateway-service`、`auth-service`）
 - **端到端**：`pnpm test:e2e`（Playwright，需先启动网关与各服务，见本地启动文档）
+- **Sprint 2 仅 API**：`pnpm test:e2e:sprint2`（无需前端，默认网关 `http://127.0.0.1:17000`）
 - **全量门禁**：`pnpm test`（含单元测试 + build + type-check + lint）
 
 E2E 包位置：`code/e2e/`（`@scrm/e2e`）。
