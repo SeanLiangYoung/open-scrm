@@ -29,17 +29,24 @@
   "code/packages/server-common": "⚡ 后端公共模块 - 微服务共享的装饰器、拦截器、工具",
   
   "code/scripts": "📜 脚本目录 - 构建、部署、数据库初始化等脚本",
-  "code/docs": "📖 项目文档 - API文档、架构设计、开发指南",
-  "code/docs/api": "📡 API文档目录",
-  "code/docs/architecture": "🏗️ 架构设计文档目录",
-  "code/docs/development": "💻 开发文档目录",
+  "docs": "📖 项目文档（仓库根目录）- API、架构、开发指南与工作流",
+  "docs/api": "📡 API文档目录",
+  "docs/architecture": "🏗️ 架构设计文档目录",
+  "docs/development": "💻 开发文档目录",
+  "docs/workflow": "🤝 协作与工作流 - 分支、PR、工程纪律、CI 意图",
   "code/.github": "🤖 GitHub配置 - CI/CD工作流",
   "code/.github/workflows": "⚙️ GitHub Actions工作流配置",
   
-  "mvp": "📋 需求与规划文档目录",
-  "mvp/需求规格说明书.md": "📄 需求规格说明书 - 完整的系统需求文档 (v2.0)",
-  "mvp/技术选型.md": "🔧 技术选型文档 - 技术栈选择和架构设计说明",
-  "mvp/参考资料.md": "📚 参考资料 - 小裂变SCRM参考资料",
+  "docs/mvp": "📋 需求与规划（规格与选型）",
+  "docs/mvp/需求规格说明书.md": "📄 需求规格说明书 - 完整的系统需求文档 (v2.0)",
+  "docs/mvp/技术选型.md": "🔧 技术选型文档 - 技术栈选择和架构设计说明",
+  "docs/guides": "🧭 快速开始、环境配置与脚本速查",
+  "docs/services": "🔌 微服务文档（与 code/services 对应）",
+  "docs/apps": "🎨 前端应用文档（与 code/apps 对应）",
+  "docs/packages": "📦 共享包文档（与 code/packages 对应）",
+  "docs/scripts": "📜 脚本目录说明（与 code/scripts 对应）",
+  
+  "docs/refs": "📚 外部参考材料（refs）- 竞品与调研笔记，非产品规格正文",
   
   "code/package.json": "📦 根项目配置 - Monorepo依赖和脚本管理",
   "code/pnpm-workspace.yaml": "🔧 PNPM工作区配置 - Monorepo工作区定义",
@@ -47,7 +54,6 @@
   "code/turbo.json": "⚡ Turborepo配置 - 构建缓存和任务编排",
   "code/.gitignore": "🚫 Git忽略规则 - 版本控制忽略文件配置",
   "code/docker-compose.yml": "🐳 Docker Compose配置 - 开发环境容器编排",
-  "code/README.md": "📖 项目总览文档 - 项目介绍、快速开始、开发指南",
-  
-  "参考资料": "📚 外部参考资料目录"
+  "code/README.md": "📌 源码入口指针 - 完整说明见 docs/code/README.md",
+  "docs/code/README.md": "📖 Monorepo 代码总览 - 对应 code/ 目录"
 }

@@ -1,7 +1,7 @@
 # 小裂变SCRM参考资料梳理
 
 > 文档创建时间: 2025-10-27  
-> 来源: 参考资料.md 综合梳理
+> 来源: [xiaoliebian-scrm-research-notes.md](./xiaoliebian-scrm-research-notes.md) 综合梳理
 
 ---
 

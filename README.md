@@ -87,7 +87,7 @@ Node.js 18 LTS        运行环境
 Midway.js 3.x         应用框架
 TypeScript 5.x        开发语言
 TypeORM 0.3.x         ORM框架
-MySQL 8.0             关系型数据库
+PostgreSQL 16         关系型数据库
 Redis 7.0             缓存/会话
 MongoDB 6.0           文档数据库
 RabbitMQ 3.x          消息队列
@@ -121,7 +121,7 @@ RabbitMQ 3.x          消息队列
 ┌─────────────────────────────────────────────────────────────┐
 │                         数据层                                │
 ├──────────┬──────────┬──────────┬──────────────────────────────┤
-│  MySQL   │  Redis   │ MongoDB  │  RabbitMQ                    │
+│PostgreSQL│  Redis   │ MongoDB  │  RabbitMQ                    │
 │ 业务数据 │  缓存    │ 日志数据 │  消息队列                    │
 └──────────┴──────────┴──────────┴──────────────────────────────┘
 ```
@@ -161,13 +161,10 @@ open-scrm/
 │   │   ├── ui-components/         # UI组件
 │   │   └── server-common/         # 后端公共模块
 │   │
-│   ├── docs/                      # 项目文档
 │   ├── scripts/                   # 脚本文件
 │   └── docker-compose.yml         # Docker编排
 │
-├── mvp/                           # 需求与规划
-│   ├── 需求规格说明书.md          # 需求文档
-│   └── 技术选型.md                # 技术选型
+├── docs/                          # 项目文档（规格、指南、模块说明等，统一入口见 docs/README.md）
 │
 └── README.md                      # 项目说明
 ```
@@ -182,7 +179,7 @@ open-scrm/
 
 - Node.js >= 18.0.0
 - pnpm >= 8.0.0
-- MySQL >= 8.0
+- PostgreSQL >= 16
 - Redis >= 7.0
 - MongoDB >= 6.0 (可选)
 - RabbitMQ >= 3.x (可选)
@@ -219,7 +216,7 @@ pnpm seed
 
 #### 方式二：手动安装依赖服务
 
-请确保已安装并启动 MySQL、Redis 等服务，然后配置相应的环境变量。
+请确保已安装并启动 PostgreSQL、Redis 等服务，然后配置相应的环境变量（参见 `code/env.example`）。
 
 ### 启动应用
 
@@ -261,27 +258,28 @@ pnpm dev
 
 ### 核心文档
 
-- [需求规格说明书](mvp/需求规格说明书.md) - 完整的功能需求和业务流程
-- [技术选型文档](mvp/技术选型.md) - 技术栈选择和架构设计
-- [代码总览](code/README.md) - 详细的代码结构说明
-- [API文档](code/docs/api/) - RESTful API接口文档
-- [架构设计](code/docs/architecture/) - 系统架构和设计文档
-- [开发指南](code/docs/development/) - 开发规范和最佳实践
+- [文档索引](docs/README.md) - 仓库根目录 `docs/` 下的专题索引与工作流
+- [需求规格说明书](docs/mvp/需求规格说明书.md) - 完整的功能需求和业务流程
+- [技术选型文档](docs/mvp/技术选型.md) - 技术栈选择和架构设计
+- [代码总览](docs/code/README.md) - 详细的代码结构说明
+- [API文档](docs/api/) - RESTful API接口文档
+- [架构设计](docs/architecture/) - 系统架构和设计文档
+- [开发指南](docs/development/) - 开发规范和最佳实践
 
 ### 模块文档
 
 各个应用和服务都有独立的 README 文档：
 
 **前端应用:**
-- [官方网站文档](code/apps/official-website/README.md)
-- [管理平台文档](code/apps/admin-platform/README.md)
-- [运营平台文档](code/apps/operation-platform/README.md)
-- [移动端文档](code/apps/mobile-app/README.md)
+- [官方网站文档](docs/apps/official-website/README.md)
+- [管理平台文档](docs/apps/admin-platform/README.md)
+- [运营平台文档](docs/apps/operation-platform/README.md)
+- [移动端文档](docs/apps/mobile-app/README.md)
 
 **后端服务:**
-- [网关服务文档](code/services/gateway-service/README.md)
-- [认证服务文档](code/services/auth-service/README.md)
-- [客户服务文档](code/services/customer-service/README.md)
+- [网关服务文档](docs/services/gateway-service/README.md)
+- [认证服务文档](docs/services/auth-service/README.md)
+- [客户服务文档](docs/services/customer-service/README.md)
 
 ---
 

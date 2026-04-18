@@ -186,10 +186,10 @@ Get-ChildItem -Path docs/tests -Filter "test-report-*.md" |
 
 ## 📞 相关链接
 
-- **测试脚本**: `../../scripts/test/`
-- **测试脚本文档**: `../../scripts/test/README.md`
-- **主项目README**: `../../README.md`
-- **开发计划**: `../../../开发计划表.md`
+- **测试脚本**：`../../code/scripts/test/`
+- **测试脚本文档**：[docs/scripts/test/README.md](../scripts/test/README.md)
+- **主项目 README**：`../../README.md`
+- **开发计划**：[开发计划.md](../开发计划.md)
 
 ---
 
