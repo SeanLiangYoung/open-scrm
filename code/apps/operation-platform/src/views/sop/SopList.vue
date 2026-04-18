@@ -44,7 +44,16 @@ import api from '@/utils/api';
 const loading = ref(false);
 const sopList = ref<any[]>([]);
 
-const triggerLabel = (t: any) => ({ 1: '添加好友', 2: '打标签', 3: '进群触发', 4: '手动触发', manual: '手动触发', auto: '自动触发', schedule: '定时触发' }[t] || String(t));
+const TRIGGER_LABELS: Record<string, string> = {
+  '1': '添加好友',
+  '2': '打标签',
+  '3': '进群触发',
+  '4': '手动触发',
+  manual: '手动触发',
+  auto: '自动触发',
+  schedule: '定时触发',
+};
+const triggerLabel = (t: unknown) => TRIGGER_LABELS[String(t)] ?? String(t);
 const statusLabel = (s: number) => ['草稿', '启用', '停用'][s] || '未知';
 const statusType = (s: number): any => ['info', 'success', 'danger'][s] || 'info';
 
