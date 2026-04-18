@@ -27,6 +27,11 @@ run_test() {
   fi
 }
 
+echo "🧪 Phase 0: Unit Tests (Vitest)"
+echo "------------------------------------------"
+run_test "Vitest (shared-utils, gateway, auth)" "pnpm test:unit"
+
+echo ""
 echo "📦 Phase 1: Shared Packages Build"
 echo "------------------------------------------"
 run_test "shared-types build" "pnpm --filter @scrm/shared-types build"

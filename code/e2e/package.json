@@ -1,0 +1,16 @@
+{
+  "name": "@scrm/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright E2E（按迭代计划分目录）",
+  "scripts": {
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "install:browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "typescript": "^5.2.2",
+    "wait-on": "^8.0.1"
+  }
+}
