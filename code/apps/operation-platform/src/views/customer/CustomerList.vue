@@ -11,7 +11,11 @@
               <el-option label="正常" :value="1" /><el-option label="待跟进" :value="2" /><el-option label="流失" :value="0" />
             </el-select>
           </div>
-          <el-button type="primary" @click="showCreate"><el-icon><Plus /></el-icon> 新建客户</el-button>
+          <div style="display:flex;gap:8px">
+            <el-button @click="exportCsv"><el-icon><Download /></el-icon> 导出CSV</el-button>
+            <el-button @click="importDialogVisible = true"><el-icon><Upload /></el-icon> 导入</el-button>
+            <el-button type="primary" @click="showCreate"><el-icon><Plus /></el-icon> 新建客户</el-button>
+          </div>
         </div>
       </template>
 
@@ -71,6 +75,19 @@
         <el-button type="primary" :loading="submitting" @click="handleSubmit">确定</el-button>
       </template>
     </el-dialog>
+
+    <el-dialog v-model="importDialogVisible" title="导入客户" width="520px">
+      <el-alert type="info" :closable="false" style="margin-bottom:16px">
+        <template #title>
+          请粘贴 CSV 格式数据，第一行为标题行。支持字段：姓名,性别,手机号,渠道
+        </template>
+      </el-alert>
+      <el-input v-model="importText" type="textarea" :rows="8" placeholder="姓名,性别,手机号,渠道&#10;测试客户A,男,13900001111,抖音&#10;测试客户B,女,13900002222,微信" />
+      <template #footer>
+        <el-button @click="importDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleImport">导入</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -78,7 +95,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, Search } from '@element-plus/icons-vue';
+import { Plus, Search, Download, Upload } from '@element-plus/icons-vue';
 import api from '@/utils/api';
 
 const router = useRouter();
@@ -148,6 +165,41 @@ async function handleSubmit() {
 async function deleteCustomer(row: any) {
   await ElMessageBox.confirm(`确定删除客户 ${row.name}？`, '提示', { type: 'warning' });
   try { await api.delete(`/api/v1/customers/${row.id}`); ElMessage.success('删除成功'); fetchCustomers(); } catch { ElMessage.error('删除失败'); }
+}
+
+const importDialogVisible = ref(false);
+const importText = ref('');
+
+async function exportCsv() {
+  try {
+    const res = await api.get('/api/v1/customers/export/csv', { responseType: 'blob' });
+    const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `customers_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click(); URL.revokeObjectURL(url);
+    ElMessage.success('导出成功');
+  } catch { ElMessage.error('导出失败'); }
+}
+
+async function handleImport() {
+  if (!importText.value.trim()) { ElMessage.warning('请粘贴CSV数据'); return; }
+  const lines = importText.value.trim().split('\n').filter(l => l.trim());
+  if (lines.length < 2) { ElMessage.warning('至少需要标题行和一行数据'); return; }
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = lines.slice(1).map(line => {
+    const vals = line.split(',').map(v => v.trim());
+    const obj: any = {};
+    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    return obj;
+  });
+  try {
+    const res = await api.post('/api/v1/customers/import/csv', { rows });
+    ElMessage.success(res.data?.message || `导入成功`);
+    importDialogVisible.value = false;
+    importText.value = '';
+    fetchCustomers();
+  } catch (e: any) { ElMessage.error(e.response?.data?.message || '导入失败'); }
 }
 
 onMounted(fetchCustomers);

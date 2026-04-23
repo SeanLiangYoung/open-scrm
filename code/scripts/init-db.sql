@@ -207,6 +207,20 @@ CREATE TABLE IF NOT EXISTS `mass_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='群发任务表';
 
 -- =============================================
+-- 客户跟进记录表
+CREATE TABLE IF NOT EXISTS `customer_follow_up` (
+  `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `customer_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL COMMENT '跟进人ID',
+  `follow_type` TINYINT NOT NULL DEFAULT 1 COMMENT '1-电话 2-微信 3-面访 4-其他',
+  `content` TEXT NOT NULL COMMENT '跟进内容',
+  `next_follow_time` DATETIME COMMENT '下次跟进时间',
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  KEY `idx_customer` (`customer_id`),
+  KEY `idx_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='客户跟进记录表';
+
 -- =============================================
 -- 消息推送模块（匹配 message-service 实体定义）
 -- =============================================
@@ -341,6 +355,15 @@ INSERT INTO `sop_step` (`template_id`, `step_order`, `step_name`, `step_type`, `
 (2, 1, '发送跟进消息', 1, 0, 'minute', 1, '{"text": "您好，最近有什么可以帮到您的吗？"}'),
 (2, 2, '发送优惠信息', 1, 1440, 'minute', 1, '{"text": "我们近期有特别优惠活动"}')
 ON DUPLICATE KEY UPDATE `step_name` = `step_name`;
+
+-- 示例跟进记录
+INSERT INTO `customer_follow_up` (`corp_id`, `customer_id`, `user_id`, `follow_type`, `content`) VALUES
+(1, 1, 1, 2, '首次添加微信，发送了欢迎消息'),
+(1, 1, 1, 1, '电话沟通产品需求，客户表示有兴趣'),
+(1, 2, 1, 2, '通过小红书渠道添加，已打标签'),
+(1, 3, 1, 3, '线下面谈，详细介绍了产品方案'),
+(1, 5, 1, 1, '回访客户，客户暂无购买意向')
+ON DUPLICATE KEY UPDATE `content` = `content`;
 
 -- 示例消息模板
 INSERT INTO `message_template` (`corp_id`, `template_name`, `template_type`, `message_type`, `content`, `status`, `create_user_id`) VALUES
