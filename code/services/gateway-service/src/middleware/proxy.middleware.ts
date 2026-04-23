@@ -37,6 +37,7 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
           headers['x-user-id'] = String(ctx.state.user.userId || '');
           headers['x-corp-id'] = String(ctx.state.user.corpId || '');
           headers['x-username'] = String(ctx.state.user.username || '');
+          headers['x-is-admin'] = String(ctx.state.user.isAdmin || false);
         }
 
         const response = await this.httpService.request({
