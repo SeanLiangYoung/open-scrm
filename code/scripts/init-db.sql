@@ -207,6 +207,65 @@ CREATE TABLE IF NOT EXISTS `mass_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='群发任务表';
 
 -- =============================================
+-- =============================================
+-- 消息推送模块（匹配 message-service 实体定义）
+-- =============================================
+
+CREATE TABLE IF NOT EXISTS `message_template` (
+  `id` INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `template_name` VARCHAR(100) NOT NULL,
+  `template_type` TINYINT NOT NULL COMMENT '1-文本 2-图片 3-链接 4-小程序 5-文件',
+  `message_type` TINYINT NOT NULL COMMENT '1-企微 2-站内 3-短信 4-邮件',
+  `content` TEXT NOT NULL,
+  `extra` JSON,
+  `status` TINYINT DEFAULT 1,
+  `create_user_id` BIGINT UNSIGNED,
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_corp_id` (`corp_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='消息模板表';
+
+CREATE TABLE IF NOT EXISTS `notification` (
+  `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `user_id` BIGINT UNSIGNED NOT NULL,
+  `notification_type` TINYINT NOT NULL COMMENT '1-系统 2-业务 3-警告',
+  `title` VARCHAR(200) NOT NULL,
+  `content` TEXT NOT NULL,
+  `link_url` VARCHAR(500),
+  `extra` JSON,
+  `is_read` TINYINT DEFAULT 0,
+  `read_time` DATETIME,
+  `expire_time` DATETIME,
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_user_read` (`user_id`, `is_read`),
+  KEY `idx_corp_time` (`corp_id`, `create_time`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通知表';
+
+CREATE TABLE IF NOT EXISTS `message_log` (
+  `id` BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+  `corp_id` BIGINT UNSIGNED NOT NULL,
+  `template_id` INT UNSIGNED,
+  `message_type` TINYINT NOT NULL,
+  `target_type` TINYINT NOT NULL,
+  `target_id` BIGINT UNSIGNED NOT NULL,
+  `target_name` VARCHAR(100),
+  `content` TEXT NOT NULL,
+  `extra` JSON,
+  `send_status` TINYINT DEFAULT 0,
+  `send_time` DATETIME,
+  `fail_reason` VARCHAR(500),
+  `retry_count` INT DEFAULT 0,
+  `external_id` VARCHAR(100),
+  `create_time` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `update_time` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  KEY `idx_corp_time` (`corp_id`, `create_time`),
+  KEY `idx_target` (`target_type`, `target_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='消息发送日志表';
+
+-- =============================================
 -- 获客模块
 -- =============================================
 
@@ -282,4 +341,18 @@ INSERT INTO `sop_step` (`template_id`, `step_order`, `step_name`, `step_type`, `
 (2, 1, '发送跟进消息', 1, 0, 'minute', 1, '{"text": "您好，最近有什么可以帮到您的吗？"}'),
 (2, 2, '发送优惠信息', 1, 1440, 'minute', 1, '{"text": "我们近期有特别优惠活动"}')
 ON DUPLICATE KEY UPDATE `step_name` = `step_name`;
+
+-- 示例消息模板
+INSERT INTO `message_template` (`corp_id`, `template_name`, `template_type`, `message_type`, `content`, `status`, `create_user_id`) VALUES
+(1, '新客欢迎模板', 1, 2, '{{name}} 您好，欢迎加入我们！有任何问题随时联系。', 1, 1),
+(1, '7天跟进模板', 1, 2, '{{name}} 您好，我们近期有优惠活动，感兴趣可以了解一下。', 1, 1),
+(1, '生日祝福模板', 1, 1, '亲爱的{{name}}，祝您生日快乐！', 1, 1)
+ON DUPLICATE KEY UPDATE `template_name` = `template_name`;
+
+-- 示例通知
+INSERT INTO `notification` (`corp_id`, `user_id`, `notification_type`, `title`, `content`, `is_read`) VALUES
+(1, 1, 1, '系统欢迎通知', '欢迎使用 SCRM 系统，您的账号已激活。', 0),
+(1, 1, 2, 'SOP执行完成', '新客欢迎SOP 已完成对客户张三的执行。', 0),
+(1, 1, 3, '客户流失预警', '客户吴十已标记为流失状态，请及时跟进。', 0)
+ON DUPLICATE KEY UPDATE `title` = `title`;
 
