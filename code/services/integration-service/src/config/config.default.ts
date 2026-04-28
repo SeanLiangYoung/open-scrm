@@ -8,6 +8,16 @@ export default {
   koa: {
     port: 7007,
   },
+
+  /** 企微回调 POST 为 text/xml，需按文本解析为 string */
+  bodyParser: {
+    enableTypes: ['json', 'form', 'text'],
+    extendTypes: {
+      text: ['text/xml', 'application/xml'],
+    },
+    textLimit: '2mb',
+    jsonLimit: '2mb',
+  },
   
   // TypeORM配置
   typeorm: {

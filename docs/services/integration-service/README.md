@@ -43,6 +43,7 @@ integration-service/
 │   │   └── config.default.ts
 │   ├── controller/          # 控制器
 │   │   ├── wework.controller.ts
+│   │   ├── integration-api.controller.ts  # 经网关：/api/v1/integration/*
 │   │   └── health.controller.ts
 │   ├── service/             # 服务层
 │   │   ├── wework-api.service.ts
@@ -63,6 +64,16 @@ integration-service/
 ```
 
 ## API 接口
+
+### 经网关标准接口（与 `gateway` 路由 `/api/v1/integration/*` 一致）
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/v1/integration/health` | 健康探测：PostgreSQL、Redis |
+| GET | `/api/v1/integration/wework/callback` | 企微回调 URL 验证（query：`msg_signature`、`timestamp`、`nonce`、`echostr`）；成功时 **text/plain** 返回解密明文 |
+| POST | `/api/v1/integration/wework/callback` | 企微推送（**text/xml**）；验签解密成功后 **text/plain** 返回 `success` |
+
+实现与本地验证步骤见 **`code/docs/harness/本地启动与验证-Sprint2.md`**。
 
 ### 企业微信配置管理
 

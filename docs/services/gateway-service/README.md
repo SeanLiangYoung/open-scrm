@@ -18,6 +18,11 @@ API网关是整个微服务架构的入口，负责路由转发、认证鉴权�
 - 🛡️ **安全防护**: CORS、CSP、XSS防护
 - 📊 **负载均衡**: 多实例负载均衡
 
+### 与当前 `code/services/gateway-service` 实现一致说明
+
+- **JWT 白名单**（`src/middleware/auth.middleware.ts`）：除登录、健康检查外，包含 **`/api/v1/integration/health`** 与 **`/api/v1/integration/wework/callback`**（企微服务器回调无 Bearer Token）。
+- **请求体**：`src/config/config.default.ts` 中 **`bodyParser.extendTypes.text`** 包含 **`text/xml`**，以便将企微 POST 原文转发至 integration-service。
+
 ---
 
 ## 🛠️ 技术栈

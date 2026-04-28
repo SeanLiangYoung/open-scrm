@@ -5,10 +5,7 @@ import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { WeworkConfigEntity } from '../entity/wework-config.entity';
 import { CreateWeworkConfigDto, UpdateWeworkConfigDto } from '../dto/wework-config.dto';
-import {
-  decryptWeworkMessage,
-  verifyWeworkCallbackSignature,
-} from '../util/wework-msg-crypt.util';
+import { decryptWeworkMessage, verifyWeworkMsgSignature } from '../util/wework-msg-crypt.util';
 
 /**
  * 企业微信API服务
@@ -317,10 +314,16 @@ export class WeworkApiService {
   }
 
   /**
-   * 验证回调URL
+   * 验证企微被动回调 msg_signature（含密文：GET 的 echostr 或 POST 的 Encrypt）
    */
-  verifyCallbackUrl(signature: string, timestamp: string, nonce: string, token: string): boolean {
-    return verifyWeworkCallbackSignature(token, timestamp, nonce, signature);
+  verifyCallbackMsgSignature(
+    msgSignature: string,
+    timestamp: string,
+    nonce: string,
+    encryptOrEchoStr: string,
+    token: string
+  ): boolean {
+    return verifyWeworkMsgSignature(token, timestamp, nonce, encryptOrEchoStr, msgSignature);
   }
 
   /**

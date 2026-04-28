@@ -38,6 +38,26 @@ curl -s http://127.0.0.1:7000/api/v1/integration/health
 
 期望 JSON 包含：`"status":"ok"`、`"database":"connected"`、`"redis":"connected"`。
 
+## 3.1 企微回调（S2 收尾）
+
+经网关（与生产一致）：
+
+- **GET** `…/api/v1/integration/wework/callback?msg_signature=…&timestamp=…&nonce=…&echostr=…`：URL 验证；成功时响应体为**解密后的明文**（`text/plain`）。
+- **POST** `…/api/v1/integration/wework/callback`，`Content-Type: text/xml`：推送消息体；验签 + 解密成功后响应 **`success`**（明文，便于本地/E2E；生产可再改为加密回包）。
+
+数据库需存在一条启用的 `wework_config`，且 **`callback_token`、`encoding_aes_key` 与 `corp_id`** 与加解密向量一致。新数据卷执行 `init-db.pg.sql` 时会插入 **Sprint 2 开发用种子行**（corp_id=`wx1234567890abcdef`）。若你使用**旧数据卷**且表为空，可手动执行：
+
+```sql
+INSERT INTO wework_config (corp_id, corp_secret, callback_token, encoding_aes_key, status)
+VALUES (
+  'wx1234567890abcdef',
+  'local_dev_placeholder_not_for_production',
+  'scrm_s2_callback_token',
+  'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG',
+  1
+) ON CONFLICT (corp_id) DO NOTHING;
+```
+
 ## 4. 自动化
 
 ```bash
@@ -51,3 +71,5 @@ pnpm test:e2e:sprint2
 
 - **Docker 更新代码后务必重建镜像**：`docker compose build integration-service && docker compose up -d integration-service`（否则仍为旧 `dist`，健康检查字段不一致）。
 - **502 / 网关代理错误**：多为 integration 未监听（容器重启循环）；`docker logs scrm-integration-service` 查看是否仍有 `*.spec.ts` 被打进产物（应已排除）。
+- **企微回调经网关返回 401**：网关 `AuthMiddleware` 须将 `/api/v1/integration/wework/callback` 列入白名单（企微请求无 Bearer Token）。
+- **POST 回调返回「期望 text/xml 请求体」**：网关须配置 `bodyParser.extendTypes.text` 包含 `text/xml`，否则代理转发时 `ctx.request.body` 为空，见 `gateway-service/src/config/config.default.ts`。

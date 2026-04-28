@@ -34,7 +34,8 @@ export function pkcs7Unpad(data: Buffer): Buffer {
 }
 
 /**
- * 企业微信回调 URL 校验：sha1(sort(token,timestamp,nonce).join(''))
+ * 企业微信「无密文参与」的 SHA1 签名校验（部分场景 / 单元测试用）。
+ * 被动回调 URL 验证与消息体验签请使用 {@link verifyWeworkMsgSignature}。
  */
 export function verifyWeworkCallbackSignature(
   token: string,
@@ -45,6 +46,23 @@ export function verifyWeworkCallbackSignature(
   const plain = [token, timestamp, nonce].sort().join('');
   const sha1 = crypto.createHash('sha1').update(plain).digest('hex');
   return sha1 === signature;
+}
+
+/**
+ * 企业微信被动回调：msg_signature = SHA1( sort([token, timestamp, nonce, encryptOrEchoStr]).join('') )
+ * - GET 验证 URL：`encryptOrEchoStr` 为 query 中的 `echostr`（密文）
+ * - POST 接收消息：`encryptOrEchoStr` 为 XML 中 `Encrypt` 节点内容（密文）
+ */
+export function verifyWeworkMsgSignature(
+  token: string,
+  timestamp: string,
+  nonce: string,
+  encryptOrEchoStr: string,
+  msgSignature: string
+): boolean {
+  const plain = [token, timestamp, nonce, encryptOrEchoStr].sort().join('');
+  const sha1 = crypto.createHash('sha1').update(plain).digest('hex');
+  return sha1 === msgSignature;
 }
 
 /**

@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development mw dev",
     "build": "mw build",
-    "start": "NODE_ENV=production node ./bootstrap.js",
+    "start": "cross-env NODE_ENV=production node ./bootstrap.js",
     "clean": "rm -rf dist",
     "test": "vitest run",
     "lint": "eslint . --ext .ts",

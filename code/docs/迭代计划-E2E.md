@@ -123,9 +123,13 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:7000/api/v1/integration/
 
 ### 4.3 E2E 流程 B — 解密与回调（API + 可选浏览器）
 
-1. 使用**单元测试**或**企业微信调试工具**生成的样本密文，调用解密逻辑（直连 integration 或经网关，以安全要求为准）。
-2. 模拟 GET 验证 URL 与 POST 消息回调（若已实现）。
-3. **完成判定：** 解密结果与预期 XML/JSON 字段一致；GET 验证返回 `echostr` 明文；POST 返回 `success` 或文档规定的响应。
+1. **单元测试**：`integration-service` 内 `wework-msg-crypt.util.spec.ts`（含 `verifyWeworkMsgSignature` 与加解密对拍）。
+2. **经网关自动化**：`pnpm test:e2e:sprint2`（Playwright）覆盖  
+   `GET /api/v1/integration/wework/callback`（URL 验证，响应体为解密后的明文）、  
+   `POST /api/v1/integration/wework/callback`（`Content-Type: text/xml`，成功时响应体为明文 `success`）。  
+   需数据库 `wework_config` 已配置 `callback_token`、`encoding_aes_key`（新库见 `code/scripts/init-db.pg.sql` 种子；旧库见 [本地启动与验证-Sprint2](./harness/本地启动与验证-Sprint2.md) §3.1）。
+3. **网关**：`AuthMiddleware` 白名单须包含上述回调路径；`bodyParser` 须将 `text/xml` 解析为字符串以便代理转发 POST 体（见 `gateway-service` 实现）。
+4. **完成判定：** 在有效签名与密文下 GET/POST 返回 200，且与 Harness「S2 已完成」状态一致。
 
 ### 4.4 E2E 流程 C — Token 有效性（API）
 
@@ -280,7 +284,7 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
 - **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
-- **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸  
+- **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸（含企微回调与故障排查）  
 
 ---
 
@@ -291,3 +295,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.0 | 2026-04-16 | 初版：六迭代效果 + E2E 流程 |
 | 1.1 | 2026-04-18 | 增加 Harness 文档索引与 Sprint 1 落地 |
 | 1.2 | 2026-04-19 | PostgreSQL/Docker 端口说明；Sprint 2 Harness 链接；开发计划链接修正 |
+| 1.3 | 2026-04-28 | Sprint 2 收尾：经网关企微回调 GET/POST、Harness 标记 S2 已完成（见 `docs/harness/`） |

@@ -24,6 +24,8 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
         '/api/health-check',
         // 各服务经网关暴露的只读探测（无需登录）
         '/api/v1/integration/health',
+        // 企微被动回调：GET/POST 由企微服务器调用，无 Bearer Token
+        '/api/v1/integration/wework/callback',
       ];
 
       // 检查是否在白名单中

@@ -484,6 +484,16 @@ INSERT INTO role (corp_id, role_name, role_code, description) VALUES
   (1, '查看者', 'viewer', '只能查看数据')
 ON CONFLICT (corp_id, role_code) DO NOTHING;
 
+-- Sprint 2 / 本地 E2E：企微回调验签与加解密（与 integration-service 单测向量一致，非真实 corp）
+INSERT INTO wework_config (corp_id, corp_secret, callback_token, encoding_aes_key, status)
+VALUES (
+  'wx1234567890abcdef',
+  'local_dev_placeholder_not_for_production',
+  'scrm_s2_callback_token',
+  'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG',
+  1
+) ON CONFLICT (corp_id) DO NOTHING;
+
 INSERT INTO customer (corp_id, external_userid, name, gender, mobile, channel, status, follow_user_id) VALUES
 (1, 'ext_001', '张三', 1, '13800001001', 'douyin', 1, 1),
 (1, 'ext_002', '李四', 2, '13800001002', 'xiaohongshu', 1, 1),

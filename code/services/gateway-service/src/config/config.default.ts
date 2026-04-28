@@ -9,6 +9,16 @@ export default {
     port: 7000
   },
 
+  /** 代理企微 text/xml 回调时，需把请求体解析为 string 再转发 */
+  bodyParser: {
+    enableTypes: ['json', 'form', 'text'],
+    extendTypes: {
+      text: ['text/xml', 'application/xml'],
+    },
+    textLimit: '2mb',
+    jsonLimit: '2mb',
+  },
+
   // JWT配置
   jwt: {
     secret: process.env.JWT_SECRET || 'scrm-jwt-secret-key-change-in-production',

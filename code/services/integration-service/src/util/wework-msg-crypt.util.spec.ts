@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import * as crypto from 'crypto';
 import {
   verifyWeworkCallbackSignature,
+  verifyWeworkMsgSignature,
   encryptWeworkMessage,
   decryptWeworkMessage,
   decodeWeworkAesKey,
@@ -19,6 +20,22 @@ describe('verifyWeworkCallbackSignature', () => {
 
   it('returns false when signature does not match', () => {
     expect(verifyWeworkCallbackSignature('a', '1', '2', 'deadbeef')).toBe(false);
+  });
+});
+
+describe('verifyWeworkMsgSignature', () => {
+  it('matches WeCom formula: sha1(sort([token,timestamp,nonce,echostr]))', () => {
+    const token = 'scrm_s2_callback_token';
+    const timestamp = '1714281600';
+    const nonce = 'nonce123';
+    const encodingAesKey = 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG';
+    const corpId = 'wx1234567890abcdef';
+    const plainEcho = 'url_verify_ok';
+    const echostr = encryptWeworkMessage(plainEcho, encodingAesKey, corpId);
+    const arr = [token, timestamp, nonce, echostr].sort();
+    const msgSignature = crypto.createHash('sha1').update(arr.join('')).digest('hex');
+    expect(verifyWeworkMsgSignature(token, timestamp, nonce, echostr, msgSignature)).toBe(true);
+    expect(verifyWeworkMsgSignature(token, timestamp, nonce, echostr, 'bad')).toBe(false);
   });
 });
 

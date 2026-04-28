@@ -24,7 +24,7 @@
 
 ## Task 3: 服务层委托
 
-**Modify:** `services/integration-service/src/service/wework-api.service.ts` — `verifyCallbackUrl`、`decryptMessage` 调用 util。
+**Modify:** `services/integration-service/src/service/wework-api.service.ts` — `verifyCallbackMsgSignature`（企微四参验签）、`decryptMessage` 调用 util。
 
 ## Task 4: Health 含 Redis
 
