@@ -10,7 +10,7 @@
 
       <el-table :data="channels" v-loading="loading" stripe>
         <el-table-column prop="id" label="ID" width="70" />
-        <el-table-column prop="name" label="活码名称" min-width="150" />
+        <el-table-column prop="codeName" label="活码名称" min-width="150" />
         <el-table-column prop="channel" label="渠道" width="120">
           <template #default="{ row }">
             <el-tag size="small" :type="channelType(row.channel)">{{ channelLabel(row.channel) }}</el-tag>
@@ -132,7 +132,7 @@ const calcRate = (row: any) => {
 async function fetchChannels() {
   loading.value = true;
   try {
-    const res = await api.get('/api/channel-code/list');
+    const res = await api.get('/api/v1/acquisition/channel-codes', { params: { page: 1, pageSize: 100 } });
     const data = res.data;
     channels.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
   } catch {} finally { loading.value = false; }
@@ -148,17 +148,32 @@ async function fetchAccounts() {
 }
 
 function showCreate() { editingId.value = null; Object.assign(channelForm, { name: '', channel: 'douyin' }); channelDialog.value = true; }
-function editChannel(row: any) { editingId.value = row.id; Object.assign(channelForm, { name: row.name, channel: row.channel }); channelDialog.value = true; }
+function editChannel(row: any) {
+  editingId.value = row.id;
+  Object.assign(channelForm, { name: row.codeName || row.name, channel: row.channel });
+  channelDialog.value = true;
+}
 function showAccountCreate() { Object.assign(accountForm, { platform: 'douyin', accountName: '', accountId: '' }); accountDialog.value = true; }
 
 async function handleChannelSubmit() {
   submitting.value = true;
   try {
-    await api.post('/api/channel-code', { ...channelForm, corpId: 1 });
+    if (editingId.value) {
+      ElMessage.info('编辑接口暂未开放，请仅使用新建');
+      return;
+    }
+    await api.post('/api/v1/acquisition/channel-codes', {
+      codeName: channelForm.name,
+      channel: channelForm.channel,
+    });
     ElMessage.success('操作成功');
     channelDialog.value = false;
     fetchChannels();
-  } catch (e: any) { ElMessage.error(e.response?.data?.message || '操作失败'); } finally { submitting.value = false; }
+  } catch (e: any) {
+    ElMessage.error(e.response?.data?.message || '操作失败');
+  } finally {
+    submitting.value = false;
+  }
 }
 
 async function handleAccountSubmit() {

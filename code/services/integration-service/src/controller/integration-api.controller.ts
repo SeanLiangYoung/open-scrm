@@ -1,9 +1,22 @@
-import { Controller, Get, Inject, Post, Query } from '@midwayjs/core';
+import { Controller, Get, Inject, Post, Query, Body, Config } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { InjectDataSource } from '@midwayjs/typeorm';
 import { RedisService } from '@midwayjs/redis';
+import { HttpService } from '@midwayjs/axios';
 import { DataSource } from 'typeorm';
+import { Validate } from '@midwayjs/validate';
 import { WeworkApiService } from '../service/wework-api.service';
+import { AcquisitionChannelScanTestDto } from '../dto/integration-test.dto';
+
+function allowIntegrationTestRoutes(): boolean {
+  if (process.env.ENABLE_INTEGRATION_TEST_ROUTES === '0') {
+    return false;
+  }
+  if (process.env.ENABLE_INTEGRATION_TEST_ROUTES === '1') {
+    return true;
+  }
+  return process.env.NODE_ENV !== 'production';
+}
 
 /** 从企微 XML 中取 CDATA 或纯文本子节点 */
 function extractXmlField(xml: string, tag: string): string | undefined {
@@ -31,6 +44,12 @@ export class IntegrationApiController {
 
   @Inject()
   weworkApiService!: WeworkApiService;
+
+  @Inject()
+  httpService!: HttpService;
+
+  @Config('integration')
+  integrationConfig!: { acquisitionServiceUrl: string };
 
   @Get('/health')
   async health() {
@@ -163,5 +182,38 @@ export class IntegrationApiController {
     this.ctx.type = 'text/plain; charset=utf-8';
     this.ctx.body = 'success';
     return;
+  }
+
+  /**
+   * Sprint 5 联调：模拟「集成侧收到扫码事件」后回写 acquisition（转发同用户的 Bearer）。
+   * 仅当 `ENABLE_INTEGRATION_TEST_ROUTES=1` 或 `NODE_ENV=local` 时开放。
+   */
+  @Post('/test/acquisition-channel-scan')
+  @Validate()
+  async testAcquisitionChannelScan(@Body() body: AcquisitionChannelScanTestDto) {
+    if (!allowIntegrationTestRoutes()) {
+      this.ctx.status = 404;
+      return { success: false, message: '未启用测试路由' };
+    }
+    const auth = this.ctx.get('authorization');
+    if (!auth) {
+      this.ctx.status = 401;
+      return { success: false, message: '需要 Authorization' };
+    }
+    const base = this.integrationConfig?.acquisitionServiceUrl || 'http://localhost:7003';
+    const url = `${base.replace(/\/$/, '')}/api/v1/acquisition/channel-codes/${body.channelCodeId}/ingest-scan`;
+    const res = await this.httpService.post(
+      url,
+      { externalEventId: body.externalEventId },
+      {
+        headers: {
+          authorization: auth,
+          'Content-Type': 'application/json',
+        },
+        validateStatus: () => true,
+      }
+    );
+    this.ctx.status = res.status;
+    return res.data;
   }
 }

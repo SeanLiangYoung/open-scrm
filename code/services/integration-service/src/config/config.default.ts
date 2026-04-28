@@ -78,6 +78,7 @@ export default {
   integration: {
     customerServiceUrl: process.env.CUSTOMER_SERVICE_URL || 'http://localhost:7002',
     scrmCorpId: parseInt(process.env.SCRM_TENANT_ID || '1', 10),
+    acquisitionServiceUrl: process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003',
   },
 } as MidwayConfig;
 

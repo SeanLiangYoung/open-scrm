@@ -3,9 +3,13 @@ import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
+import { RedisService } from '@midwayjs/redis';
 import { ChannelCodeEntity } from '../entity/channel-code.entity';
 import { CreateChannelCodeDto, QueryChannelCodeDto } from '../dto/channel-code.dto';
 import * as QRCode from 'qrcode';
+
+/** 对外 JSON：不包含企微 configId 等敏感字段 */
+export type PublicChannelCode = Omit<ChannelCodeEntity, 'configId'>;
 
 @Provide()
 export class ChannelCodeService {
@@ -18,8 +22,59 @@ export class ChannelCodeService {
   @Inject()
   httpService!: HttpService;
 
+  @Inject()
+  redisService!: RedisService;
+
   @Config('acquisition.services')
   servicesConfig: any;
+
+  toPublicChannel(c: ChannelCodeEntity): PublicChannelCode {
+    return {
+      id: c.id,
+      corpId: c.corpId,
+      codeName: c.codeName,
+      channel: c.channel,
+      qrCodeUrl: c.qrCodeUrl,
+      staffIds: c.staffIds,
+      welcomeMsg: c.welcomeMsg,
+      autoTagIds: c.autoTagIds,
+      scanCount: c.scanCount,
+      addCount: c.addCount,
+      status: c.status,
+      createTime: c.createTime,
+      updateTime: c.updateTime,
+    };
+  }
+
+  async getById(corpId: number, id: number): Promise<ChannelCodeEntity | null> {
+    return this.codeRepository.findOne({ where: { id, corpId } });
+  }
+
+  /**
+   * 扫码 +1；若提供 externalEventId 且 Redis 已存在键则返回 replayed=true 不再自增。
+   */
+  async recordScanEvent(
+    corpId: number,
+    id: number,
+    externalEventId?: string
+  ): Promise<{ scanCount: number; replayed: boolean }> {
+    const code = await this.getById(corpId, id);
+    if (!code) {
+      throw new Error('活码不存在');
+    }
+    if (externalEventId) {
+      const dedupeKey = `acq:chscan:${corpId}:${id}:${externalEventId}`;
+      const existed = await this.redisService.get(dedupeKey);
+      if (existed) {
+        const latest = await this.getById(corpId, id);
+        return { scanCount: latest?.scanCount ?? code.scanCount, replayed: true };
+      }
+      await this.redisService.set(dedupeKey, '1', 'EX', 86400);
+    }
+    code.scanCount = (code.scanCount || 0) + 1;
+    await this.codeRepository.save(code);
+    return { scanCount: code.scanCount, replayed: false };
+  }
 
   async createChannelCode(corpId: number, dto: CreateChannelCodeDto): Promise<ChannelCodeEntity> {
     // 创建渠道活码

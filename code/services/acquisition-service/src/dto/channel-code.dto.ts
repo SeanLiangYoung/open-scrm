@@ -17,6 +17,12 @@ export class CreateChannelCodeDto {
   autoTagIds?: number[];
 }
 
+export class IngestChannelScanDto {
+  /** 外部事件唯一标识，用于幂等（如企微 EventKey + CreateTime） */
+  @Rule(RuleType.string().max(128).optional())
+  externalEventId?: string;
+}
+
 export class QueryChannelCodeDto {
   @Rule(RuleType.string().optional())
   codeName?: string;

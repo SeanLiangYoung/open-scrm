@@ -199,22 +199,22 @@ curl -s "http://127.0.0.1:17000/api/v1/analytics/summary?startDate=2026-04-28&en
 
 ### 7.1 最终效果
 
-- 一条**端到端业务主路径**打通：例如「创建获客渠道 → 保存外部渠道 ID → 模拟/真实事件经 integration 回写 → acquisition 侧可见更新」。
-- 网关路由完整；敏感信息不落在 acquisition 的公开响应中。
-- 若提供运营端页面：可完成列表 + 创建/编辑最小表单。
+- 一条**端到端业务主路径**打通：例如「创建获客渠道 → 保存外部渠道 ID → 模拟/真实事件经 integration 回写 → acquisition 侧可见更新」。**已落地**：`POST /api/v1/acquisition/channel-codes` 创建活码；`POST /api/v1/integration/test/acquisition-channel-scan`（测试入口，见 Harness）转发扫码至 `POST /api/v1/acquisition/channel-codes/:id/ingest-scan`；`GET /api/v1/acquisition/channel-codes/:id` 查看 `scanCount`。
+- 网关路由完整；敏感信息不落在 acquisition 的公开响应中。**已落地**：列表/详情/创建响应使用 `toPublicChannel`，**不包含 `configId`**。
+- 若提供运营端页面：可完成列表 + 创建/编辑最小表单。**已落地**：列表 + 新建走 v1 API；**编辑**仍为占位提示（Backlog）。
 
 ### 7.2 E2E 流程 A — 获客主路径（API + 集成）
 
-1. 经网关创建渠道（或活码占位实体），记录返回 ID。
-2. 模拟企业微信侧事件（或调用 integration 的测试入口）携带渠道标识。
-3. 查询 acquisition 侧详情或统计接口，确认关联成功。
-4. **完成判定：** 全链路数据可追溯；重复事件按设计幂等或去重。
+1. 经网关创建渠道（或活码占位实体），记录返回 ID。示例：`POST {GATEWAY}/api/v1/acquisition/channel-codes`，Bearer + JSON `{ "codeName", "channel" }`。
+2. 模拟企业微信侧事件（或调用 integration 的测试入口）携带渠道标识。示例：`POST {GATEWAY}/api/v1/integration/test/acquisition-channel-scan`，body `{ "channelCodeId": <id>, "externalEventId"?: "可选幂等键" }`（路由开关见 [本地启动与验证-Sprint5.md](./harness/本地启动与验证-Sprint5.md)）。
+3. 查询 acquisition 侧详情或统计接口，确认关联成功。示例：`GET {GATEWAY}/api/v1/acquisition/channel-codes/<id>`。
+4. **完成判定：** 全链路数据可追溯；重复事件按设计幂等或去重。**自动化**：`code/e2e/tests/sprint5-acquisition.spec.ts`；命令 `cd code && pnpm test:e2e:sprint5`。
 
 ### 7.3 E2E 流程 B — 运营端列表与创建（浏览器）
 
-1. 登录 `http://localhost:3003`，进入获客相关菜单。
-2. 新建一条渠道并保存；列表中可见；点进详情与 API 一致。
-3. **完成判定：** 无 500；字段与后端 DTO 对齐（见迭代内联调记录）。
+1. 登录 `http://localhost:3003`，进入获客相关菜单（路由 **渠道活码** `/channels`）。
+2. 新建一条渠道并保存；列表中可见；与 `GET /api/v1/acquisition/channel-codes` 字段对齐（`codeName`、`scanCount` 等）。
+3. **完成判定：** 无 500；字段与后端 DTO 对齐。编辑能力见 Sprint5 Harness Backlog。
 
 ---
 
@@ -278,16 +278,18 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` / `test:e2e:sprint4` 说明  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` / `test:e2e:sprint4` / `test:e2e:sprint5` 说明  
 - **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
 - **[harness/Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md)** — Sprint 3（统一消息、幂等经网关）  
 - **[harness/Sprint4-功能开发测试计划.md](./harness/Sprint4-功能开发测试计划.md)** — Sprint 4（分析聚合与看板）  
+- **[harness/Sprint5-功能开发测试计划.md](./harness/Sprint5-功能开发测试计划.md)** — Sprint 5（获客 × 集成）  
 - **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
 - **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸（含企微回调与故障排查）  
 - **[harness/本地启动与验证-Sprint3.md](./harness/本地启动与验证-Sprint3.md)** — Sprint 3 一页纸（消息 API 与 E2E）  
 - **[harness/本地启动与验证-Sprint4.md](./harness/本地启动与验证-Sprint4.md)** — Sprint 4 一页纸（analytics 与运营端）  
+- **[harness/本地启动与验证-Sprint5.md](./harness/本地启动与验证-Sprint5.md)** — Sprint 5 一页纸（获客与 integration 测试入口）  
 
 ---
 
@@ -301,3 +303,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.3 | 2026-04-28 | Sprint 2 收尾：经网关企微回调 GET/POST、Harness 标记 S2 已完成（见 `docs/harness/`） |
 | 1.4 | 2026-04-28 | Sprint 3 收尾：message-service 幂等、`/api/v1/messages`、E2E `test:e2e:sprint3`、Harness S3 文档与总览 |
 | 1.5 | 2026-04-28 | Sprint 4：`daily_stat` 日聚合 Cron + 手动任务、`/api/v1/analytics`、operation 仪表盘、E2E `test:e2e:sprint4`、Harness S4 |
+| 1.6 | 2026-04-28 | Sprint 5：`/api/v1/acquisition/channel-codes*`、integration 测试扫码转发、运营活码页、E2E `test:e2e:sprint5`、Harness S5 |
