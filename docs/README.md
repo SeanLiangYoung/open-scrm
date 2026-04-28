@@ -60,6 +60,7 @@ docs/
 - **[代码现状与文档索引](../code/docs/代码现状与文档索引.md)** — `code/` 运行时事实、端口、测试命令与文档阅读顺序
 - **[可执行迭代计划（含 E2E）](../code/docs/迭代计划-E2E.md)** — Sprint 约定与端到端验证
 - **[Harness 测试节奏](../code/docs/harness/README.md)** — `test:unit`、`test:e2e`、`test:e2e:sprint2`
+- **出海私域（方法论 × 本地化 × AI）**：[设计草案](../code/docs/plans/2026-04-28-outbound-private-domain-localization-design.md) · [实现计划](../code/docs/plans/2026-04-28-outbound-private-domain-implementation-plan.md) · [区域矩阵](../code/docs/facts/outbound-private-domain-region-matrix.md)
 
 ### 模块文档
 
