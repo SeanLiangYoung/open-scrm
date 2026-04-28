@@ -16,7 +16,7 @@
 
 - Read: `code/docs/plans/2026-04-28-outbound-private-domain-localization-design.md`
 
-**Step 1:** 通读设计文档「Epic E1–E6」与开放问题，确认与干系人方向一致（若不一致，先修订设计 md 再编码）。
+**Step 1:** 通读设计文档「Epic E1–E6」与 [`2026-04-28-outbound-private-domain-user-scenarios-and-features.md`](./2026-04-28-outbound-private-domain-user-scenarios-and-features.md)（场景与能力映射），确认与干系人方向一致（若不一致，先修订设计 md 再编码）。
 
 **Step 2:** Commit 仅文档时可用信息性 message（见 Task 5）。
 
