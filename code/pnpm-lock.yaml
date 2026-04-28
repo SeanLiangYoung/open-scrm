@@ -852,6 +852,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@20.19.23)
 
   services/operation-service:
     dependencies:
@@ -2633,7 +2636,7 @@ packages:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 5.4.21(@types/node@18.19.130)
+      vite: 5.4.21(@types/node@20.19.23)
     dev: true
 
   /@vitest/pretty-format@2.1.9:

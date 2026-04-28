@@ -36,6 +36,13 @@ export default defineConfig({
       },
     },
     {
+      name: 'sprint3-messages',
+      testMatch: /sprint3-messages\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
       name: 'sprint1-admin',
       testMatch: /sprint1-admin\.spec\.ts/,
       use: {

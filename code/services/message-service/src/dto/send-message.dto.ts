@@ -24,6 +24,10 @@ export class SendMessageDto {
 
   @Rule(RuleType.any().optional())
   extra?: any;
+
+  /** 可选；与请求头 `Idempotency-Key` 二选一或同时提供（头优先，见 MessageApiController） */
+  @Rule(RuleType.string().max(128).optional())
+  idempotencyKey?: string;
 }
 
 /**

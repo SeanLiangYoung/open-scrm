@@ -144,20 +144,20 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:7000/api/v1/integration/
 ### 5.1 最终效果
 
 - 存在**统一发送模型**：渠道、模板、收件人、**幂等键**、发送状态可查。
-- 至少一种通道落地：**短信**或**邮件**或**文档化 Mock 通道**（开发环境可验证「发送成功/失败」 observable）。
-- **gateway** 暴露发送或查询类 API；与群发任务（operation-service）的对接关系有书面结论（已实现或 backlog）。
+- 至少一种通道落地：**短信**或**邮件**或**文档化 Mock 通道**（开发环境可验证「发送成功/失败」 observable）。**已落地**：`messageType === 2`（站内通知）作为 Mock 通道（无外部 HTTP），详见 [Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md) S3-F5。
+- **gateway** 暴露发送或查询类 API（**已落地**：`POST /api/v1/messages/send`、`GET /api/v1/messages/logs/:id`）。与群发任务（operation-service）的对接：**Backlog**（书面结论见 [Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md) S3-F7）。
 
 ### 5.2 E2E 流程 A — 发送一条消息（API）
 
-1. 启动 message-service、依赖中间件、gateway。
-2. 使用测试模板或 Mock 通道，向本服务经网关发起「发送」请求（路径与 body 以 Swagger 为准），携带幂等键 `idempotency-key: test-sprint3-001`。
-3. 立即重复相同请求。
-4. **完成判定：** 第一次返回成功或明确失败原因；第二次**不产生重复副作用**（日志或数据库唯一约束或返回「重复」业务码）。
+1. 启动 message-service、auth-service、依赖中间件、gateway。
+2. 先 `POST {GATEWAY}/api/v1/auth/login` 取得 `accessToken`；再 `POST {GATEWAY}/api/v1/messages/send`，Header：`Authorization: Bearer <token>`，可选 **`Idempotency-Key`**（与 body 的 `idempotencyKey` 二选一或一致；**头优先**；二者冲突则 400）。Body 示例（Mock 通道）：`messageType: 2`，`targetType` / `targetIds`（**使用幂等键时 `targetIds` 仅 1 个**）、`content`。**仓库用例**：`code/e2e/tests/sprint3-messages.spec.ts`；命令：`cd code && pnpm test:e2e:sprint3`。
+3. 立即重复相同请求（相同 `Idempotency-Key` 与等价 body）。
+4. **完成判定：** 第一次返回成功或明确失败原因；第二次**不产生重复副作用**，响应中带 **`idempotentReplay: true`** 且 **`messageLogId`** 与第一次一致（或依赖 DB 唯一约束 + 服务端重放逻辑）。
 
 ### 5.3 E2E 流程 B — 查询发送状态（API）
 
-1. 用上一流程返回的 `messageId`（或等价 ID）查询状态接口。
-2. **完成判定：** 状态与最终投递结果一致；终态可区分成功/失败/超时。
+1. 用上一流程返回的 **`messageLogId`**（见 `data.details[0].messageLogId` 或幂等重放时的 `data.messageLogId`）调用 **`GET {GATEWAY}/api/v1/messages/logs/:id`**（Bearer 同上）。
+2. **完成判定：** 状态与最终投递结果一致；终态可区分成功/失败（`sendStatus`：0 待发送 / 1 成功 / 2 失败）。
 
 ### 5.4 E2E 流程 C — 与运营端（可选浏览器）
 
@@ -279,12 +279,14 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` 说明  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` 说明  
 - **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
+- **[harness/Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md)** — Sprint 3（统一消息、幂等经网关）  
 - **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
 - **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸（含企微回调与故障排查）  
+- **[harness/本地启动与验证-Sprint3.md](./harness/本地启动与验证-Sprint3.md)** — Sprint 3 一页纸（消息 API 与 E2E）  
 
 ---
 
@@ -296,3 +298,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.1 | 2026-04-18 | 增加 Harness 文档索引与 Sprint 1 落地 |
 | 1.2 | 2026-04-19 | PostgreSQL/Docker 端口说明；Sprint 2 Harness 链接；开发计划链接修正 |
 | 1.3 | 2026-04-28 | Sprint 2 收尾：经网关企微回调 GET/POST、Harness 标记 S2 已完成（见 `docs/harness/`） |
+| 1.4 | 2026-04-28 | Sprint 3 收尾：message-service 幂等、`/api/v1/messages`、E2E `test:e2e:sprint3`、Harness S3 文档与总览 |

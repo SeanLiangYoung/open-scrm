@@ -1,11 +1,17 @@
 import { Provide, Inject, Config } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, In, QueryFailedError } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
 import { MessageLogEntity } from '../entity/message-log.entity';
 import { MessageTemplateService } from './message-template.service';
 import { SendMessageDto, BatchSendMessageDto, SendByTemplateDto } from '../dto/send-message.dto';
+import {
+  normalizeIdempotencyKey,
+  resolveIdempotentReplay,
+  type IdempotentReplayResult,
+  type IdempotentReplaySnapshot,
+} from '../util/message-idempotency.util';
 
 /**
  * 消息发送服务
@@ -28,11 +34,37 @@ export class MessageSendService {
   messageConfig: any;
 
   /**
-   * 发送单条消息
+   * 发送单条消息（可选幂等键：仅支持单 target；同 corp + 键重放已有 message_log 结果）
    */
   async sendMessage(corpId: number, dto: SendMessageDto) {
+    const idemKey = normalizeIdempotencyKey(dto.idempotencyKey);
     const targetIds = Array.isArray(dto.targetIds) ? dto.targetIds : [dto.targetIds];
-    const results = [];
+
+    if (idemKey !== null && targetIds.length !== 1) {
+      throw new Error('使用幂等键时 targetIds 只能包含 1 个接收方');
+    }
+
+    if (idemKey !== null) {
+      const existing = await this.messageLogRepository.findOne({
+        where: { corpId, idempotencyKey: idemKey },
+      });
+      const replay = resolveIdempotentReplay(
+        corpId,
+        idemKey,
+        existing ? this.logEntityToSnapshot(existing) : null
+      );
+      if (replay) {
+        return this.buildIdempotentSendResult(replay, targetIds[0]);
+      }
+    }
+
+    const results: Array<{
+      targetId: number;
+      success: boolean;
+      messageLogId?: number;
+      idempotentReplay?: boolean;
+      error?: string;
+    }> = [];
 
     for (const targetId of targetIds) {
       const log = this.messageLogRepository.create({
@@ -44,26 +76,50 @@ export class MessageSendService {
         content: dto.content,
         extra: dto.extra,
         sendStatus: 0,
+        ...(idemKey !== null ? { idempotencyKey: idemKey } : {}),
       });
 
-      await this.messageLogRepository.save(log);
+      let saved: MessageLogEntity;
+      try {
+        saved = await this.messageLogRepository.save(log);
+      } catch (err) {
+        if (idemKey !== null && this.isUniqueIdempotencyViolation(err)) {
+          const raced = await this.messageLogRepository.findOne({
+            where: { corpId, idempotencyKey: idemKey },
+          });
+          const racedReplay = resolveIdempotentReplay(
+            corpId,
+            idemKey,
+            raced ? this.logEntityToSnapshot(raced) : null
+          );
+          if (racedReplay) {
+            results.push({
+              targetId,
+              success: racedReplay.sendStatus === 1,
+              messageLogId: racedReplay.messageLogId,
+              idempotentReplay: true,
+              ...(racedReplay.sendStatus !== 1 && racedReplay.failReason
+                ? { error: racedReplay.failReason }
+                : {}),
+            });
+            continue;
+          }
+        }
+        throw err;
+      }
 
       try {
-        // 根据消息类型发送
-        await this.doSendMessage(log);
-        
-        log.sendStatus = 1;
-        log.sendTime = new Date();
-        await this.messageLogRepository.save(log);
-
-        results.push({ targetId, success: true });
+        await this.doSendMessage(saved);
+        saved.sendStatus = 1;
+        saved.sendTime = new Date();
+        await this.messageLogRepository.save(saved);
+        results.push({ targetId, success: true, messageLogId: saved.id });
       } catch (error: any) {
-        log.sendStatus = 2;
-        log.failReason = error?.message || 'Unknown error';
-        log.retryCount++;
-        await this.messageLogRepository.save(log);
-
-        results.push({ targetId, success: false, error: error?.message });
+        saved.sendStatus = 2;
+        saved.failReason = error?.message || 'Unknown error';
+        saved.retryCount++;
+        await this.messageLogRepository.save(saved);
+        results.push({ targetId, success: false, messageLogId: saved.id, error: error?.message });
       }
     }
 
@@ -73,6 +129,51 @@ export class MessageSendService {
       failed: results.filter(r => !r.success).length,
       details: results,
     };
+  }
+
+  private logEntityToSnapshot(log: MessageLogEntity): IdempotentReplaySnapshot {
+    return {
+      id: log.id,
+      corpId: log.corpId,
+      sendStatus: log.sendStatus,
+      content: log.content,
+      failReason: log.failReason ?? null,
+      externalId: log.externalId ?? null,
+    };
+  }
+
+  private buildIdempotentSendResult(replay: IdempotentReplayResult, targetId: number) {
+    const ok = replay.sendStatus === 1;
+    const failed = replay.sendStatus === 2;
+    const pending = replay.sendStatus === 0;
+    return {
+      idempotentReplay: true,
+      messageLogId: replay.messageLogId,
+      sendStatus: replay.sendStatus,
+      content: replay.content,
+      failReason: replay.failReason,
+      externalId: replay.externalId,
+      total: 1,
+      success: ok ? 1 : 0,
+      failed: failed ? 1 : 0,
+      pending: pending ? 1 : 0,
+      details: [
+        {
+          targetId,
+          success: ok,
+          messageLogId: replay.messageLogId,
+          idempotentReplay: true,
+        },
+      ],
+    };
+  }
+
+  private isUniqueIdempotencyViolation(err: unknown): boolean {
+    if (!(err instanceof QueryFailedError)) {
+      return false;
+    }
+    const code = (err as QueryFailedError & { driverError?: { code?: string } }).driverError?.code;
+    return code === '23505';
   }
 
   /**

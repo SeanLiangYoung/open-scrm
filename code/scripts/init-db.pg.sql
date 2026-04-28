@@ -277,8 +277,15 @@ CREATE TABLE IF NOT EXISTS message_log (
   fail_reason VARCHAR(500),
   retry_count INTEGER DEFAULT 0,
   external_id VARCHAR(100),
+  idempotency_key VARCHAR(128),
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Sprint 3：幂等发送（旧库升级时补列；新库已在 CREATE 中包含）
+ALTER TABLE message_log ADD COLUMN IF NOT EXISTS idempotency_key VARCHAR(128);
+CREATE UNIQUE INDEX IF NOT EXISTS ux_message_log_corp_idempotency
+  ON message_log (corp_id, idempotency_key)
+  WHERE idempotency_key IS NOT NULL;
 
 -- ========== 集成 ==========
 

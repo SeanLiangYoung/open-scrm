@@ -49,6 +49,10 @@ export class MessageLogEntity {
   @Column({ name: 'external_id', type: 'varchar', length: 100, nullable: true, comment: '第三方消息ID' })
   externalId: string;
 
+  /** Sprint 3：与 corp_id 联合唯一（见 DB 部分唯一索引）；单接收方发送幂等 */
+  @Column({ name: 'idempotency_key', type: 'varchar', length: 128, nullable: true, comment: '幂等键（可选）' })
+  idempotencyKey: string | null;
+
   @CreateDateColumn({ name: 'create_time' })
   createTime: Date;
 }
