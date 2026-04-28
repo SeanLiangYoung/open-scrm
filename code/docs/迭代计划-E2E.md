@@ -278,18 +278,21 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` / `test:e2e:sprint4` / `test:e2e:sprint5` 说明  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` … `test:e2e:sprint5` / `test:e2e:sprint6-official` 说明  
+- **[facts/gateway-routes.md](./facts/gateway-routes.md)** — 网关 `gateway.routes` 与上游端口事实表（Sprint 6）  
 - **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
 - **[harness/Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md)** — Sprint 3（统一消息、幂等经网关）  
 - **[harness/Sprint4-功能开发测试计划.md](./harness/Sprint4-功能开发测试计划.md)** — Sprint 4（分析聚合与看板）  
 - **[harness/Sprint5-功能开发测试计划.md](./harness/Sprint5-功能开发测试计划.md)** — Sprint 5（获客 × 集成）  
+- **[harness/Sprint6-功能开发测试计划.md](./harness/Sprint6-功能开发测试计划.md)** — Sprint 6（质量门禁、官网、E2E 扩展）  
 - **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
 - **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸（含企微回调与故障排查）  
 - **[harness/本地启动与验证-Sprint3.md](./harness/本地启动与验证-Sprint3.md)** — Sprint 3 一页纸（消息 API 与 E2E）  
 - **[harness/本地启动与验证-Sprint4.md](./harness/本地启动与验证-Sprint4.md)** — Sprint 4 一页纸（analytics 与运营端）  
 - **[harness/本地启动与验证-Sprint5.md](./harness/本地启动与验证-Sprint5.md)** — Sprint 5 一页纸（获客与 integration 测试入口）  
+- **[harness/本地启动与验证-Sprint6.md](./harness/本地启动与验证-Sprint6.md)** — Sprint 6 一页纸（官网、全量 E2E、路由表）  
 
 ---
 
@@ -304,3 +307,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.4 | 2026-04-28 | Sprint 3 收尾：message-service 幂等、`/api/v1/messages`、E2E `test:e2e:sprint3`、Harness S3 文档与总览 |
 | 1.5 | 2026-04-28 | Sprint 4：`daily_stat` 日聚合 Cron + 手动任务、`/api/v1/analytics`、operation 仪表盘、E2E `test:e2e:sprint4`、Harness S4 |
 | 1.6 | 2026-04-28 | Sprint 5：`/api/v1/acquisition/channel-codes*`、integration 测试扫码转发、运营活码页、E2E `test:e2e:sprint5`、Harness S5 |
+| 1.7 | 2026-04-28 | Sprint 6：`gateway-routes.md`、运营端新建活码 E2E、`official-website`（:3010）、`sprint6-official`、`run-full-e2e` 三前端、Harness S6 |

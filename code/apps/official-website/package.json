@@ -1,0 +1,20 @@
+{
+  "name": "@scrm/official-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Open SCRM 官网（Sprint 6 最小可运行骨架：首页 + 构建）",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 3010",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 3010"
+  },
+  "dependencies": {
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.4.0"
+  }
+}

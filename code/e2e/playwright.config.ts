@@ -72,5 +72,13 @@ export default defineConfig({
         baseURL: process.env.OPERATION_BASE_URL || 'http://localhost:3003',
       },
     },
+    {
+      name: 'sprint6-official',
+      testMatch: /sprint6-official\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: process.env.OFFICIAL_BASE_URL || 'http://127.0.0.1:3010',
+      },
+    },
   ],
 });

@@ -2,6 +2,8 @@
 
 > 基于Nuxt 4的企业官网，支持SSR/SSG，SEO友好
 
+> **仓库内可运行骨架（Sprint 6）**：Monorepo 内见 `code/apps/official-website`（Vite + Vue 3，`pnpm dev` 默认 **3010**）；以下为中长期产品/技术规划，与当前 `code/apps` 工程可并存演进。
+
 ---
 
 ## 📋 项目概览

@@ -76,6 +76,22 @@ importers:
         specifier: ^2.0.0
         version: 2.2.12(typescript@5.9.3)
 
+  apps/official-website:
+    dependencies:
+      vue:
+        specifier: ^3.4.0
+        version: 3.5.29(typescript@5.9.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^5.0.0
+        version: 5.2.4(vite@5.4.21)(vue@3.5.29)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.9.3
+      vite:
+        specifier: ^5.4.0
+        version: 5.4.21(@types/node@20.19.23)
+
   apps/operation-platform:
     dependencies:
       '@element-plus/icons-vue':
