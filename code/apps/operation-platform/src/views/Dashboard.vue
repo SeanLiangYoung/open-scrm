@@ -17,6 +17,27 @@
     </el-row>
 
     <el-row :gutter="20" style="margin-top:20px">
+      <el-col :span="24">
+        <el-card shadow="never">
+          <template #header>
+            <span>聚合看板（analytics-service / daily_stat）</span>
+            <span style="font-size:12px;color:#909399;margin-left:8px">与「客户总数」等 OLTP 卡片独立；先跑日聚合再读当日快照</span>
+          </template>
+          <el-descriptions v-if="analyticsOverview" :column="4" border size="small">
+            <el-descriptions-item label="统计日">{{ analyticsDate }}</el-descriptions-item>
+            <el-descriptions-item label="累计客户（日表）">{{ analyticsOverview.totalCustomerCount }}</el-descriptions-item>
+            <el-descriptions-item label="活跃客户（日表）">{{ analyticsOverview.activeCustomerCount }}</el-descriptions-item>
+            <el-descriptions-item label="当日发送消息">{{ analyticsOverview.messageSendCount }}</el-descriptions-item>
+            <el-descriptions-item label="SOP 执行（当日）">{{ analyticsOverview.sopExecuteCount }}</el-descriptions-item>
+            <el-descriptions-item label="消息成功率%">{{ analyticsOverview.messageSuccessRate }}</el-descriptions-item>
+            <el-descriptions-item label="SOP 成功率%">{{ analyticsOverview.sopSuccessRate }}</el-descriptions-item>
+          </el-descriptions>
+          <div v-else style="color:#c0c4cc;font-size:13px">暂无聚合数据（可检查网关与 analytics-service）</div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <el-row :gutter="20" style="margin-top:20px">
       <el-col :span="12">
         <el-card><template #header>客户来源分布</template>
           <v-chart :option="sourceOption" style="height:300px" autoresize />
@@ -95,6 +116,25 @@ const sopData = ref<any[]>([]);
 const tagStats = ref<any[]>([]);
 const tagTypeMap: Record<number, string> = { 1: '来源', 2: '行为', 3: '兴趣', 4: '价值' };
 
+/** 本地日历日 YYYY-MM-DD（与 analytics 聚合 stat_date 对齐） */
+function localYmd(): string {
+  const t = new Date();
+  const y = t.getFullYear();
+  const m = String(t.getMonth() + 1).padStart(2, '0');
+  const d = String(t.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+const analyticsDate = ref(localYmd());
+const analyticsOverview = ref<{
+  totalCustomerCount: number;
+  activeCustomerCount: number;
+  messageSendCount: number;
+  messageSuccessRate: number;
+  sopExecuteCount: number;
+  sopSuccessRate: number;
+} | null>(null);
+
 async function loadStats() {
   try {
     const [custRes, sopRes, execRes, tagRes] = await Promise.allSettled([
@@ -169,7 +209,38 @@ async function loadCharts() {
   } catch {}
 }
 
-onMounted(() => { loadStats(); loadCharts(); });
+/** Sprint 4：拉取经网关的 daily_stat 概览（先触发当日聚合，再读 overview） */
+async function loadAnalyticsOverview() {
+  const day = localYmd();
+  analyticsDate.value = day;
+  try {
+    await api.post('/api/v1/analytics/jobs/aggregate-daily', { statDate: day });
+  } catch {
+    /* 聚合失败时仍尝试读已有日表 */
+  }
+  try {
+    const res = await api.get('/api/v1/analytics/overview', { params: { date: day } });
+    const d = res.data as Record<string, unknown>;
+    if (d && typeof d.totalCustomerCount === 'number') {
+      analyticsOverview.value = {
+        totalCustomerCount: Number(d.totalCustomerCount),
+        activeCustomerCount: Number(d.activeCustomerCount),
+        messageSendCount: Number(d.messageSendCount),
+        messageSuccessRate: Number(d.messageSuccessRate),
+        sopExecuteCount: Number(d.sopExecuteCount),
+        sopSuccessRate: Number(d.sopSuccessRate),
+      };
+    }
+  } catch {
+    analyticsOverview.value = null;
+  }
+}
+
+onMounted(() => {
+  loadStats();
+  loadCharts();
+  loadAnalyticsOverview();
+});
 </script>
 
 <style scoped>

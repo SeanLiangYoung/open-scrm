@@ -170,29 +170,28 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:7000/api/v1/integration/
 
 ### 6.1 最终效果
 
-- 选定 **1～2 个核心指标**（如客户总数、SOP 执行次数），有**聚合表或汇总表**及迁移脚本。
-- **定时任务**按约定频率写入聚合结果；失败可追踪（日志或告警占位）。
-- **REST 查询 API**（支持时间范围）经网关可访问。
-- **operation-platform** 至少一页（通常为仪表盘）展示真实聚合数据，与 API 抽样一致。
+- 选定 **1～2 个核心指标**（如客户总数、SOP 执行次数），有**聚合表或汇总表**及迁移脚本。**已落地**：`daily_stat`（`init-db.pg.sql` + 唯一索引 `ux_daily_stat_corp_date`）；核心指标含**累计客户**、**SOP 执行次数**（见 `DailyAggregationService`）。
+- **定时任务**按约定频率写入聚合结果；失败可追踪（日志或告警占位）。**已落地**：`DailyStatAggregationJob`（每日 **03:00** 聚合上一自然日）；手动 `POST /api/v1/analytics/jobs/aggregate-daily`。
+- **REST 查询 API**（支持时间范围）经网关可访问。**已落地**：`GET /api/v1/analytics/summary?startDate=&endDate=`、`GET /api/v1/analytics/overview?date=` 等（Bearer 必带）。
+- **operation-platform** 至少一页（通常为仪表盘）展示真实聚合数据，与 API 抽样一致。**已落地**：`Dashboard.vue`「聚合看板」区块；§6.3 建议人工对照同参 `overview`。
 
 ### 6.2 E2E 流程 A — 跑批后数据一致（API）
 
-1. 在测试库插入或制造已知数据（如固定数量的客户或 SOP 执行记录）。
-2. 手动触发或等待定时任务执行一次。
+1. 在测试库插入或制造已知数据（如固定数量的客户或 SOP 执行记录）。**开发种子**：`init-db.pg.sql` 中 `customer` 8 条（`corp_id=1`）。
+2. 手动触发或等待定时任务执行一次。推荐：`POST {GATEWAY}/api/v1/analytics/jobs/aggregate-daily`，body `{"statDate":"YYYY-MM-DD"}`（省略则默认当天）。
 3. 调用聚合查询 API，时间范围覆盖测试数据。
 
 ```bash
-# 示例：具体 path/query 以实现为准
-curl -s "http://localhost:7000/api/v1/analytics/summary?from=2026-04-01&to=2026-04-30" \
+curl -s "http://127.0.0.1:17000/api/v1/analytics/summary?startDate=2026-04-28&endDate=2026-04-28" \
   -H "Authorization: Bearer <token>"
 ```
 
-4. **完成判定：** 返回数值与 SQL 独立统计结果一致（允许文档说明的舍入规则）。
+4. **完成判定：** 返回数值与 SQL 独立统计结果一致（允许文档说明的舍入规则）。**自动化**：`code/e2e/tests/sprint4-analytics.spec.ts`（聚合后 `overview.totalCustomerCount === 8`）。
 
 ### 6.3 E2E 流程 B — 看板展示（浏览器）
 
 1. 登录 `http://localhost:3003`，打开**数据看板/仪表盘**（以路由为准）。
-2. **完成判定：** 卡片或图表数字与 **E2E 流程 A** 同参下 API 返回一致；刷新后数据稳定（无随机数）。
+2. **完成判定：** 「聚合看板（analytics-service / daily_stat）」与 **E2E 流程 A** 同参下 `GET /api/v1/analytics/overview?date=当日` 一致；刷新后数据稳定（无随机数）。**说明**：当前仓库以人工对照为主；全链路 Playwright UI 可放入 Sprint 6 扩展。
 
 ---
 
@@ -279,14 +278,16 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` 说明  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` / `test:e2e:sprint3` / `test:e2e:sprint4` 说明  
 - **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–6 完成状态  
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
 - **[harness/Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md)** — Sprint 3（统一消息、幂等经网关）  
+- **[harness/Sprint4-功能开发测试计划.md](./harness/Sprint4-功能开发测试计划.md)** — Sprint 4（分析聚合与看板）  
 - **[harness/本地启动与验证-Sprint1.md](./harness/本地启动与验证-Sprint1.md)** — Sprint 1 一页纸  
 - **[harness/本地启动与验证-Sprint2.md](./harness/本地启动与验证-Sprint2.md)** — Sprint 2 一页纸（含企微回调与故障排查）  
 - **[harness/本地启动与验证-Sprint3.md](./harness/本地启动与验证-Sprint3.md)** — Sprint 3 一页纸（消息 API 与 E2E）  
+- **[harness/本地启动与验证-Sprint4.md](./harness/本地启动与验证-Sprint4.md)** — Sprint 4 一页纸（analytics 与运营端）  
 
 ---
 
@@ -299,3 +300,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.2 | 2026-04-19 | PostgreSQL/Docker 端口说明；Sprint 2 Harness 链接；开发计划链接修正 |
 | 1.3 | 2026-04-28 | Sprint 2 收尾：经网关企微回调 GET/POST、Harness 标记 S2 已完成（见 `docs/harness/`） |
 | 1.4 | 2026-04-28 | Sprint 3 收尾：message-service 幂等、`/api/v1/messages`、E2E `test:e2e:sprint3`、Harness S3 文档与总览 |
+| 1.5 | 2026-04-28 | Sprint 4：`daily_stat` 日聚合 Cron + 手动任务、`/api/v1/analytics`、operation 仪表盘、E2E `test:e2e:sprint4`、Harness S4 |

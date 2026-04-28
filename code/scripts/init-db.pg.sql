@@ -444,6 +444,8 @@ CREATE TABLE IF NOT EXISTS daily_stat (
   update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS ux_daily_stat_corp_date ON daily_stat (corp_id, stat_date);
+
 CREATE TABLE IF NOT EXISTS channel_stat (
   id BIGSERIAL PRIMARY KEY,
   corp_id BIGINT NOT NULL,

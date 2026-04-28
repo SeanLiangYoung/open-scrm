@@ -44,7 +44,7 @@
 
 #### 获取概览数据
 ```http
-GET /api/analytics/overview?date=2025-10-28
+GET /api/v1/analytics/overview?date=2025-10-28
 ```
 
 响应示例：
@@ -66,9 +66,24 @@ GET /api/analytics/overview?date=2025-10-28
 }
 ```
 
+#### 区间汇总（Sprint 4）
+```http
+GET /api/v1/analytics/summary?startDate=2025-10-01&endDate=2025-10-31
+```
+返回 `additive`（区间内可加指标之和）、`snapshotAtEnd`（最后一日快照）、`rates`（消息/SOP 成功率，基于 additive）。
+
+#### 手动触发日聚合（当前登录企业）
+```http
+POST /api/v1/analytics/jobs/aggregate-daily
+Content-Type: application/json
+
+{"statDate":"2025-10-28"}
+```
+省略 `statDate` 时默认聚合**当天**。定时任务每日 **03:00** 聚合**上一自然日**（见 `DailyStatAggregationJob`）。
+
 #### 获取趋势数据
 ```http
-GET /api/analytics/trend?days=7
+GET /api/v1/analytics/trend?days=7
 ```
 
 响应示例：
@@ -89,19 +104,19 @@ GET /api/analytics/trend?days=7
 
 #### 查询每日统计
 ```http
-GET /api/analytics/daily?startDate=2025-10-01&endDate=2025-10-31
+GET /api/v1/analytics/daily?startDate=2025-10-01&endDate=2025-10-31
 ```
 
 ### 渠道统计
 
 #### 查询渠道统计
 ```http
-GET /api/analytics/channel?startDate=2025-10-01&endDate=2025-10-31&channel=douyin
+GET /api/v1/analytics/channel?startDate=2025-10-01&endDate=2025-10-31&channel=douyin
 ```
 
 #### 获取渠道排行榜
 ```http
-GET /api/analytics/channel/ranking?startDate=2025-10-01&endDate=2025-10-31
+GET /api/v1/analytics/channel/ranking?startDate=2025-10-01&endDate=2025-10-31
 ```
 
 响应示例：
@@ -129,12 +144,12 @@ GET /api/analytics/channel/ranking?startDate=2025-10-01&endDate=2025-10-31
 
 #### 查询员工统计
 ```http
-GET /api/analytics/staff?startDate=2025-10-01&endDate=2025-10-31&staffId=123&page=1&pageSize=20
+GET /api/v1/analytics/staff?startDate=2025-10-01&endDate=2025-10-31&staffId=123&page=1&pageSize=20
 ```
 
 #### 获取员工排行榜
 ```http
-GET /api/analytics/staff/ranking?startDate=2025-10-01&endDate=2025-10-31
+GET /api/v1/analytics/staff/ranking?startDate=2025-10-01&endDate=2025-10-31
 ```
 
 ## 环境配置

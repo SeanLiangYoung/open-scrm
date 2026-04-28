@@ -277,6 +277,9 @@ importers:
       '@midwayjs/core':
         specifier: ^3.20.0
         version: 3.20.11
+      '@midwayjs/cron':
+        specifier: ^3.20.0
+        version: 3.20.24
       '@midwayjs/decorator':
         specifier: ^3.20.0
         version: 3.20.11
@@ -335,6 +338,9 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@20.19.23)
 
   services/asset-service:
     dependencies:
@@ -1583,6 +1589,13 @@ packages:
       reflect-metadata: 0.2.2
     dev: false
 
+  /@midwayjs/cron@3.20.24:
+    resolution: {integrity: sha512-L4xTTxTUNLujilJnscA7DWSSz1UeA7snjVnTI11jAXYiD7lJPSOVh0mV6yH/VA+ZtLbVqWCd0mrvNwjS4tpizQ==}
+    engines: {node: '>=12'}
+    dependencies:
+      cron: 3.5.0
+    dev: false
+
   /@midwayjs/debugger@1.0.9:
     resolution: {integrity: sha512-weDe6otEd75wxndIYRt5eKkhrI/e14leVn1ctwE1nXrxt0EVGda/ZTfMDB3TkF3ogwYJYoDQxUBiA9TUY5qgQQ==}
     engines: {node: '>=10.3.0'}
@@ -2246,6 +2259,10 @@ packages:
     resolution: {integrity: sha512-gIW7lQLZbue7lRSWEFql49QJJWThrTFFeIMJdp3eH4tKoxm1OvEPg02rm4wCCSHS0cL3/Fizimb35b7k8atwsQ==}
     dev: false
 
+  /@types/luxon@3.4.2:
+    resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
+    dev: false
+
   /@types/mime-types@2.1.4:
     resolution: {integrity: sha512-lfU4b34HOri+kAY5UheuFMWPDOI+OPceBSHZKp69gEyTL/mmJ4cnU6Y/rlme3UL3GyOn6Y42hyIEw0/q8sWx5w==}
     dev: true
@@ -2636,7 +2653,7 @@ packages:
       '@vitest/spy': 2.1.9
       estree-walker: 3.0.3
       magic-string: 0.30.21
-      vite: 5.4.21(@types/node@20.19.23)
+      vite: 5.4.21(@types/node@18.19.130)
     dev: true
 
   /@vitest/pretty-format@2.1.9:
@@ -3370,6 +3387,13 @@ packages:
     engines: {node: '>=12.0.0'}
     dependencies:
       luxon: 3.7.2
+    dev: false
+
+  /cron@3.5.0:
+    resolution: {integrity: sha512-0eYZqCnapmxYcV06uktql93wNWdlTmmBFP2iYz+JPVcQqlyFYcn1lFuIk4R54pkOmE7mcldTAPZv6X5XA4Q46A==}
+    dependencies:
+      '@types/luxon': 3.4.2
+      luxon: 3.5.0
     dev: false
 
   /cross-env@7.0.3:
@@ -4803,6 +4827,11 @@ packages:
 
   /lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+    dev: false
+
+  /luxon@3.5.0:
+    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
+    engines: {node: '>=12'}
     dev: false
 
   /luxon@3.7.2:

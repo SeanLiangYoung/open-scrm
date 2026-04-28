@@ -7,36 +7,38 @@
     "dev": "cross-env NODE_ENV=local mw dev",
     "start": "cross-env NODE_ENV=production node ./bootstrap.js",
     "build": "mw build",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "vitest run"
   },
   "dependencies": {
+    "@midwayjs/cron": "^3.20.0",
+    "@midwayjs/axios": "^3.20.0",
     "@midwayjs/bootstrap": "^3.20.0",
     "@midwayjs/core": "^3.20.0",
     "@midwayjs/decorator": "^3.20.0",
     "@midwayjs/info": "^3.20.0",
     "@midwayjs/koa": "^3.20.0",
     "@midwayjs/logger": "^3.4.0",
+    "@midwayjs/redis": "^3.20.0",
     "@midwayjs/typeorm": "^3.20.0",
     "@midwayjs/validate": "^3.20.0",
-    "@midwayjs/redis": "^3.20.0",
-    "@midwayjs/axios": "^3.20.0",
+    "@scrm/server-common": "workspace:*",
+    "@scrm/shared-constants": "workspace:*",
     "@scrm/shared-types": "workspace:*",
     "@scrm/shared-utils": "workspace:*",
-    "@scrm/shared-constants": "workspace:*",
-    "@scrm/server-common": "workspace:*",
-    "typeorm": "^0.3.20",
+    "dayjs": "^1.11.10",
     "pg": "^8.13.1",
-    "dayjs": "^1.11.10"
+    "typeorm": "^0.3.20"
   },
   "devDependencies": {
     "@midwayjs/cli": "^2.0.0",
     "@midwayjs/mock": "^3.20.0",
     "@types/node": "^20.0.0",
     "cross-env": "^7.0.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^2.1.0"
   },
   "engines": {
     "node": ">=16.0.0"
   }
 }
-

@@ -41,3 +41,9 @@ export class OverviewStatDto {
   date?: string;
 }
 
+/** 手动触发日聚合（仅当前登录企业） */
+export class AggregateDailyDto {
+  @Rule(RuleType.string().pattern(/^\d{4}-\d{2}-\d{2}$/).optional())
+  statDate?: string;
+}
+

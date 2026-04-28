@@ -5,6 +5,7 @@ import * as info from '@midwayjs/info';
 import * as typeorm from '@midwayjs/typeorm';
 import * as redis from '@midwayjs/redis';
 import * as axios from '@midwayjs/axios';
+import * as cron from '@midwayjs/cron';
 import { join } from 'path';
 
 @Configuration({
@@ -15,6 +16,7 @@ import { join } from 'path';
     typeorm,
     redis,
     axios,
+    cron,
   ],
   importConfigs: [join(__dirname, './config')],
 })
