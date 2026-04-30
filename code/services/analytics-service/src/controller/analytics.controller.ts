@@ -14,6 +14,7 @@ import {
   OverviewStatDto,
   AggregateDailyDto,
 } from '../dto/stat-query.dto';
+import { computeAttributionGapMetrics } from '../util/funnel-gap.util';
 
 /** 经网关统一前缀 `/api/v1/analytics/*`（与 gateway-service 配置一致） */
 @Controller('/api/v1/analytics')
@@ -32,6 +33,28 @@ export class AnalyticsController {
 
   @Inject()
   dailyAggregationService!: DailyAggregationService;
+
+  /**
+   * Sprint 9：归因缺口占位（固定示例输入 + 纯函数口径）；后续替换为 OLTP 查询。
+   */
+  @Get('/funnel-gap-placeholder')
+  async funnelGapPlaceholder() {
+    const { corpId } = getTenantContext(this.ctx);
+    const metrics = computeAttributionGapMetrics({
+      sendsTotal: 10,
+      sendsWithTouchHint: 8,
+      customersTotal: 100,
+      customersWithAttribution: 90,
+    });
+    return {
+      success: true,
+      data: {
+        corpId,
+        ...metrics,
+        note: 'Phase C+ 占位：非真实 message_log / customer 聚合',
+      },
+    };
+  }
 
   @Get('/overview')
   @Validate()
