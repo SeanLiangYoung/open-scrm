@@ -232,8 +232,24 @@ evaluateOutboundSendPolicy(input: {
 cd code
 pnpm test:unit
 pnpm type-check
-pnpm test:e2e:sprint8   # 扩展后或改用 sprint9 脚本
+pnpm test:e2e:sprint9    # RegionPack 频控 + 扫码归因 + funnel-gap 占位（需栈齐）
+pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 ```
+
+---
+
+## 执行状态（2026-04-28 收口）
+
+| Task | 状态 |
+|------|------|
+| 0 契约文档 | ✅ `docs/facts/attribution-identity-keys-v0.1.md`、`attribution-event-taxonomy-v0.1.md` |
+| 1–3 RegionPack + 纯函数 + Redis 状态 | ✅ `message-service` |
+| 4 发送路径策略闸门 | ✅ `MessageApiController` + E2E `sprint9-sea-policy` |
+| 5 模板 extra 约定 | ✅ `docs/facts/message-template-extra-locale-convention.md` |
+| 6 Harness | ✅ `docs/harness/本地启动与验证-Sprint9.md`、`README`、迭代总览 S9 行 |
+| 7 扫码归因 MVP | ✅ `channel_scan_touch` + acquisition API + E2E `sprint9-acquisition` |
+| 8 COD 占位 | ✅ `docs/plans/2026-04-28-cod-light-loop-states.md` |
+| 9 漏斗缺口占位 | ✅ `computeAttributionGapMetrics` + `GET .../funnel-gap-placeholder` + `funnel-metrics-v0.1.md` + E2E `sprint9-funnel-gap` |
 
 ---
 
@@ -242,3 +258,4 @@ pnpm test:e2e:sprint8   # 扩展后或改用 sprint9 脚本
 | 日期 | 说明 |
 |------|------|
 | 2026-04-28 | 初版：从 B主C辅设计拆为可执行 Task；与现有 message / consent / RegionPack 对齐 |
+| 2026-04-28 | 收口：Task 0–9 落地；`pnpm test:e2e:sprint9`、Harness Sprint9、实现状态表 |

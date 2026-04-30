@@ -17,11 +17,12 @@
 | [本地启动与验证-Sprint5.md](./本地启动与验证-Sprint5.md) | Sprint 5：获客 API、integration 测试入口、E2E |
 | [本地启动与验证-Sprint6.md](./本地启动与验证-Sprint6.md) | Sprint 6：官网 dev/build、全量 E2E、路由表对照 |
 | [本地启动与验证-Sprint8.md](./本地启动与验证-Sprint8.md) | Sprint 8：Consent 闸门、`messageType:5` Mock、`pnpm test:e2e:sprint8` |
-| [迭代进度总览.md](./迭代进度总览.md) | Sprint 1–8 状态与下一阶段（S7/S8）摘要；权威见 [迭代计划-E2E §2.5](../迭代计划-E2E.md#next-sprints-s7-s8) |
+| [本地启动与验证-Sprint9.md](./本地启动与验证-Sprint9.md) | Sprint 9：RegionPack 营销频控/静默、`channel_scan_touch`、analytics 漏斗占位、`pnpm test:e2e:sprint9` |
+| [迭代进度总览.md](./迭代进度总览.md) | Sprint 1–9 状态与下一阶段摘要；权威见 [迭代计划-E2E §2.5](../迭代计划-E2E.md#next-sprints-s7-s8) |
 
 ## 命令速查（在 `code/` 下）
 
-- **单元测试**：`pnpm test:unit`（Vitest：`shared-utils`、`gateway-service`、`auth-service`、`integration-service`、`message-service`、`analytics-service`、`operation-service`）
+- **单元测试**：`pnpm test:unit`（Vitest：`shared-utils`、`gateway-service`、`auth-service`、`integration-service`、`message-service`、`analytics-service`、`operation-service`、`acquisition-service`）
 - **端到端**：`pnpm test:e2e`（Playwright，需先启动网关与各服务，见本地启动文档）
 - **Sprint 2 仅 API**：`pnpm test:e2e:sprint2`（无需前端，默认网关 `http://127.0.0.1:17000`）
 - **Sprint 3 仅 API**：`pnpm test:e2e:sprint3`（需 gateway + auth + message + DB；见 [本地启动与验证-Sprint3.md](./本地启动与验证-Sprint3.md)）
@@ -29,6 +30,7 @@
 - **Sprint 5 仅 API**：`pnpm test:e2e:sprint5`（需 gateway + auth + acquisition + integration + Redis + DB；见 [本地启动与验证-Sprint5.md](./本地启动与验证-Sprint5.md)）
 - **Sprint 6 仅官网 E2E**：`pnpm test:e2e:sprint6-official`（需已启动 `official-website`；见 [本地启动与验证-Sprint6.md](./本地启动与验证-Sprint6.md)）
 - **Sprint 8 仅 API**：`pnpm test:e2e:sprint8`（需 gateway + auth + message + DB 含 `consent_record`；见 [本地启动与验证-Sprint8.md](./本地启动与验证-Sprint8.md)）
+- **Sprint 9 仅 API**：`pnpm test:e2e:sprint9`（需 gateway + auth + message + redis + acquisition + integration + analytics + DB 含 `channel_scan_touch`；见 [本地启动与验证-Sprint9.md](./本地启动与验证-Sprint9.md)）
 - **全量门禁**：`pnpm test`（含单元测试 + build + type-check + lint）
 
 E2E 包位置：`code/e2e/`（`@scrm/e2e`）。
