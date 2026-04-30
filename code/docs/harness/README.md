@@ -16,7 +16,7 @@
 | [本地启动与验证-Sprint4.md](./本地启动与验证-Sprint4.md) | Sprint 4：analytics 聚合、summary、运营端对照 |
 | [本地启动与验证-Sprint5.md](./本地启动与验证-Sprint5.md) | Sprint 5：获客 API、integration 测试入口、E2E |
 | [本地启动与验证-Sprint6.md](./本地启动与验证-Sprint6.md) | Sprint 6：官网 dev/build、全量 E2E、路由表对照 |
-| [迭代进度总览.md](./迭代进度总览.md) | Sprint 1–6 状态与下一步 |
+| [迭代进度总览.md](./迭代进度总览.md) | Sprint 1–8 状态与下一阶段（S7/S8）摘要；权威见 [迭代计划-E2E §2.5](../迭代计划-E2E.md#next-sprints-s7-s8) |
 
 ## 命令速查（在 `code/` 下）
 
