@@ -32,6 +32,10 @@ export class SendMessageDto {
   /** 为 marketing 时，对客户类发送走 consent_record 闸门（Sprint 8） */
   @Rule(RuleType.string().valid('transactional', 'marketing').optional())
   consentPurpose?: 'transactional' | 'marketing';
+
+  /** 可选；缺省为 `th-bangkok`（开发期约定）。与 RegionPack 策略（静默/日频控）绑定 */
+  @Rule(RuleType.string().max(64).optional())
+  regionPackId?: string;
 }
 
 /**
