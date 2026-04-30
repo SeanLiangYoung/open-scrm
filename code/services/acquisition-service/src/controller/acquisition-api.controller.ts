@@ -60,15 +60,22 @@ export class AcquisitionApiController {
    * 模拟「企微/集成侧」扫码回写（Sprint 5）；生产应由真实回调链路调用等价逻辑。
    * 支持 `externalEventId` 幂等：相同 eventId 24h 内仅生效一次。
    */
+  /** 最近一次带归因字段的扫码占位记录（无则 data 为 null） */
+  @Get('/channel-codes/:id/scan-touches/latest')
+  async latestScanTouch(@Param('id') id: string) {
+    const { corpId } = getTenantContext(this.ctx);
+    const row = await this.channelCodeService.getLatestScanTouch(corpId, parseInt(id, 10));
+    return {
+      success: true,
+      data: row,
+    };
+  }
+
   @Post('/channel-codes/:id/ingest-scan')
   @Validate()
   async ingestScan(@Param('id') id: string, @Body() dto: IngestChannelScanDto) {
     const { corpId } = getTenantContext(this.ctx);
-    const data = await this.channelCodeService.recordScanEvent(
-      corpId,
-      parseInt(id, 10),
-      dto.externalEventId
-    );
+    const data = await this.channelCodeService.recordScanEvent(corpId, parseInt(id, 10), dto);
     return {
       success: true,
       data,

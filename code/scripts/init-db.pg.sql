@@ -196,6 +196,20 @@ CREATE TABLE IF NOT EXISTS channel_code (
 );
 CREATE INDEX IF NOT EXISTS idx_channel_code_corp ON channel_code (corp_id);
 
+-- Sprint 9：扫码归因占位（与 docs/facts/attribution-identity-keys-v0.1 对齐）
+CREATE TABLE IF NOT EXISTS channel_scan_touch (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  channel_code_id INT NOT NULL,
+  utm_campaign VARCHAR(255),
+  creative_id VARCHAR(128),
+  region_pack_id VARCHAR(64),
+  payload JSONB,
+  create_time TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_channel_scan_touch_code_time
+  ON channel_scan_touch (corp_id, channel_code_id, create_time DESC);
+
 CREATE TABLE IF NOT EXISTS platform_account (
   id SERIAL PRIMARY KEY,
   corp_id BIGINT NOT NULL,

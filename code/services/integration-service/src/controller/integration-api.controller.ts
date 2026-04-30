@@ -204,7 +204,14 @@ export class IntegrationApiController {
     const url = `${base.replace(/\/$/, '')}/api/v1/acquisition/channel-codes/${body.channelCodeId}/ingest-scan`;
     const res = await this.httpService.post(
       url,
-      { externalEventId: body.externalEventId },
+      {
+        externalEventId: body.externalEventId,
+        utm_campaign: body.utm_campaign,
+        creative_id: body.creative_id,
+        region_pack_id: body.region_pack_id,
+        utm_source: body.utm_source,
+        utm_medium: body.utm_medium,
+      },
       {
         headers: {
           authorization: auth,

@@ -5,7 +5,9 @@ import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
 import { RedisService } from '@midwayjs/redis';
 import { ChannelCodeEntity } from '../entity/channel-code.entity';
-import { CreateChannelCodeDto, QueryChannelCodeDto } from '../dto/channel-code.dto';
+import { ChannelScanTouchEntity } from '../entity/channel-scan-touch.entity';
+import { CreateChannelCodeDto, QueryChannelCodeDto, IngestChannelScanDto } from '../dto/channel-code.dto';
+import { hasAttributionFields } from '../util/channel-scan-touch-fields.util';
 import * as QRCode from 'qrcode';
 
 /** 对外 JSON：不包含企微 configId 等敏感字段 */
@@ -18,6 +20,9 @@ export class ChannelCodeService {
 
   @InjectEntityModel(ChannelCodeEntity)
   codeRepository!: Repository<ChannelCodeEntity>;
+
+  @InjectEntityModel(ChannelScanTouchEntity)
+  scanTouchRepository!: Repository<ChannelScanTouchEntity>;
 
   @Inject()
   httpService!: HttpService;
@@ -52,12 +57,14 @@ export class ChannelCodeService {
 
   /**
    * 扫码 +1；若提供 externalEventId 且 Redis 已存在键则返回 replayed=true 不再自增。
+   * 可选归因字段写入 `channel_scan_touch`（失败不影响 scan_count）。
    */
   async recordScanEvent(
     corpId: number,
     id: number,
-    externalEventId?: string
+    dto: IngestChannelScanDto = {}
   ): Promise<{ scanCount: number; replayed: boolean }> {
+    const externalEventId = dto.externalEventId;
     const code = await this.getById(corpId, id);
     if (!code) {
       throw new Error('活码不存在');
@@ -73,7 +80,37 @@ export class ChannelCodeService {
     }
     code.scanCount = (code.scanCount || 0) + 1;
     await this.codeRepository.save(code);
+
+    if (hasAttributionFields(dto)) {
+      try {
+        const payload: Record<string, unknown> = {};
+        if (dto.utm_source) payload.utm_source = dto.utm_source;
+        if (dto.utm_medium) payload.utm_medium = dto.utm_medium;
+        const row = this.scanTouchRepository.create({
+          corpId,
+          channelCodeId: id,
+          utmCampaign: dto.utm_campaign ?? null,
+          creativeId: dto.creative_id ?? null,
+          regionPackId: dto.region_pack_id ?? null,
+          payload: Object.keys(payload).length ? payload : null,
+        });
+        await this.scanTouchRepository.save(row);
+      } catch (e) {
+        console.error('channel_scan_touch 写入失败（已计入 scan）:', e);
+      }
+    }
+
     return { scanCount: code.scanCount, replayed: false };
+  }
+
+  async getLatestScanTouch(
+    corpId: number,
+    channelCodeId: number
+  ): Promise<ChannelScanTouchEntity | null> {
+    return this.scanTouchRepository.findOne({
+      where: { corpId, channelCodeId },
+      order: { createTime: 'DESC' },
+    });
   }
 
   async createChannelCode(corpId: number, dto: CreateChannelCodeDto): Promise<ChannelCodeEntity> {

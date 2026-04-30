@@ -7,4 +7,19 @@ export class AcquisitionChannelScanTestDto {
 
   @Rule(RuleType.string().max(128).optional())
   externalEventId?: string;
+
+  @Rule(RuleType.string().max(255).optional())
+  utm_campaign?: string;
+
+  @Rule(RuleType.string().max(128).optional())
+  creative_id?: string;
+
+  @Rule(RuleType.string().max(64).optional())
+  region_pack_id?: string;
+
+  @Rule(RuleType.string().max(64).optional())
+  utm_source?: string;
+
+  @Rule(RuleType.string().max(64).optional())
+  utm_medium?: string;
 }
