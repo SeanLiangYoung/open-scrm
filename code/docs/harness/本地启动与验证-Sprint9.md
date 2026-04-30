@@ -27,7 +27,7 @@ export GATEWAY_URL=http://127.0.0.1:17000   # 按实际调整
 pnpm test:e2e:sprint9
 ```
 
-脚本：`e2e/run-sprint9-api.sh`（先 `curl` `/health`，再跑 `sprint9-sea-policy`、`sprint9-acquisition`、`sprint9-funnel-gap`）。
+脚本：`e2e/run-sprint9-api.sh`（先 `curl` `/health`，再跑 `sprint9-sea-policy`、`sprint9-acquisition`、`sprint9-funnel-gap`、`sprint9-cod-mock`）。
 
 ## 手工抽查
 

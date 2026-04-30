@@ -232,9 +232,30 @@ evaluateOutboundSendPolicy(input: {
 cd code
 pnpm test:unit
 pnpm type-check
-pnpm test:e2e:sprint9    # RegionPack 频控 + 扫码归因 + funnel-gap 占位（需栈齐）
+pnpm test:e2e:sprint9    # 见下表：sea-policy + acquisition + funnel OLTP + cod-mock（需栈齐）
 pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 ```
+
+---
+
+## 功能清单与 E2E 对标（Sprint 9）
+
+Playwright 工程：`code/e2e/playwright.config.ts`。聚合脚本：`pnpm test:e2e:sprint9` → `e2e/run-sprint9-api.sh`（`--project=sprint9-sea-policy`、`sprint9-acquisition`、`sprint9-funnel-gap`、`sprint9-cod-mock`）。`test:e2e:api` 已包含上述 project。
+
+| 计划项 | 实现摘要（代码 / 文档） | E2E 文件 | 覆盖与断言 | 缺口 / 备注 |
+|--------|-------------------------|----------|------------|----------------|
+| **Task 0** 归因契约 | `docs/facts/attribution-identity-keys-v0.1.md`、`attribution-event-taxonomy-v0.1.md` | 无 | 文档不跑 API | 正常 |
+| **Task 1–3** RegionPack + 纯函数 + Redis | `region-packs.ts`、`outbound-send-policy.util.ts`、`outbound-policy-state.service.ts` | 间接由 Task4 E2E 覆盖 | 单测覆盖纯函数与 Redis mock | 无单独 E2E 文件 |
+| **Task 4** 策略闸门 | `MessageApiController` + `send-message.dto` 的 `regionPackId` | `sprint9-sea-policy.spec.ts` | ① `test-e2e-policy` 第 4 次营销发送 **429** + `code=frequency_cap`；②未知 pack **400** | **未 E2E**：`silent_hours`（429 + `silent_hours`）需可控「本地时间 + 静默窗」或时钟注入；同意闸门仍由 `sprint8-outbound.spec.ts` 覆盖 |
+| **Task 5** 模板 `extra` | `validateMessageTemplateExtra` + `MessageTemplateService` | 无 | **Vitest** `message-template-extra.util.spec.ts` | 模板 API 走网关 **`/api/message/*`**（非 `/api/v1/messages`），与 Sprint9 网关脚本不同线；若需 E2E 可另加 project 调网关 `POST /api/message/template` |
+| **Task 6** Harness | `docs/harness/本地启动与验证-Sprint9.md` 等 | 无 | 人工按文档起栈 | `run-sprint9-api.sh` 注释已列依赖服务 |
+| **Task 7** 扫码归因 MVP | `channel_scan_touch`、`ingest-scan`、`scan-touches/latest`、integration 转发 | `sprint9-acquisition-attribution.spec.ts` | 建活码 → integration 带 UTM → **latest 有 `utmCampaign`** | 未断言 `creativeId`/`regionPackId`/`payload`；未直连测 `POST .../ingest-scan`（与 integration 等价） |
+| **Task 8** COD mock | `GET|POST /api/v1/operation/cod-mock/state`（内存） | `sprint9-cod-mock.spec.ts` | GET 默认 `intent` → POST `shipped` → GET 一致 | 依赖 **operation-service**；进程重启状态丢失（符合 mock） |
+| **Task 9 + ANA-01** 漏斗 OLTP | `FunnelGapQueryService`、`funnel-gap-window.util`、`GET .../funnel-gap-placeholder` | `sprint9-funnel-gap.spec.ts` | `source=oltp`、`window`、`sendsTotal`、`channelScanTouchCount`、`customersTotal`、`note` 含 `message_log` | 未测 **400**（如只传 `startDate`、或窗口 >93 天）；未对数值与种子数据强断言（避免环境差异） |
+
+**与 Sprint 8 关系**：`sprint8-outbound.spec.ts` 继续负责 **consent + messageType:5** 基线；Sprint9 **不重复** 403 同意用例，仅叠加 **RegionPack 频控 / 未知 pack**。
+
+**栈依赖（跑满 `pnpm test:e2e:sprint9`）**：gateway、auth、**message**、**redis**、**postgres**、**acquisition**、**integration**（测试扫码路由）、**analytics**、**operation**。
 
 ---
 
@@ -248,8 +269,8 @@ pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 | 5 模板 extra 约定 | ✅ `docs/facts/message-template-extra-locale-convention.md` |
 | 6 Harness | ✅ `docs/harness/本地启动与验证-Sprint9.md`、`README`、迭代总览 S9 行 |
 | 7 扫码归因 MVP | ✅ `channel_scan_touch` + acquisition API + E2E `sprint9-acquisition` |
-| 8 COD 占位 | ✅ `docs/plans/2026-04-28-cod-light-loop-states.md` |
-| 9 漏斗缺口占位 | ✅ `computeAttributionGapMetrics` + `GET .../funnel-gap-placeholder` + `funnel-metrics-v0.1.md` + E2E `sprint9-funnel-gap` |
+| 8 COD 占位 | ✅ `docs/plans/2026-04-28-cod-light-loop-states.md` + mock API + E2E `sprint9-cod-mock` |
+| 9 漏斗缺口（OLTP） | ✅ `FunnelGapQueryService` + `resolveFunnelGapWindow` + `computeAttributionGapMetrics` + `GET .../funnel-gap-placeholder` + `funnel-metrics-v0.1.md` + E2E `sprint9-funnel-gap` |
 | Task 5 可选（extra 校验） | ✅ `validateMessageTemplateExtra` + `MessageTemplateService` create/update |
 | Task 8 可选（COD mock） | ✅ `GET|POST /api/v1/operation/cod-mock/state`（内存占位） |
 | ANA-01 切片（OLTP 漏斗） | ✅ `FunnelGapQueryService` + `resolveFunnelGapWindow`；占位路径改为读 `message_log` / `customer` / `channel_scan_touch` |
@@ -264,3 +285,4 @@ pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 | 2026-04-28 | 收口：Task 0–9 落地；`pnpm test:e2e:sprint9`、Harness Sprint9、实现状态表 |
 | 2026-04-28 | 文档循环：`迭代计划-E2E` v1.10（§二 Sprint 9、§2.5.3 落地 / §2.5.4 Backlog）、`代码现状与文档索引` 测试命令与 S9 链接、`迭代进度总览` Backlog 锚点改为 §2.5.4 |
 | 2026-04-28 | Task5/8 可选与 ANA-01 切片：模板 extra 校验、COD mock API、funnel OLTP 聚合与文档 / E2E 调整 |
+| 2026-04-28 | 整理「功能清单与 E2E 对标」表；新增 `sprint9-cod-mock`；补强 funnel E2E 断言与脚本依赖说明 |

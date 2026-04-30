@@ -71,6 +71,13 @@ export default defineConfig({
       },
     },
     {
+      name: 'sprint9-cod-mock',
+      testMatch: /sprint9-cod-mock\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
       name: 'sprint4-analytics',
       testMatch: /sprint4-analytics\.spec\.ts/,
       use: {

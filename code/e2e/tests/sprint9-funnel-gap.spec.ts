@@ -12,8 +12,8 @@ async function loginAccessToken(request: import('@playwright/test').APIRequestCo
   return body.accessToken as string;
 }
 
-test.describe('Sprint 9 — analytics 归因缺口占位', () => {
-  test('GET funnel-gap-placeholder 返回固定示例率与 corpId', async ({ request }) => {
+test.describe('Sprint 9 — analytics 归因缺口（OLTP）', () => {
+  test('GET funnel-gap-placeholder 返回 oltp、时间窗与聚合字段', async ({ request }) => {
     const health = await request.get(`${GATEWAY}/health`).catch(() => null);
     test.skip(!health?.ok(), 'Gateway 未启动');
 
@@ -33,5 +33,8 @@ test.describe('Sprint 9 — analytics 归因缺口占位', () => {
     expect(Number.isFinite(body.data.messageAttributionGapRate)).toBe(true);
     expect(Number.isFinite(body.data.customerUnlinkedRate)).toBe(true);
     expect(typeof body.data.sendsTotal).toBe('number');
+    expect(typeof body.data.channelScanTouchCount).toBe('number');
+    expect(typeof body.data.customersTotal).toBe('number');
+    expect(body.data.note).toContain('message_log');
   });
 });
