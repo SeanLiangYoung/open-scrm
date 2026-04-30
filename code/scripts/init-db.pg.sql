@@ -287,6 +287,22 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_message_log_corp_idempotency
   ON message_log (corp_id, idempotency_key)
   WHERE idempotency_key IS NOT NULL;
 
+-- Sprint 8：营销同意留痕（出海 Phase 1 / CON-03 闸门数据源）
+CREATE TABLE IF NOT EXISTS consent_record (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  subject_type VARCHAR(32) NOT NULL,
+  subject_id BIGINT NOT NULL,
+  purpose VARCHAR(32) NOT NULL,
+  policy_version VARCHAR(64),
+  channel VARCHAR(32),
+  locale VARCHAR(16),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  revoked_at TIMESTAMPTZ NULL
+);
+CREATE INDEX IF NOT EXISTS idx_consent_record_lookup
+  ON consent_record (corp_id, subject_type, subject_id, purpose);
+
 -- ========== 集成 ==========
 
 CREATE TABLE IF NOT EXISTS wework_config (
@@ -512,6 +528,15 @@ INSERT INTO customer (corp_id, external_userid, name, gender, mobile, channel, s
 (1, 'ext_006', '孙八', 2, '13800001006', 'xiaohongshu', 1, 1),
 (1, 'ext_007', '周九', 1, '13800001007', 'wechat', 1, 1),
 (1, 'ext_008', '吴十', 2, '13800001008', 'douyin', 0, 1);
+
+-- 客户 id=1（张三）具备 marketing 同意，供 Sprint 8 API E2E；其余客户默认无营销同意
+INSERT INTO consent_record (corp_id, subject_type, subject_id, purpose, policy_version, channel, locale)
+SELECT 1, 'customer', 1, 'marketing', 'v1-seed', 'init-db', 'zh-CN'
+WHERE NOT EXISTS (
+  SELECT 1 FROM consent_record c
+  WHERE c.corp_id = 1 AND c.subject_type = 'customer' AND c.subject_id = 1
+    AND c.purpose = 'marketing' AND c.revoked_at IS NULL
+);
 
 INSERT INTO customer_tag (corp_id, tag_name, tag_type, tag_color, status) VALUES
 (1, '高意向', 4, '#67C23A', 1),

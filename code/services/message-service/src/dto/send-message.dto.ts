@@ -4,7 +4,7 @@ import { Rule, RuleType } from '@midwayjs/validate';
  * 发送消息DTO
  */
 export class SendMessageDto {
-  @Rule(RuleType.number().valid(1, 2, 3, 4).required())
+  @Rule(RuleType.number().valid(1, 2, 3, 4, 5).required())
   messageType: number;
 
   @Rule(RuleType.number().valid(1, 2, 3).required())
@@ -28,6 +28,10 @@ export class SendMessageDto {
   /** 可选；与请求头 `Idempotency-Key` 二选一或同时提供（头优先，见 MessageApiController） */
   @Rule(RuleType.string().max(128).optional())
   idempotencyKey?: string;
+
+  /** 为 marketing 时，对客户类发送走 consent_record 闸门（Sprint 8） */
+  @Rule(RuleType.string().valid('transactional', 'marketing').optional())
+  consentPurpose?: 'transactional' | 'marketing';
 }
 
 /**

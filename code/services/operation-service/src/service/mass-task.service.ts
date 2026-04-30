@@ -5,6 +5,11 @@ import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
 import { MassTaskEntity } from '../entity/mass-task.entity';
 import { CreateMassTaskDto, QueryMassTaskDto } from '../dto/mass-task.dto';
+import {
+  buildMassTaskIdempotencyKey,
+  buildMessageServiceV1SendUrl,
+  normalizeMassTaskTextContent,
+} from '../util/mass-task-v1-send.util';
 
 /**
  * 群发任务服务
@@ -121,32 +126,47 @@ export class MassTaskService {
     let failCount = 0;
 
     const targetIds = task.targetIds as number[];
+    const sendUrl = buildMessageServiceV1SendUrl(this.servicesConfig.message);
+    const content = normalizeMassTaskTextContent(task.messageContent);
+    const messageType = task.messageType ?? 2;
 
     for (let i = 0; i < targetIds.length; i += batchSize) {
       const batch = targetIds.slice(i, i + batchSize);
 
-      try {
-        const response = await this.httpService.post(
-          `${this.servicesConfig.message}/api/message/send/batch`,
-          {
-            messageType: task.messageType,
-            targetType: task.targetType,
-            targetIds: batch,
-            content: task.messageContent,
-          },
-          { headers: this.taskRequestHeaders(task) }
-        );
+      for (const targetId of batch) {
+        try {
+          const response = await this.httpService.post(
+            sendUrl,
+            {
+              messageType,
+              targetType: task.targetType,
+              targetIds: targetId,
+              content,
+            },
+            {
+              headers: {
+                ...this.taskRequestHeaders(task),
+                'Idempotency-Key': buildMassTaskIdempotencyKey(task.id, targetId),
+              },
+            }
+          );
 
-        if (response.data.success) {
-          successCount += response.data.data.success || 0;
-          failCount += response.data.data.failed || 0;
+          const body = response.data as {
+            success?: boolean;
+            data?: { success?: number; failed?: number };
+          };
+          if (body?.success && body.data) {
+            successCount += body.data.success ?? 0;
+            failCount += body.data.failed ?? 0;
+          } else {
+            failCount += 1;
+          }
+        } catch (error: any) {
+          console.error('群发单条经 v1 发送失败:', targetId, error?.message);
+          failCount += 1;
         }
-      } catch (error: any) {
-        console.error('批量发送失败:', error);
-        failCount += batch.length;
       }
 
-      // 批次间隔
       if (i + batchSize < targetIds.length) {
         await this.delay(this.massTaskConfig.batchInterval || 1000);
       }

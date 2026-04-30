@@ -109,4 +109,25 @@ describe('MessageSendService.sendMessage 幂等', () => {
     });
     expect(save).toHaveBeenCalledTimes(1);
   });
+
+  it('messageType 5（Outbound Mock）无外呼且发送成功', async () => {
+    const findOne = vi.fn().mockResolvedValue(null);
+    const save = vi
+      .fn()
+      .mockImplementationOnce(async (entity: object) => ({ ...entity, id: 200 }))
+      .mockImplementation(async (entity: object) => entity);
+    const create = vi.fn((x: object) => x);
+    const svc = makeService({ findOne, create, save });
+
+    const result = await svc.sendMessage(1, {
+      messageType: 5,
+      targetType: 1,
+      targetIds: [1],
+      content: 'mock outbound',
+    });
+
+    expect(result.success).toBe(1);
+    expect(result.details?.[0]?.success).toBe(true);
+    expect(save).toHaveBeenCalled();
+  });
 });

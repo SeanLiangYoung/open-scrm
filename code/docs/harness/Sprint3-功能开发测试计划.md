@@ -14,7 +14,7 @@
 | S3-F4 | 经网关 REST：`POST /api/v1/messages/send`、`GET /api/v1/messages/logs/:id` | 新增 | ✅ `MessageApiController`；头 `Idempotency-Key` 优先于 body，冲突返回 400 |
 | S3-F5 | Mock 可观测通道（开发环境） | 文档化 | ✅ `messageType === 2`（站内通知，`doSendMessage` 无外部调用即成功）；E2E 默认使用该类型 |
 | S3-F6 | API E2E | 新增 | ✅ `e2e/tests/sprint3-messages.spec.ts`；`pnpm test:e2e:sprint3` |
-| S3-F7 | 与群发任务（operation-service）联动 | Backlog | 本迭代未改群发；结论：**后续迭代**在 operation 调本 API 或消息队列时对齐幂等键与状态查询（见迭代计划 §5.1） |
+| S3-F7 | 与群发任务（operation-service）联动 | 已完成（Sprint 7） | ✅ 群发 `sendBatchMessages` 经 `MESSAGE_SERVICE_URL` 调 `POST /api/v1/messages/send`；`Idempotency-Key: mass-task-{taskId}-tgt-{targetId}`；Vitest `mass-task-v1-send.util.spec.ts`；详见 `operation-service` |
 
 ## 2. 开发计划（Harness 顺序）
 
@@ -39,4 +39,4 @@
 
 ## 5. 完成判定
 
-本文档「功能点清单」中 **S3-F1～F6** 全部 ✅，且 [迭代进度总览](./迭代进度总览.md) 中 S3 为「已完成」。
+本文档「功能点清单」中 **S3-F1～F7** 全部 ✅（F7 在 Sprint 7 由 operation-service 联调完成），且 [迭代进度总览](./迭代进度总览.md) 中 S3 为「已完成」。

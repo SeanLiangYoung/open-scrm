@@ -84,8 +84,24 @@ const unreadCount = ref(0);
 const createDialog = ref(false);
 const notifyForm = reactive({ title: '', notificationType: 1, content: '', userIds: 1 });
 
-const notifyLabel = (t: any) => ({ 1: '系统', 2: '任务', 3: '客户', system: '系统', task: '任务', customer: '客户' }[t] || '通知');
-const notifyType = (t: any): any => ({ 1: '', 2: 'warning', 3: 'success', system: '', task: 'warning', customer: 'success' }[t] || 'info');
+const NOTIFY_LABELS: Record<string, string> = {
+  '1': '系统',
+  '2': '任务',
+  '3': '客户',
+  system: '系统',
+  task: '任务',
+  customer: '客户',
+};
+const NOTIFY_TYPES: Record<string, '' | 'warning' | 'success' | 'info'> = {
+  '1': '',
+  '2': 'warning',
+  '3': 'success',
+  system: '',
+  task: 'warning',
+  customer: 'success',
+};
+const notifyLabel = (t: number | string) => NOTIFY_LABELS[String(t)] || '通知';
+const notifyType = (t: number | string) => NOTIFY_TYPES[String(t)] || 'info';
 const formatDate = (d: string) => d ? new Date(d).toLocaleString('zh-CN') : '-';
 
 async function fetchNotifications() {

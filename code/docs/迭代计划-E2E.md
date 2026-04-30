@@ -72,20 +72,22 @@
 
 | 工作项 | 类型 | 完成判定（摘要） |
 |--------|------|------------------|
-| **E2E 进 CI** | 工程 | 流水线执行约定子集（如仅 API E2E 或 `test:e2e:sprint2`–`sprint5` 子矩阵）；失败阻断合并；文档写明所需 Docker/服务与缓存策略。 |
-| **S3-F7 群发 × 统一消息** | 功能 | 运营端群发（或等价批量触达）走 `POST /api/v1/messages/send`；`Idempotency-Key` 与幂等行为与 [Sprint3-功能开发测试计划](./harness/Sprint3-功能开发测试计划.md) F7 一致；补充单测或 E2E 一条。 |
+| **CI 门禁** | 工程 | ✅ `.github/workflows/ci.yml`：`code/` 下 `pnpm install` → `pnpm test:unit` → `pnpm type-check`；失败阻断合并。**说明**：全量 Playwright 仍依赖本机/Compose 起栈，未进同一 job（与下项「E2E 进 CI」理想态仍有差距）。 |
+| **S3-F7 群发 × 统一消息** | 功能 | ✅ 运营群发走 `POST /api/v1/messages/send`；幂等键 `mass-task-{taskId}-tgt-{targetId}`；`operation-service` Vitest；见 [Sprint3-功能开发测试计划](./harness/Sprint3-功能开发测试计划.md) S3-F7。 |
 | **getAccessToken 并发观测（可选）** | 技术债 | 文档或脚本验证「双请求命中同一 Redis key」无风暴；或登记延期至 S8 后。 |
 
 **S7 E2E 主形态**：以 **API E2E + 现有浏览器用例在 CI 中子集重跑** 为主；全量三前端 E2E 可放在夜间或手动 job。
 
 ### 2.5.2 Sprint 8 — 出海私域 Phase 1（契约 + Mock）
 
+**状态（2026-04-28）**：以下为一 **可跑最小切片**；与下表「理想完成判定」未逐字对齐处见 [本地启动与验证-Sprint8.md](./harness/本地启动与验证-Sprint8.md) 的 Backlog 说明。
+
 | 工作项 | 类型 | 完成判定（摘要） |
 |--------|------|------------------|
-| **RegionPack** | 契约 | 至少 2 个 Pack（如 `th-bangkok`、`de-berlin`）以 **JSON 或 DB 种子** 可被服务读取；租户可绑定 `default_region_pack_id`（字段或配置表）。 |
-| **Consent Ledger 最小表** | 契约 | 落库 + 只增写入 API（或内嵌于测试）；含 `purpose`、`policyVersion`、`capturedAt`、`channel`、`locale`（与 [RFC](./plans/rfc-consent-regionpack.md) 一致）。 |
-| **Outbound Mock 通道** | 功能 | `message-service`（或 integration）增加 **mock-outbound** 类型；请求体带 `regionPackId`、`consentPurpose`；**发送前**对 `marketing` 等目的做 CON-03 规则校验（无同意记录则拒绝）。 |
-| **API E2E** | 测试 | 新增 `sprint8-outbound-*.spec.ts`（名称以 harness 为准）：**同意 → 成功发送 → 撤回/退订 → 再次营销发送失败**；Mock 无外部 BSP。 |
+| **RegionPack** | 契约 | ✅ `message-service` 内 **`src/catalog/region-packs.ts`**（`th-bangkok`、`de-berlin`）+ Vitest；租户绑定 `default_region_pack_id` 仍为 Backlog。 |
+| **Consent Ledger 最小表** | 契约 | ✅ 表 `consent_record` + `init-db.pg.sql` 种子（客户 1 marketing 同意）；**写入/撤回 API** 未做。 |
+| **Outbound Mock 通道** | 功能 | ✅ `messageType: 5` + `consentPurpose` 营销闸门（客户 `targetType:1` + `consent_record`）；请求体 **`regionPackId` 未强制**。 |
+| **API E2E** | 测试 | ✅ `e2e/tests/sprint8-outbound.spec.ts`；`pnpm test:e2e:sprint8`。**「撤回后再发失败」** 未自动化，列为 Backlog。 |
 
 **S8 明确不在范围（除非单独开 Sprint）**：真实 WABA/LINE BSP 联调、运营端完整 AI 坐席 UI、CMP 双端落地页。
 
@@ -96,6 +98,8 @@
 - 真实 **WABA / LINE OA** 适配器与 BSP 配置；东南亚多国 Pack 批量导入。  
 - **AI 人审**（草稿/摘要/路由）与审计日志产品化。  
 - **ANA-01** 全链路 UTM→订单与看板。
+
+**S9 文档切片（2026-04-28，无新列/新接口）**：统一发送 DTO 的 **`extra`**（`Record` / 任意 JSON）已随请求写入 **`message_log.extra`**。归因侧可约定字段例如 `utm_source`、`utm_medium`、`utm_campaign`、`utm_content`、`utm_term`；分析服务消费与校验留待 ANA-01。
 
 ---
 
@@ -184,7 +188,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:7000/api/v1/integration/
 
 - 存在**统一发送模型**：渠道、模板、收件人、**幂等键**、发送状态可查。
 - 至少一种通道落地：**短信**或**邮件**或**文档化 Mock 通道**（开发环境可验证「发送成功/失败」 observable）。**已落地**：`messageType === 2`（站内通知）作为 Mock 通道（无外部 HTTP），详见 [Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md) S3-F5。
-- **gateway** 暴露发送或查询类 API（**已落地**：`POST /api/v1/messages/send`、`GET /api/v1/messages/logs/:id`）。与群发任务（operation-service）的对接：**Backlog**（书面结论见 [Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md) S3-F7）。
+- **gateway** 暴露发送或查询类 API（**已落地**：`POST /api/v1/messages/send`、`GET /api/v1/messages/logs/:id`）。与群发任务（operation-service）的对接：**已落地（Sprint 7）**（见 [Sprint3-功能开发测试计划.md](./harness/Sprint3-功能开发测试计划.md) S3-F7）。
 
 ### 5.2 E2E 流程 A — 发送一条消息（API）
 
@@ -337,6 +341,7 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 - **[harness/本地启动与验证-Sprint4.md](./harness/本地启动与验证-Sprint4.md)** — Sprint 4 一页纸（analytics 与运营端）  
 - **[harness/本地启动与验证-Sprint5.md](./harness/本地启动与验证-Sprint5.md)** — Sprint 5 一页纸（获客与 integration 测试入口）  
 - **[harness/本地启动与验证-Sprint6.md](./harness/本地启动与验证-Sprint6.md)** — Sprint 6 一页纸（官网、全量 E2E、路由表）  
+- **[harness/本地启动与验证-Sprint8.md](./harness/本地启动与验证-Sprint8.md)** — Sprint 8 一页纸（Consent 闸门、`messageType:5`、E2E `test:e2e:sprint8`）  
 
 ---
 
@@ -353,3 +358,4 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.6 | 2026-04-28 | Sprint 5：`/api/v1/acquisition/channel-codes*`、integration 测试扫码转发、运营活码页、E2E `test:e2e:sprint5`、Harness S5 |
 | 1.7 | 2026-04-28 | Sprint 6：`gateway-routes.md`、运营端新建活码 E2E、`official-website`（:3010）、`sprint6-official`、`run-full-e2e` 三前端、Harness S6 |
 | 1.8 | 2026-04-28 | 增加 **S7/S8** 下一阶段迭代总览（E2E 进 CI、S3-F7、出海 Phase1 Mock+Consent）；更新依赖图与 Harness 索引说明 |
+| 1.9 | 2026-04-28 | **S7/S8 最小切片落地**：GitHub Actions 单元+类型检查；S3-F7 群发联调；`consent_record` + 营销闸门 + `messageType:5` + RegionPack 静态目录 + `sprint8-outbound` E2E；§2.5.1–2.5.3 与 Sprint 3 §5.1 同步事实；**S9** `extra`/UTM 文档说明 |

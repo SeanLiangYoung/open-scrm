@@ -43,6 +43,13 @@ export default defineConfig({
       },
     },
     {
+      name: 'sprint8-outbound',
+      testMatch: /sprint8-outbound\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
       name: 'sprint4-analytics',
       testMatch: /sprint4-analytics\.spec\.ts/,
       use: {

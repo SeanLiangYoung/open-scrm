@@ -276,6 +276,8 @@ export class MessageSendService {
         break;
       case 2: // 站内通知 (由NotificationService处理)
         break;
+      case 5: // 出海 Outbound Mock（无外部调用，用于 E2E / 闸门联调）
+        break;
       case 3: // 短信
         await this.sendSmsMessage(log);
         break;

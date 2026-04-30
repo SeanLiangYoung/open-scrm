@@ -5,7 +5,9 @@ import { getTenantContext } from '@scrm/server-common';
 import { SendMessageDto } from '../dto/send-message.dto';
 import { MessageSendService } from '../service/message-send.service';
 import { MessageLogService } from '../service/message-log.service';
+import { ConsentRecordService } from '../service/consent-record.service';
 import { normalizeIdempotencyKey } from '../util/message-idempotency.util';
+import { resolveMarketingConsentGate } from '../util/marketing-consent-gate.util';
 
 /**
  * Sprint 3：经网关的统一消息 API（/api/v1/messages），支持 Idempotency-Key 头
@@ -20,6 +22,9 @@ export class MessageApiController {
 
   @Inject()
   messageLogService!: MessageLogService;
+
+  @Inject()
+  consentRecordService!: ConsentRecordService;
 
   @Post('/send')
   @Validate()
@@ -46,6 +51,18 @@ export class MessageApiController {
       keyFromHeader !== null ? { ...dto, idempotencyKey: keyFromHeader } : dto;
 
     const { corpId } = getTenantContext(this.ctx);
+
+    const consentBlock = await resolveMarketingConsentGate(
+      corpId,
+      merged,
+      (c, customerId) =>
+        this.consentRecordService.hasActiveMarketingConsentForCustomer(c, customerId)
+    );
+    if (consentBlock) {
+      this.ctx.status = consentBlock.status;
+      return consentBlock.body;
+    }
+
     const result = await this.messageSendService.sendMessage(corpId, merged);
     return {
       success: true,
