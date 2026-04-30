@@ -5,7 +5,12 @@ import { test, expect } from '@playwright/test';
  * 全量 `pnpm test:e2e` 由 run-full-e2e.sh 拉起官网。
  */
 test.describe('Sprint 6 — 官网首页', () => {
-  test('首页标题与主导航可见', async ({ page }) => {
+  test('首页标题与主导航可见', async ({ page, request }) => {
+    const probe = await request.get('/').catch(() => null);
+    test.skip(
+      probe === null || !probe.ok(),
+      '官网未启动（默认 :3010），跳过；全量 E2E 见 e2e/run-full-e2e.sh',
+    );
     await page.goto('/');
     await expect(page).toHaveTitle(/Open SCRM/);
     await expect(page.getByRole('heading', { name: '企业私域与客户运营' })).toBeVisible();

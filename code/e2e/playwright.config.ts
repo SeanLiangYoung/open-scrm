@@ -12,6 +12,12 @@ export default defineConfig({
   timeout: 90_000,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  /** 端到端报告：HTML 可浏览器打开，JUnit 供 CI 解析 */
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'reports/html', open: 'never' }],
+    ['junit', { outputFile: 'reports/junit.xml' }],
+  ],
   use: {
     trace: 'on-first-retry',
     video: 'retain-on-failure',
