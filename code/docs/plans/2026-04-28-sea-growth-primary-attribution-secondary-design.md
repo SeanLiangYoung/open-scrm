@@ -1,6 +1,7 @@
 # 出海私域：东南亚增长为主、归因为辅 — 方向拍板（2026-04-28）
 
-> **状态**：经 brainstorming 多角色 PM 调研后，干系人明确 **B 为主、C 为辅**。本文档为 **执行级方向约束**，与主设计 [出海私域运营：方法论 × 本地化 × AI](./2026-04-28-outbound-private-domain-localization-design.md) 并存；实现拆解见后续 **writing-plans** 产出的实现计划。
+> **状态**：经 brainstorming 多角色 PM 调研后，干系人明确 **B 为主、C 为辅**。本文档为 **执行级方向约束**，与主设计 [出海私域运营：方法论 × 本地化 × AI](./2026-04-28-outbound-private-domain-localization-design.md) 并存。  
+> **实现计划**：[2026-04-28-sea-growth-attribution-implementation-plan.md](./2026-04-28-sea-growth-attribution-implementation-plan.md)（writing-plans 产出，按 Task 顺序执行）。
 
 ---
 
