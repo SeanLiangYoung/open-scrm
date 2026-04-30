@@ -13,8 +13,11 @@ import {
   QueryStaffStatDto,
   OverviewStatDto,
   AggregateDailyDto,
+  QueryFunnelGapDto,
 } from '../dto/stat-query.dto';
 import { computeAttributionGapMetrics } from '../util/funnel-gap.util';
+import { resolveFunnelGapWindow } from '../util/funnel-gap-window.util';
+import { FunnelGapQueryService } from '../service/funnel-gap-query.service';
 
 /** 经网关统一前缀 `/api/v1/analytics/*`（与 gateway-service 配置一致） */
 @Controller('/api/v1/analytics')
@@ -34,24 +37,48 @@ export class AnalyticsController {
   @Inject()
   dailyAggregationService!: DailyAggregationService;
 
+  @Inject()
+  funnelGapQueryService!: FunnelGapQueryService;
+
   /**
-   * Sprint 9：归因缺口占位（固定示例输入 + 纯函数口径）；后续替换为 OLTP 查询。
+   * ANA-01：归因缺口（OLTP 聚合 message_log + customer + channel_scan_touch）。
+   * 路径名保留兼容旧 E2E；默认近 31 天 UTC 窗，最长 93 天（见 funnel-metrics-v0.1 / funnel-gap-window）。
    */
   @Get('/funnel-gap-placeholder')
-  async funnelGapPlaceholder() {
+  @Validate()
+  async funnelGapPlaceholder(@Query() query: QueryFunnelGapDto) {
     const { corpId } = getTenantContext(this.ctx);
+    let start: Date;
+    let endExclusive: Date;
+    try {
+      const w = resolveFunnelGapWindow(
+        { startDate: query.startDate, endDate: query.endDate },
+        new Date()
+      );
+      start = w.start;
+      endExclusive = w.endExclusive;
+    } catch (e: any) {
+      this.ctx.status = 400;
+      return { success: false, message: e?.message || '时间窗非法' };
+    }
+
+    const agg = await this.funnelGapQueryService.aggregateOltp(corpId, start, endExclusive);
     const metrics = computeAttributionGapMetrics({
-      sendsTotal: 10,
-      sendsWithTouchHint: 8,
-      customersTotal: 100,
-      customersWithAttribution: 90,
+      sendsTotal: agg.sendsTotal,
+      sendsWithTouchHint: agg.sendsWithTouchHint,
+      customersTotal: agg.customersTotal,
+      customersWithAttribution: agg.customersWithAttribution,
     });
+
     return {
       success: true,
       data: {
         corpId,
         ...metrics,
-        note: 'Phase C+ 占位：非真实 message_log / customer 聚合',
+        ...agg,
+        window: { start: start.toISOString(), endExclusive: endExclusive.toISOString() },
+        source: 'oltp',
+        note: 'v0.2：message_log 成功发送 + extra 归因键；客户侧为窗口内收到过带 hint 的去重客户数 / 全量客户',
       },
     };
   }

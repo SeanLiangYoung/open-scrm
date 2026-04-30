@@ -250,6 +250,9 @@ pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 | 7 扫码归因 MVP | ✅ `channel_scan_touch` + acquisition API + E2E `sprint9-acquisition` |
 | 8 COD 占位 | ✅ `docs/plans/2026-04-28-cod-light-loop-states.md` |
 | 9 漏斗缺口占位 | ✅ `computeAttributionGapMetrics` + `GET .../funnel-gap-placeholder` + `funnel-metrics-v0.1.md` + E2E `sprint9-funnel-gap` |
+| Task 5 可选（extra 校验） | ✅ `validateMessageTemplateExtra` + `MessageTemplateService` create/update |
+| Task 8 可选（COD mock） | ✅ `GET|POST /api/v1/operation/cod-mock/state`（内存占位） |
+| ANA-01 切片（OLTP 漏斗） | ✅ `FunnelGapQueryService` + `resolveFunnelGapWindow`；占位路径改为读 `message_log` / `customer` / `channel_scan_touch` |
 
 ---
 
@@ -260,3 +263,4 @@ pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 | 2026-04-28 | 初版：从 B主C辅设计拆为可执行 Task；与现有 message / consent / RegionPack 对齐 |
 | 2026-04-28 | 收口：Task 0–9 落地；`pnpm test:e2e:sprint9`、Harness Sprint9、实现状态表 |
 | 2026-04-28 | 文档循环：`迭代计划-E2E` v1.10（§二 Sprint 9、§2.5.3 落地 / §2.5.4 Backlog）、`代码现状与文档索引` 测试命令与 S9 链接、`迭代进度总览` Backlog 锚点改为 §2.5.4 |
+| 2026-04-28 | Task5/8 可选与 ANA-01 切片：模板 extra 校验、COD mock API、funnel OLTP 聚合与文档 / E2E 调整 |

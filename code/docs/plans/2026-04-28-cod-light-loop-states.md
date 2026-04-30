@@ -22,6 +22,11 @@
 
 路径归属 `operation-service` 或 `customer-service` 待评审。
 
+## Mock（占位已实现）
+
+- `GET /api/v1/operation/cod-mock/state` — 读当前内存状态（默认 `intent`）  
+- `POST /api/v1/operation/cod-mock/state`，body `{ "state": "shipped" }` — 写内存状态（进程重启丢失）
+
 ## 修订记录
 
 | 日期 | 说明 |

@@ -28,7 +28,10 @@ test.describe('Sprint 9 — analytics 归因缺口占位', () => {
     const body = await res.json();
     expect(body.success).toBeTruthy();
     expect(body.data.corpId).toBeTruthy();
-    expect(body.data.messageAttributionGapRate).toBe(0.2);
-    expect(body.data.customerUnlinkedRate).toBe(0.1);
+    expect(body.data.source).toBe('oltp');
+    expect(body.data.window?.start).toBeTruthy();
+    expect(Number.isFinite(body.data.messageAttributionGapRate)).toBe(true);
+    expect(Number.isFinite(body.data.customerUnlinkedRate)).toBe(true);
+    expect(typeof body.data.sendsTotal).toBe('number');
   });
 });

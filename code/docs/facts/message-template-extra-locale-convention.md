@@ -18,7 +18,7 @@
 | `supervisorSummaryZh` | 督导/质检侧中文摘要，不落顾客侧文案 |
 | `tabooPackId` | 与 RegionPack / 禁忌词分区 id 对齐 |
 
-后端 **可选**：在 `CreateMessageTemplateDto` 增加校验；首版以文档约定为主。
+后端 **已实现（可选校验）**：`message-service` 内 `validateMessageTemplateExtra`（`create` / `update` 模板时若带 `extra` 则校验约定键）；非法时抛错，由控制器层转为 HTTP 4xx（与现有模板 API 错误处理一致）。
 
 ## 修订记录
 

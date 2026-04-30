@@ -27,6 +27,7 @@
 
 **不在此表**：网关自身 `GET /health` 等由 `gateway-service` 直接处理。
 
-**Sprint 9 推导路径（analytics）**：`GET /api/v1/analytics/funnel-gap-placeholder` → `ANALYTICS_SERVICE_URL`（占位响应，见 [funnel-metrics-v0.1.md](./funnel-metrics-v0.1.md)）。
+**Sprint 9 推导路径（analytics）**：`GET /api/v1/analytics/funnel-gap-placeholder` → `ANALYTICS_SERVICE_URL`（OLTP 聚合，见 [funnel-metrics-v0.1.md](./funnel-metrics-v0.1.md)）。  
+**Sprint 9+ 推导路径（operation，mock）**：`GET|POST /api/v1/operation/cod-mock/state` → `OPERATION_SERVICE_URL`（内存 COD 状态占位）。
 
 **维护约定**：新增 `/api` 前缀路由时，须同时更新本表与（如适用）[迭代计划-E2E.md](../迭代计划-E2E.md) 端口说明。

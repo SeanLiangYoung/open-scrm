@@ -36,6 +36,15 @@ export class QueryStaffStatDto {
   pageSize?: number;
 }
 
+/** GET /funnel-gap-placeholder 可选查询窗（UTC 日历日） */
+export class QueryFunnelGapDto {
+  @Rule(RuleType.string().optional())
+  startDate?: string;
+
+  @Rule(RuleType.string().optional())
+  endDate?: string;
+}
+
 export class OverviewStatDto {
   @Rule(RuleType.string().optional())
   date?: string;

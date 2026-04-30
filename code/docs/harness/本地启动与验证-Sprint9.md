@@ -1,4 +1,4 @@
-# 本地启动与验证 — Sprint 9（SEA 策略 + 扫码归因 + 漏斗占位）
+# 本地启动与验证 — Sprint 9（SEA 策略 + 扫码归因 + 漏斗 OLTP + COD mock）
 
 与 [2026-04-28-sea-growth-attribution-implementation-plan.md](../plans/2026-04-28-sea-growth-attribution-implementation-plan.md) 对齐。
 
@@ -12,7 +12,8 @@
 | message-service | `regionPackId=test-e2e-policy` 频控 |
 | acquisition-service | 活码、`ingest-scan`、`scan-touches/latest` |
 | integration-service | `POST /api/v1/integration/test/acquisition-channel-scan` |
-| analytics-service | `GET /api/v1/analytics/funnel-gap-placeholder` |
+| analytics-service | `GET /api/v1/analytics/funnel-gap-placeholder`（OLTP 聚合） |
+| operation-service | （可选）`GET|POST /api/v1/operation/cod-mock/state` |
 
 ## 启动顺序（示例）
 
@@ -32,7 +33,8 @@ pnpm test:e2e:sprint9
 
 - 频控：`sprint9-sea-policy.spec.ts` 说明（第 4 次营销发送应 `429` + `frequency_cap`）。
 - 归因：`GET /api/v1/acquisition/channel-codes/:id/scan-touches/latest` 在带 UTM 的 ingest 后应有 `utmCampaign` 等字段。
-- 漏斗占位：`GET /api/v1/analytics/funnel-gap-placeholder` 返回 `messageAttributionGapRate: 0.2`、`customerUnlinkedRate: 0.1`（固定示例，非真实聚合）。
+- 漏斗 OLTP：`GET /api/v1/analytics/funnel-gap-placeholder` 返回 `source: 'oltp'` 与 `window`；指标由 `message_log` / `customer` / `channel_scan_touch` 聚合（见 [funnel-metrics-v0.1.md](../facts/funnel-metrics-v0.1.md)）。
+- COD mock（可选）：`GET /POST /api/v1/operation/cod-mock/state`（需起 **operation-service**）。
 
 ## 修订记录
 
