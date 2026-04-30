@@ -1,6 +1,6 @@
 # Open SCRM 可执行迭代计划（含 E2E）
 
-**文档版本:** 1.8  
+**文档版本:** 1.11  
 **创建日期:** 2026-04-16  
 **适用范围:** `code/` 目录（pnpm + Turborepo 单体仓库）
 
@@ -59,14 +59,15 @@
 | Sprint 6 | S6 | 质量门禁 + 官网或移动端脚手架 |
 | Sprint 7 | S7 | 工程延续：E2E 进 CI + 群发与统一消息联调（S3-F7） |
 | Sprint 8 | S8 | 出海私域 Phase 1：RegionPack / Consent 契约落地 + Outbound Mock 通道与闸门 E2E |
+| Sprint 9 | S9 | SEA 增长 + 归因辅线：营销频控/静默、`channel_scan_touch`、analytics 漏斗占位、`pnpm test:e2e:sprint9` |
 
 ---
 
 <a id="next-sprints-s7-s8"></a>
 
-## 二点五、下一阶段迭代总览（S7–S8，草案）
+## 二点五、下一阶段迭代总览（S7–S9，草案 + 已落地）
 
-> 与 [出海私域产品设计](./plans/2026-04-28-outbound-private-domain-localization-design.md)、[用户场景与功能映射](./plans/2026-04-28-outbound-private-domain-user-scenarios-and-features.md)、[实现计划](./plans/2026-04-28-outbound-private-domain-implementation-plan.md) 对齐。**S7 以工程债与联调为主**；**S8 以出海「可跑切片」为主**（不绑定真实 WABA/LINE BSP，除非干系人另行拍板）。
+> 与 [出海私域产品设计](./plans/2026-04-28-outbound-private-domain-localization-design.md)、[用户场景与功能映射](./plans/2026-04-28-outbound-private-domain-user-scenarios-and-features.md)、[实现计划](./plans/2026-04-28-outbound-private-domain-implementation-plan.md) 对齐。**S7 以工程债与联调为主**；**S8 以出海「可跑切片」为主**；**S9** 见 [东南亚增长 + 归因实现计划](./plans/2026-04-28-sea-growth-attribution-implementation-plan.md)（不绑定真实 WABA/LINE BSP，除非干系人另行拍板）。
 
 ### 2.5.1 Sprint 7 — 工程延续（优先）
 
@@ -91,15 +92,28 @@
 
 **S8 明确不在范围（除非单独开 Sprint）**：真实 WABA/LINE BSP 联调、运营端完整 AI 坐席 UI、CMP 双端落地页。
 
+### 2.5.3 Sprint 9 — SEA 增长为主 + 归因为辅（已落地，2026-04-28）
+
+**状态**：可跑最小切片；Task 0–9 与代码路径见 [sea-growth-attribution-implementation-plan.md](./plans/2026-04-28-sea-growth-attribution-implementation-plan.md)。
+
+| 工作项 | 类型 | 完成判定（摘要） |
+|--------|------|------------------|
+| **RegionPack 策略闸门** | 功能 | ✅ 营销单聊：`consent` 闸门 → `OutboundPolicyStateService`（静默优先，Redis 日历日桶）；未知 pack **400**；静默/超 cap **429** + `code`（`silent_hours` / `frequency_cap`）；E2E `sprint9-sea-policy`（`test-e2e-policy`）。 |
+| **扫码归因 MVP** | 功能 | ✅ `channel_scan_touch` + `ingest-scan` 归因字段 + `GET .../scan-touches/latest`；integration 测试入口转发完整 body；E2E `sprint9-acquisition-attribution`。 |
+| **漏斗占位** | 分析 | ✅ `computeAttributionGapMetrics` + Vitest；`GET /api/v1/analytics/funnel-gap-placeholder`；[funnel-metrics-v0.1.md](./facts/funnel-metrics-v0.1.md)；E2E `sprint9-funnel-gap`。 |
+| **文档契约** | 契约 | ✅ Task 0 facts、[message-template-extra-locale-convention.md](./facts/message-template-extra-locale-convention.md)、[2026-04-28-cod-light-loop-states.md](./plans/2026-04-28-cod-light-loop-states.md)。 |
+
+**S9 E2E**：`pnpm test:e2e:sprint9`（`e2e/run-sprint9-api.sh`）；需 **gateway、auth、message、redis、postgres、acquisition、integration、analytics** 与表 `channel_scan_touch`。一页纸：[本地启动与验证-Sprint9.md](./harness/本地启动与验证-Sprint9.md)。
+
+**与 S3 并存**：发送 DTO 的 **`extra`** 仍写入 **`message_log.extra`**（`utm_*` 等）；S9 增加活码 touch 落库与分析占位接口；**ANA-01** 级真实聚合仍属后续 Phase。
+
 <a id="backlog-s9-plus"></a>
 
-### 2.5.3 Sprint 9+（Backlog，不排期）
+### 2.5.4 Sprint 10+（Backlog，不排期）
 
 - 真实 **WABA / LINE OA** 适配器与 BSP 配置；东南亚多国 Pack 批量导入。  
 - **AI 人审**（草稿/摘要/路由）与审计日志产品化。  
-- **ANA-01** 全链路 UTM→订单与看板。
-
-**S9 文档切片（2026-04-28，无新列/新接口）**：统一发送 DTO 的 **`extra`**（`Record` / 任意 JSON）已随请求写入 **`message_log.extra`**。归因侧可约定字段例如 `utm_source`、`utm_medium`、`utm_campaign`、`utm_content`、`utm_term`；分析服务消费与校验留待 ANA-01。
+- **ANA-01** 全链路 UTM→订单与看板（消费 `message_log.extra` + `channel_scan_touch`，替换 funnel 占位）。
 
 ---
 
@@ -325,9 +339,9 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 
 ## 十一、Harness 执行材料
 
-- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` … `test:e2e:sprint5` / `test:e2e:sprint6-official` 说明  
+- **[harness/README.md](./harness/README.md)** — 测试先行命令、`test:unit` / `test:e2e` / `test:e2e:sprint2` … `test:e2e:sprint5` / `test:e2e:sprint8` / `test:e2e:sprint9` / `test:e2e:sprint6-official` 说明  
 - **[facts/gateway-routes.md](./facts/gateway-routes.md)** — 网关 `gateway.routes` 与上游端口事实表（Sprint 6）  
-- **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–8 状态与下一步（随 S7/S8 推进更新）  
+- **[harness/迭代进度总览.md](./harness/迭代进度总览.md)** — Sprint 1–9 状态与下一步（随 S7–S9 推进更新）  
 - **[plans/2026-04-28-outbound-private-domain-localization-design.md](./plans/2026-04-28-outbound-private-domain-localization-design.md)** — 出海私域产品设计（东南亚 + EU 锚点）  
 - **[harness/Sprint1-功能开发测试计划.md](./harness/Sprint1-功能开发测试计划.md)** — Sprint 1 功能点与测试计划  
 - **[harness/Sprint2-功能开发测试计划.md](./harness/Sprint2-功能开发测试计划.md)** — Sprint 2（企微集成底座）  
@@ -342,6 +356,7 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 - **[harness/本地启动与验证-Sprint5.md](./harness/本地启动与验证-Sprint5.md)** — Sprint 5 一页纸（获客与 integration 测试入口）  
 - **[harness/本地启动与验证-Sprint6.md](./harness/本地启动与验证-Sprint6.md)** — Sprint 6 一页纸（官网、全量 E2E、路由表）  
 - **[harness/本地启动与验证-Sprint8.md](./harness/本地启动与验证-Sprint8.md)** — Sprint 8 一页纸（Consent 闸门、`messageType:5`、E2E `test:e2e:sprint8`）  
+- **[harness/本地启动与验证-Sprint9.md](./harness/本地启动与验证-Sprint9.md)** — Sprint 9 一页纸（SEA 策略、`channel_scan_touch`、`test:e2e:sprint9`）  
 
 ---
 
@@ -359,3 +374,5 @@ S1 ─────────────┼──► S3 消息 ──► S4 �
 | 1.7 | 2026-04-28 | Sprint 6：`gateway-routes.md`、运营端新建活码 E2E、`official-website`（:3010）、`sprint6-official`、`run-full-e2e` 三前端、Harness S6 |
 | 1.8 | 2026-04-28 | 增加 **S7/S8** 下一阶段迭代总览（E2E 进 CI、S3-F7、出海 Phase1 Mock+Consent）；更新依赖图与 Harness 索引说明 |
 | 1.9 | 2026-04-28 | **S7/S8 最小切片落地**：GitHub Actions 单元+类型检查；S3-F7 群发联调；`consent_record` + 营销闸门 + `messageType:5` + RegionPack 静态目录 + `sprint8-outbound` E2E；§2.5.1–2.5.3 与 Sprint 3 §5.1 同步事实；**S9** `extra`/UTM 文档说明 |
+| 1.10 | 2026-04-28 | **S9 实现收口写入主计划**：§二 增加 Sprint 9 行；**§2.5.3** 改为 S9 已落地（频控、`channel_scan_touch`、funnel 占位、E2E）；原 Backlog 移至 **§2.5.4**（锚点 `backlog-s9-plus` 保留）；Harness 索引补充 Sprint 9 |
+| 1.11 | 2026-04-28 | **§二点五** 标题与导语对齐 S9；外链 [sea-growth-attribution-implementation-plan](./plans/2026-04-28-sea-growth-attribution-implementation-plan.md) |

@@ -259,3 +259,4 @@ pnpm test:e2e:sprint8   # Consent / RegionPack 基线（可与 Sprint9 互补）
 |------|------|
 | 2026-04-28 | 初版：从 B主C辅设计拆为可执行 Task；与现有 message / consent / RegionPack 对齐 |
 | 2026-04-28 | 收口：Task 0–9 落地；`pnpm test:e2e:sprint9`、Harness Sprint9、实现状态表 |
+| 2026-04-28 | 文档循环：`迭代计划-E2E` v1.10（§二 Sprint 9、§2.5.3 落地 / §2.5.4 Backlog）、`代码现状与文档索引` 测试命令与 S9 链接、`迭代进度总览` Backlog 锚点改为 §2.5.4 |

@@ -29,7 +29,11 @@ pnpm test:e2e:sprint8
 
 等价：`bash ./e2e/run-sprint8-api.sh`（默认 `GATEWAY_URL=http://127.0.0.1:17000`）。
 
+## 与 Sprint 9 的关系
+
+Sprint 9 在 S8 闸门之上增加 **RegionPack 营销频控/静默**（Redis）与可选 **`regionPackId`**；E2E 见 [本地启动与验证-Sprint9.md](./本地启动与验证-Sprint9.md) 与 `pnpm test:e2e:sprint9`。
+
 ## Backlog（未在本切片实现）
 
 - **撤回后营销再发失败**：需同意撤回写入 API 或 SQL 后再加一条 Playwright。
-- **`regionPackId` 请求字段**：当前 RegionPack 以 **`message-service` 内静态目录** `src/catalog/region-packs.ts` 可读；发送 API 尚未强制校验 `regionPackId`（见迭代主文档 S8 工作项说明）。
+- **`regionPackId` 请求字段**：S8 阶段未强制；Sprint 9 对 **营销单聊** 在传入 `regionPackId` 时做策略校验（未知 pack **400**），详见 Sprint 9 文档。
