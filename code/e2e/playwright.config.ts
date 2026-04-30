@@ -50,6 +50,27 @@ export default defineConfig({
       },
     },
     {
+      name: 'sprint9-sea-policy',
+      testMatch: /sprint9-sea-policy\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
+      name: 'sprint9-acquisition',
+      testMatch: /sprint9-acquisition-attribution\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
+      name: 'sprint9-funnel-gap',
+      testMatch: /sprint9-funnel-gap\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
       name: 'sprint4-analytics',
       testMatch: /sprint4-analytics\.spec\.ts/,
       use: {
