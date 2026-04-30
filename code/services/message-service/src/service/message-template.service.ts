@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { MessageTemplateEntity } from '../entity/message-template.entity';
 import { CreateMessageTemplateDto, UpdateMessageTemplateDto, QueryMessageTemplateDto } from '../dto/message-template.dto';
+import { validateMessageTemplateExtra } from '../util/message-template-extra.util';
 
 /**
  * 消息模板服务
@@ -20,6 +21,10 @@ export class MessageTemplateService {
    * 创建模板
    */
   async createTemplate(corpId: number, userId: number, dto: CreateMessageTemplateDto): Promise<MessageTemplateEntity> {
+    const extraCheck = validateMessageTemplateExtra(dto.extra);
+    if (!extraCheck.ok) {
+      throw new Error(extraCheck.message);
+    }
     const template = this.templateRepository.create({
       corpId,
       createUserId: userId,
@@ -39,6 +44,13 @@ export class MessageTemplateService {
 
     if (!template) {
       throw new Error('模板不存在');
+    }
+
+    if (dto.extra !== undefined) {
+      const extraCheck = validateMessageTemplateExtra(dto.extra);
+      if (!extraCheck.ok) {
+        throw new Error(extraCheck.message);
+      }
     }
 
     Object.assign(template, dto);
