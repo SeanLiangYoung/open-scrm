@@ -68,6 +68,11 @@ docs/
 - **前端应用**：[`apps/`](./apps/) 下各子目录 `README.md`
 - **共享包**：[`packages/`](./packages/) 下各子目录 `README.md`
 
+### 路线图（`plans/`）
+
+- [系统分阶段实施路线](./plans/2026-04-18-system-execution-roadmap.md)
+- [多平台内容生成服务](./plans/2026-06-04-content-generation-service.md) — 核心内容源 → 多平台形态（参照 dbskill 方法论）
+
 ### 仓库入口
 
 - **[仓库 README](../README.md)** — 项目主文档
