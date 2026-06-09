@@ -29,6 +29,9 @@ export class ContentSourceService {
       kbEnabled: dto.kbEnabled ?? false,
       kbQuery: dto.kbQuery?.trim() || null,
       kbProjectId: dto.kbProjectId ?? null,
+      kbSelectedPaths: dto.kbSelectedPaths ?? [],
+      kbCitations: dto.kbCitations ?? [],
+      composeStatus: dto.composeStatus ?? 'draft',
       createUserId: userId ?? null,
     });
 
@@ -83,6 +86,11 @@ export class ContentSourceService {
         ? { kbQuery: dto.kbQuery.trim() || null }
         : {}),
       ...(dto.kbProjectId !== undefined ? { kbProjectId: dto.kbProjectId } : {}),
+      ...(dto.kbSelectedPaths !== undefined
+        ? { kbSelectedPaths: dto.kbSelectedPaths }
+        : {}),
+      ...(dto.kbCitations !== undefined ? { kbCitations: dto.kbCitations } : {}),
+      ...(dto.composeStatus !== undefined ? { composeStatus: dto.composeStatus } : {}),
     });
 
     return this.sourceRepository.save(source);

@@ -258,6 +258,9 @@ CREATE TABLE IF NOT EXISTS content_source (
   kb_enabled BOOLEAN NOT NULL DEFAULT FALSE,
   kb_query VARCHAR(500),
   kb_project_id VARCHAR(255),
+  kb_selected_paths JSONB NOT NULL DEFAULT '[]'::jsonb,
+  kb_citations JSONB NOT NULL DEFAULT '[]'::jsonb,
+  compose_status VARCHAR(20) NOT NULL DEFAULT 'draft',
   create_user_id BIGINT,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

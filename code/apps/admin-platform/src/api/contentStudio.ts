@@ -1,5 +1,11 @@
 import api from '@/utils/api';
 
+export interface KbCitation {
+  path: string;
+  title: string;
+  snippet?: string;
+}
+
 export interface ContentSource {
   id: number;
   title: string;
@@ -11,6 +17,9 @@ export interface ContentSource {
   kbEnabled?: boolean;
   kbQuery?: string | null;
   kbProjectId?: string | null;
+  kbSelectedPaths?: string[];
+  kbCitations?: KbCitation[];
+  composeStatus?: 'draft' | 'composed' | 'finalized';
   updateTime?: string;
 }
 

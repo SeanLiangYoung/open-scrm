@@ -113,10 +113,36 @@
           <el-input v-model="kbSearchQuery" placeholder="搜索 llm-wiki" />
           <el-button style="margin-top: 8px" @click="searchKb" :loading="kbSearching">检索</el-button>
           <el-empty v-if="!kbHits.length" description="暂无命中" />
-          <div v-for="hit in kbHits" :key="hit.path" class="kb-hit">
-            <div class="kb-hit-title">{{ hit.title }}</div>
-            <div class="kb-hit-snippet">{{ hit.snippet }}</div>
-            <div class="kb-hit-path">{{ hit.path }}</div>
+          <el-checkbox-group v-model="selectedKbPaths" style="width: 100%">
+            <div v-for="hit in kbHits" :key="hit.path" class="kb-hit">
+              <el-checkbox :label="hit.path">
+                <div class="kb-hit-title">{{ hit.title }}</div>
+              </el-checkbox>
+              <div class="kb-hit-snippet">{{ hit.snippet }}</div>
+              <div class="kb-hit-path">{{ hit.path }}</div>
+            </div>
+          </el-checkbox-group>
+          <div v-if="selectedKbPaths.length" class="kb-selected">
+            <div class="citations-title">已选 {{ selectedKbPaths.length }} 条</div>
+            <el-tag
+              v-for="path in selectedKbPaths"
+              :key="path"
+              size="small"
+              closable
+              style="margin: 4px"
+              @close="removeSelectedPath(path)"
+            >
+              {{ citationTitle(path) }}
+            </el-tag>
+            <el-button
+              type="primary"
+              size="small"
+              style="margin-top: 8px"
+              :loading="savingPaths"
+              @click="saveSelectedPaths"
+            >
+              保存选材
+            </el-button>
           </div>
         </el-card>
       </el-col>
@@ -157,19 +183,16 @@
 import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { contentStudioApi, type ContentSource, type ContentVariant } from '@/api/contentStudio';
+import { contentStudioApi, type ContentSource, type ContentVariant, type KbCitation } from '@/api/contentStudio';
 
-interface Citation {
-  path: string;
-  title: string;
-  snippet?: string;
-}
+interface Citation extends KbCitation {}
 
 const route = useRoute();
 const sourceId = Number(route.params.sourceId);
 
 const loading = ref(false);
 const saving = ref(false);
+const savingPaths = ref(false);
 const generating = ref(false);
 const kbSearching = ref(false);
 const pushing = ref(false);
@@ -178,6 +201,8 @@ const kbStatusOk = ref(false);
 const kbStatusText = ref('检查中...');
 const kbSearchQuery = ref('');
 const kbHits = ref<Citation[]>([]);
+const selectedKbPaths = ref<string[]>([]);
+const kbCitationMap = ref<Record<string, Citation>>({});
 const variants = ref<ContentVariant[]>([]);
 const drafts = ref<Array<{ id: number; title?: string | null; platform: string; status: number; platformContentId?: string | null }>>([]);
 const activeVariantTab = ref('');
@@ -220,6 +245,43 @@ function citations(variant: ContentVariant): Citation[] {
   return Array.isArray(list) ? (list as Citation[]) : [];
 }
 
+function citationTitle(path: string): string {
+  return kbCitationMap.value[path]?.title ?? path;
+}
+
+function removeSelectedPath(path: string) {
+  selectedKbPaths.value = selectedKbPaths.value.filter(p => p !== path);
+}
+
+function syncCitationMapFromHits(hits: Citation[]) {
+  for (const hit of hits) {
+    kbCitationMap.value[hit.path] = hit;
+  }
+}
+
+function buildSelectedCitations(): Citation[] {
+  return selectedKbPaths.value.map(path => {
+    const known = kbCitationMap.value[path];
+    return known ?? { path, title: path };
+  });
+}
+
+async function saveSelectedPaths() {
+  savingPaths.value = true;
+  try {
+    const kbCitations = buildSelectedCitations();
+    await contentStudioApi.updateSource(sourceId, {
+      kbSelectedPaths: [...selectedKbPaths.value],
+      kbCitations,
+    });
+    ElMessage.success('选材已保存');
+  } catch (error: unknown) {
+    ElMessage.error(error instanceof Error ? error.message : '保存选材失败');
+  } finally {
+    savingPaths.value = false;
+  }
+}
+
 async function loadSource() {
   loading.value = true;
   try {
@@ -233,6 +295,10 @@ async function loadSource() {
     form.targetAudience = data.targetAudience ?? '';
     form.kbEnabled = data.kbEnabled ?? false;
     form.kbQuery = data.kbQuery ?? '';
+    selectedKbPaths.value = data.kbSelectedPaths ?? [];
+    if (data.kbCitations?.length) {
+      syncCitationMapFromHits(data.kbCitations);
+    }
   } finally {
     loading.value = false;
   }
@@ -274,6 +340,7 @@ async function searchKb() {
       includeContent: false,
     });
     kbHits.value = res.data?.citations ?? res.data?.results ?? [];
+    syncCitationMapFromHits(kbHits.value);
   } catch (error: unknown) {
     ElMessage.error(error instanceof Error ? error.message : '检索失败');
   } finally {
@@ -417,5 +484,10 @@ onMounted(async () => {
   font-size: 13px;
   color: #606266;
   margin-bottom: 4px;
+}
+.kb-selected {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #ebeef5;
 }
 </style>

@@ -43,6 +43,15 @@ export class ContentSourceEntity {
   @Column({ name: 'kb_project_id', type: 'varchar', length: 255, nullable: true })
   kbProjectId!: string | null;
 
+  @Column({ name: 'kb_selected_paths', type: 'jsonb', default: () => "'[]'" })
+  kbSelectedPaths!: string[];
+
+  @Column({ name: 'kb_citations', type: 'jsonb', default: () => "'[]'" })
+  kbCitations!: Array<{ path: string; title: string; snippet?: string }>;
+
+  @Column({ name: 'compose_status', type: 'varchar', length: 20, default: 'draft' })
+  composeStatus!: 'draft' | 'composed' | 'finalized';
+
   @Column({ name: 'create_user_id', type: 'bigint', unsigned: true, nullable: true })
   createUserId!: number | null;
 
