@@ -1,7 +1,7 @@
 import { Rule, RuleType } from '@midwayjs/validate';
 
 export class CreatePlatformAccountDto {
-  @Rule(RuleType.string().valid('douyin', 'xiaohongshu').required())
+  @Rule(RuleType.string().valid('douyin', 'xiaohongshu', 'wechat', 'twitter').required())
   platform: string;
 
   @Rule(RuleType.string().optional())

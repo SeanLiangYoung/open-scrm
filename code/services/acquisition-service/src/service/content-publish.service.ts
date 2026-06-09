@@ -17,6 +17,7 @@ export class ContentPublishService {
 
   publisherRegistry: Map<string, PlatformPublisher> = createPublisherRegistry({
     xhs: { mode: (process.env.XHS_PUBLISH_MODE as 'mock' | 'live') || 'mock' },
+    publishMode: (process.env.PLATFORM_PUBLISH_MODE as 'mock' | 'live') || 'mock',
   });
 
   async publishContent(corpId: number, contentId: number): Promise<ContentEntity> {
