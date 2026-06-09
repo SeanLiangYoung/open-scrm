@@ -40,6 +40,16 @@ const router = createRouter({
           name: 'Monitor',
           component: () => import('@/views/ServiceMonitor.vue'),
         },
+        {
+          path: 'content-studio',
+          name: 'ContentStudio',
+          component: () => import('@/views/content-studio/ContentStudioList.vue'),
+        },
+        {
+          path: 'content-studio/:sourceId',
+          name: 'ContentStudioEditor',
+          component: () => import('@/views/content-studio/ContentStudioEditor.vue'),
+        },
       ],
     },
   ],
