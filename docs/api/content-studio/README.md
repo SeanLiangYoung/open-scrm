@@ -70,6 +70,8 @@ Content-Type: application/json
 
 响应写入 `content_source` 并返回 `{ title, summary, body, keywords, citations, composeStatus: "composed" }`。
 
+**超时**：该接口同步调用 LLM，端到端可能需 30–120 秒。`admin-platform` 与 gateway 对 `/api/v1/content-studio/*` 已将代理/客户端超时放宽至 120 秒；若仍超时，请检查 `LLM_API_BASE` 连通性与模型响应速度。
+
 ### 触发生成
 
 ```http
@@ -86,6 +88,8 @@ Content-Type: application/json
 当 `kbSelectedPaths` 非空时，orchestrator 使用 `readPage` 全文 grounding（`kbMode: selected`），不再隐式 search。
 
 响应含 `jobId`；默认 Bull 异步（`status: pending`），设置 `CONTENT_GENERATION_SYNC=true` 时同步返回 `variants`。
+
+**超时**：异步模式下 `POST /generate` 通常很快；若启用 `CONTENT_GENERATION_SYNC=true` 或 Redis/Bull 不可用导致同步等待，单次请求可能需 30–120 秒。客户端与 gateway 对该路径已放宽至 120 秒。
 
 ### 查询任务
 

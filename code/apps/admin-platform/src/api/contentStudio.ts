@@ -1,5 +1,8 @@
 import api from '@/utils/api';
 
+/** LLM 合成/生成类接口可能超过默认 15s，单独放宽超时。 */
+const LLM_REQUEST_TIMEOUT_MS = 120_000;
+
 export interface KbCitation {
   path: string;
   title: string;
@@ -81,11 +84,15 @@ export const contentStudioApi = {
       instruction?: string;
     }
   ) {
-    return api.post(`/api/v1/content-studio/sources/${sourceId}/compose`, payload ?? {});
+    return api.post(`/api/v1/content-studio/sources/${sourceId}/compose`, payload ?? {}, {
+      timeout: LLM_REQUEST_TIMEOUT_MS,
+    });
   },
 
   generate(sourceId: number, payload: { channels: string[]; kbEnabled?: boolean; kbQuery?: string }) {
-    return api.post(`/api/v1/content-studio/sources/${sourceId}/generate`, payload);
+    return api.post(`/api/v1/content-studio/sources/${sourceId}/generate`, payload, {
+      timeout: LLM_REQUEST_TIMEOUT_MS,
+    });
   },
 
   getJob(jobId: number) {

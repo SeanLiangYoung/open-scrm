@@ -500,13 +500,19 @@ async function runCompose() {
     syncCitationMapFromHits(composeCitations.value);
     ElMessage.success('核心稿已生成');
   } catch (error: unknown) {
-    ElMessage.error(error instanceof Error ? error.message : '合成失败');
+    const message =
+      error instanceof Error && /timeout/i.test(error.message)
+        ? '合成超时，LLM 响应较慢，请稍后重试'
+        : error instanceof Error
+          ? error.message
+          : '合成失败';
+    ElMessage.error(message);
   } finally {
     composing.value = false;
   }
 }
 
-async function pollJob(jobId: number, attempts = 20) {
+async function pollJob(jobId: number, attempts = 120) {
   for (let i = 0; i < attempts; i += 1) {
     const res = await contentStudioApi.getJob(jobId);
     const job = res.data?.job ?? res.data?.data?.job;
@@ -555,7 +561,13 @@ async function runGenerate() {
     }
     ElMessage.success(`生成完成：${status}`);
   } catch (error: unknown) {
-    ElMessage.error(error instanceof Error ? error.message : '生成失败');
+    const message =
+      error instanceof Error && /timeout/i.test(error.message)
+        ? '生成超时，LLM 响应较慢，请稍后重试'
+        : error instanceof Error
+          ? error.message
+          : '生成失败';
+    ElMessage.error(message);
   } finally {
     generating.value = false;
   }
