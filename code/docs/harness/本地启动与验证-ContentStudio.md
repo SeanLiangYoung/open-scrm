@@ -10,7 +10,7 @@
 | auth-service | 7001 | 登录 JWT |
 | acquisition-service | 7003 | 草稿与发布 |
 | content-generation-service | 7010 | 内容工坊 |
-| PostgreSQL | 5432 | 含 `content_*` 表 |
+| PostgreSQL | 5432 | 含 `content_source` 等 Content Studio 表 |
 | Redis | 6379 | Bull 队列（异步生成） |
 
 ## 推荐环境变量（content-generation-service）
@@ -35,7 +35,7 @@ cp env.example .env
 # 编辑 LLM_WIKI_API_TOKEN=...
 ```
 
-`content-generation-service` 启动时会自动加载 `code/.env`（见 `load-monorepo-env.cjs`）。
+`content-generation-service` 启动时会自动加载 `code/.env`（见 `load-monorepo-env.cjs`）。**Docker Compose** 下需把 `code/.env` 放在 compose 工作目录，并 `docker compose up -d content-generation-service` 重建以注入变量；容器内访问 llm-wiki 使用 `host.docker.internal:19828`（已在 `docker-compose.yml` 配置）。
 
 ```env
 LLM_WIKI_BASE_URL=http://127.0.0.1:19828
@@ -46,6 +46,12 @@ LLM_WIKI_PROJECT_ID=current
 ## 启动顺序（本地 mw dev）
 
 1. `docker compose up -d postgres redis`
+   - **已有数据卷**：若 POST `/content-studio/sources` 返回 `42P01`，说明库中缺少 Content Studio 表，执行：
+     ```bash
+     docker exec -i scrm-postgres psql -U postgres -d scrm_dev \
+       < code/scripts/migrations/2026-06-04-content-studio.sql
+     ```
+   - **全新环境**：`init-db.pg.sql` 首次初始化已包含上述表。
 2. `cd services/auth-service && NODE_ENV=development npx mw dev`
 3. `cd services/acquisition-service && NODE_ENV=development npx mw dev`
 4. `cd services/content-generation-service && CONTENT_GENERATION_SYNC=true CONTENT_GENERATION_MOCK_LLM=true NODE_ENV=development npx mw dev`

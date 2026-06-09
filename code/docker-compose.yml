@@ -349,8 +349,14 @@ services:
     command: ['node', 'bootstrap.js']
     ports:
       - '7010:7010'
+    env_file:
+      - .env
     environment:
       <<: *backend-env
+      # llm-wiki 跑在宿主机；容器内 127.0.0.1 指向自身
+      LLM_WIKI_BASE_URL: http://host.docker.internal:19828
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     networks:
       - scrm-network
     depends_on:
