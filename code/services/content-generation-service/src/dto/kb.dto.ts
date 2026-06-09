@@ -13,3 +13,11 @@ export class KbSearchDto {
   @Rule(RuleType.string().max(255).optional())
   projectId?: string;
 }
+
+export class KbReadPagesDto {
+  @Rule(RuleType.array().items(RuleType.string().max(500)).min(1).max(5).required())
+  paths!: string[];
+
+  @Rule(RuleType.string().max(255).optional())
+  projectId?: string;
+}
