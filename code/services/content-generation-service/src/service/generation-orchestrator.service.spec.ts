@@ -89,5 +89,29 @@ describe('GenerationOrchestrator', () => {
     expect(result.variants[0].structured?.citations).toEqual([
       { path: 'wiki/concepts/ai.md', title: 'AI', snippet: 'about ai' },
     ]);
+    expect(result.variants[0].qualityFlags?.ai_check_passed).toBe(true);
+  });
+
+  it('runs LLM generation for all channels in parallel', async () => {
+    const llmComplete = vi.fn().mockImplementation(async () => ({
+      content: '{"title":"OK title here","body":"This body is long enough for ai check.","structured":{}}',
+    }));
+    const saveVariant = vi.fn().mockImplementation(async v => ({ ...v, id: Math.random() }));
+    const updateJob = vi.fn().mockImplementation(async j => j);
+
+    const orchestrator = new GenerationOrchestrator();
+    orchestrator.llmAdapter = { complete: llmComplete };
+    orchestrator.kbService = { search: vi.fn() } as any;
+    orchestrator.variantRepository = { save: saveVariant } as any;
+    orchestrator.jobRepository = { save: updateJob } as any;
+    orchestrator.promptRegistry = new (await import('../prompt/channel-prompt.registry')).ChannelPromptRegistry();
+
+    await orchestrator.runJob(job, source, {
+      channels: ['tweet', 'xhs_graphic', 'wechat_article'],
+      kbEnabled: false,
+    });
+
+    expect(llmComplete).toHaveBeenCalledTimes(3);
+    expect(saveVariant).toHaveBeenCalledTimes(3);
   });
 });

@@ -30,6 +30,11 @@ describe('ChannelPromptRegistry', () => {
     expect(prompt.user).toContain('tags');
   });
 
+  it('builds wechat_article and douyin_caption prompts', () => {
+    expect(registry.build('wechat_article', baseSource).system).toContain('WeChat');
+    expect(registry.build('douyin_caption', baseSource).system).toContain('video');
+  });
+
   it('throws for unsupported channel', () => {
     expect(() => registry.build('invalid' as 'tweet', baseSource)).toThrow(
       'Unsupported channel'

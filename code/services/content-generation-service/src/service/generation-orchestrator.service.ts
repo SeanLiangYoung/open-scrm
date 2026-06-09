@@ -5,6 +5,7 @@ import type { ContentSourceEntity } from '../entity/content-source.entity';
 import type { GenerationJobEntity } from '../entity/generation-job.entity';
 import type { ContentVariantEntity } from '../entity/content-variant.entity';
 import { ChannelPromptRegistry } from '../prompt/channel-prompt.registry';
+import { runAiCheck } from '../prompt/post-process/ai-check.util';
 import { toCitationRecords } from '../util/citations.util';
 import type { LlmAdapter } from './llm/llm.adapter';
 import type { LlmWikiKbService } from './llm-wiki-kb.service';
@@ -93,30 +94,40 @@ export class GenerationOrchestrator {
     const variants: ContentVariantEntity[] = [];
 
     try {
-      for (const channel of channels) {
-        const prompt = this.promptRegistry.build(channel as ContentChannel, promptContext);
-        const llmResult = await this.llmAdapter.complete(prompt);
-        const parsed = this.parseVariantPayload(llmResult.content);
+      const variantResults = await Promise.all(
+        channels.map(async channel => {
+          const prompt = this.promptRegistry.build(channel as ContentChannel, promptContext);
+          const llmResult = await this.llmAdapter.complete(prompt);
+          const parsed = this.parseVariantPayload(llmResult.content);
 
-        const structured = {
-          ...(parsed.structured ?? {}),
-          ...(citations.length ? { citations } : {}),
-        };
+          const structured = {
+            ...(parsed.structured ?? {}),
+            ...(citations.length ? { citations } : {}),
+          };
 
-        const variant = await this.variantRepository.save({
-          corpId: source.corpId,
-          jobId: job.id,
-          sourceId: source.id,
-          channel,
-          title: parsed.title ?? null,
-          body: parsed.body ?? llmResult.content,
-          structured,
-          qualityFlags: { ai_check_passed: true },
-          version: 1,
-        });
+          const aiCheck = runAiCheck({
+            title: parsed.title ?? null,
+            body: parsed.body ?? llmResult.content,
+          });
 
-        variants.push(variant);
-      }
+          return this.variantRepository.save({
+            corpId: source.corpId,
+            jobId: job.id,
+            sourceId: source.id,
+            channel,
+            title: parsed.title ?? null,
+            body: parsed.body ?? llmResult.content,
+            structured,
+            qualityFlags: {
+              ai_check_passed: aiCheck.passed,
+              ai_check_issues: aiCheck.issues,
+            },
+            version: 1,
+          });
+        })
+      );
+
+      variants.push(...variantResults);
 
       job.status = 'succeeded';
       job.errorMessage = null;
