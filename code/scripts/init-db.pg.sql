@@ -300,6 +300,17 @@ CREATE INDEX IF NOT EXISTS idx_content_variant_job ON content_variant (job_id);
 CREATE INDEX IF NOT EXISTS idx_content_variant_source_channel
   ON content_variant (source_id, channel);
 
+CREATE TABLE IF NOT EXISTS variant_publish_link (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  variant_id BIGINT NOT NULL,
+  content_id BIGINT NOT NULL,
+  platform VARCHAR(20) NOT NULL,
+  create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_variant_publish_link_variant
+  ON variant_publish_link (corp_id, variant_id);
+
 -- ========== 消息 ==========
 
 CREATE TABLE IF NOT EXISTS notification (

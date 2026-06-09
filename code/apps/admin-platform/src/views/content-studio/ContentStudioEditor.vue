@@ -42,6 +42,9 @@
             <el-checkbox label="tweet">Tweet</el-checkbox>
             <el-checkbox label="xhs_graphic">小红书图文</el-checkbox>
             <el-checkbox label="wechat_article">公众号文章</el-checkbox>
+            <el-checkbox label="short_video_script">短视频脚本</el-checkbox>
+            <el-checkbox label="long_video_script">长视频脚本</el-checkbox>
+            <el-checkbox label="douyin_caption">抖音文案</el-checkbox>
           </el-checkbox-group>
         </el-card>
 
@@ -125,6 +128,8 @@
           <el-select v-model="pushForm.platform" style="width: 100%">
             <el-option label="小红书" value="xiaohongshu" />
             <el-option label="抖音" value="douyin" />
+            <el-option label="微信公众号" value="wechat" />
+            <el-option label="X / Twitter" value="twitter" />
           </el-select>
         </el-form-item>
         <el-form-item label="账号 ID">
@@ -276,6 +281,26 @@ async function searchKb() {
   }
 }
 
+async function pollJob(jobId: number, attempts = 20) {
+  for (let i = 0; i < attempts; i += 1) {
+    const res = await contentStudioApi.getJob(jobId);
+    const job = res.data?.job ?? res.data?.data?.job;
+    const jobVariants = res.data?.variants ?? res.data?.data?.variants ?? [];
+    if (job?.status === 'succeeded') {
+      variants.value = jobVariants;
+      if (variants.value.length) {
+        activeVariantTab.value = String(variants.value[0].id);
+      }
+      return job.status as string;
+    }
+    if (job?.status === 'failed') {
+      throw new Error(job.errorMessage || '生成失败');
+    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  throw new Error('生成超时，请稍后在任务列表重试');
+}
+
 async function runGenerate() {
   if (!selectedChannels.value.length) {
     ElMessage.warning('请至少选择一个渠道');
@@ -289,11 +314,18 @@ async function runGenerate() {
       kbEnabled: form.kbEnabled,
       kbQuery: form.kbQuery || undefined,
     });
-    variants.value = res.data?.variants ?? [];
+    const jobId = res.data?.jobId ?? res.data?.data?.jobId;
+    const status = res.data?.status ?? res.data?.data?.status;
+    if (status === 'pending' && jobId) {
+      const finalStatus = await pollJob(jobId);
+      ElMessage.success(`生成完成：${finalStatus}`);
+      return;
+    }
+    variants.value = res.data?.variants ?? res.data?.data?.variants ?? [];
     if (variants.value.length) {
       activeVariantTab.value = String(variants.value[0].id);
     }
-    ElMessage.success(`生成完成：${res.data?.status}`);
+    ElMessage.success(`生成完成：${status}`);
   } catch (error: unknown) {
     ElMessage.error(error instanceof Error ? error.message : '生成失败');
   } finally {
