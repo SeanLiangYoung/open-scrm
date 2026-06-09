@@ -147,6 +147,18 @@ importers:
         specifier: ^8.0.1
         version: 8.0.5
 
+  packages/llm-wiki-client:
+    devDependencies:
+      '@types/node':
+        specifier: ^18.0.0
+        version: 18.19.130
+      typescript:
+        specifier: ^5.2.2
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@18.19.130)
+
   packages/server-common:
     dependencies:
       '@midwayjs/core':
