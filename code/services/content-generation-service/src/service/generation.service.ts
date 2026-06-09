@@ -144,8 +144,10 @@ export class GenerationService {
       dto,
       headers
     );
+    const contentId = result?.data?.id ?? result?.data?.data?.id;
     return {
       variantId: variant.id,
+      contentId,
       acquisition: result,
     };
   }

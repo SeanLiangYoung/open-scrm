@@ -68,6 +68,33 @@
             </el-tab-pane>
           </el-tabs>
         </el-card>
+
+        <el-card v-if="drafts.length" style="margin-top: 16px">
+          <template #header>发布草稿</template>
+          <el-table :data="drafts" size="small">
+            <el-table-column prop="id" label="ID" width="70" />
+            <el-table-column prop="title" label="标题" />
+            <el-table-column prop="platform" label="平台" width="110" />
+            <el-table-column label="状态" width="100">
+              <template #default="{ row }">
+                <el-tag size="small">{{ draftStatusLabel(row.status) }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="120">
+              <template #default="{ row }">
+                <el-button
+                  v-if="row.status === 0"
+                  type="success"
+                  link
+                  :loading="publishing && publishingDraftId === row.id"
+                  @click="publishDraft(row.id)"
+                >
+                  发布
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
       </el-col>
 
       <el-col :span="8">
@@ -109,6 +136,9 @@
             <el-option label="视频" :value="2" />
           </el-select>
         </el-form-item>
+        <el-form-item label="平台 Token">
+          <el-input v-model="pushForm.accessToken" placeholder="本地开发：模拟 OAuth token" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="pushDialogVisible = false">取消</el-button>
@@ -138,11 +168,13 @@ const saving = ref(false);
 const generating = ref(false);
 const kbSearching = ref(false);
 const pushing = ref(false);
+const publishing = ref(false);
 const kbStatusOk = ref(false);
 const kbStatusText = ref('检查中...');
 const kbSearchQuery = ref('');
 const kbHits = ref<Citation[]>([]);
 const variants = ref<ContentVariant[]>([]);
+const drafts = ref<Array<{ id: number; title?: string | null; platform: string; status: number; platformContentId?: string | null }>>([]);
 const activeVariantTab = ref('');
 const selectedChannels = ref(['tweet', 'xhs_graphic']);
 const pushDialogVisible = ref(false);
@@ -163,7 +195,20 @@ const pushForm = reactive({
   platform: 'xiaohongshu',
   accountId: 1,
   contentType: 1,
+  accessToken: 'dev-token',
 });
+
+const publishingDraftId = ref<number | null>(null);
+
+function draftStatusLabel(status: number) {
+  const map: Record<number, string> = {
+    0: '草稿',
+    1: '已发布',
+    2: '失败',
+    3: '发布中',
+  };
+  return map[status] ?? String(status);
+}
 
 function citations(variant: ContentVariant): Citation[] {
   const list = variant.structured?.citations;
@@ -261,13 +306,29 @@ function openPushDialog(variant: ContentVariant) {
   pushDialogVisible.value = true;
 }
 
+async function loadDrafts() {
+  try {
+    const res = await contentStudioApi.listDrafts({ status: 0, platform: 'xiaohongshu' });
+    drafts.value = res.data?.data?.list ?? res.data?.list ?? [];
+  } catch {
+    drafts.value = [];
+  }
+}
+
 async function confirmPush() {
   if (!pushTarget.value) return;
   pushing.value = true;
   try {
-    await contentStudioApi.pushDraft(pushTarget.value.id, { ...pushForm });
-    ElMessage.success('已推送草稿');
+    const { accessToken, ...draftPayload } = pushForm;
+    if (accessToken.trim()) {
+      await contentStudioApi.connectPlatformOAuth(draftPayload.accountId, {
+        accessToken: accessToken.trim(),
+      });
+    }
+    const res = await contentStudioApi.pushDraft(pushTarget.value.id, draftPayload);
+    ElMessage.success(`已推送草稿${res.data?.contentId ? ` #${res.data.contentId}` : ''}`);
     pushDialogVisible.value = false;
+    await loadDrafts();
   } catch (error: unknown) {
     ElMessage.error(error instanceof Error ? error.message : '推送失败');
   } finally {
@@ -275,8 +336,24 @@ async function confirmPush() {
   }
 }
 
+async function publishDraft(contentId: number) {
+  publishing.value = true;
+  publishingDraftId.value = contentId;
+  try {
+    const res = await contentStudioApi.publishContent(contentId);
+    const platformContentId = res.data?.data?.platformContentId ?? res.data?.platformContentId;
+    ElMessage.success(platformContentId ? `发布成功：${platformContentId}` : '发布成功');
+    await loadDrafts();
+  } catch (error: unknown) {
+    ElMessage.error(error instanceof Error ? error.message : '发布失败');
+  } finally {
+    publishing.value = false;
+    publishingDraftId.value = null;
+  }
+}
+
 onMounted(async () => {
-  await Promise.all([loadSource(), loadKbHealth()]);
+  await Promise.all([loadSource(), loadKbHealth(), loadDrafts()]);
 });
 </script>
 

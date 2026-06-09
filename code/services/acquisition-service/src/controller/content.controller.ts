@@ -3,6 +3,7 @@ import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
 import { ContentService } from '../service/content.service';
+import { ContentPublishService } from '../service/content-publish.service';
 import { CreateContentDto, QueryContentDto } from '../dto/content.dto';
 
 @Controller('/api/v1/acquisition/contents')
@@ -12,6 +13,9 @@ export class ContentController {
 
   @Inject()
   contentService!: ContentService;
+
+  @Inject()
+  contentPublishService!: ContentPublishService;
 
   @Post('/')
   @Validate()
@@ -34,5 +38,19 @@ export class ContentController {
     const { corpId } = getTenantContext(this.ctx);
     const content = await this.contentService.getContent(corpId, Number(id));
     return { success: true, data: content };
+  }
+
+  @Post('/:id/publish')
+  async publish(@Param('id') id: string) {
+    const { corpId } = getTenantContext(this.ctx);
+    const content = await this.contentPublishService.publishContent(corpId, Number(id));
+    return { success: true, data: content };
+  }
+
+  @Get('/:id/publish-status')
+  async publishStatus(@Param('id') id: string) {
+    const { corpId } = getTenantContext(this.ctx);
+    const status = await this.contentPublishService.getPublishStatus(corpId, Number(id));
+    return { success: true, data: status };
   }
 }

@@ -75,7 +75,19 @@ export const contentStudioApi = {
     return api.get('/api/platform-account/list', { params });
   },
 
-  listDrafts(params?: { status?: number }) {
+  listDrafts(params?: { status?: number; platform?: string }) {
     return api.get('/api/v1/acquisition/contents', { params });
+  },
+
+  publishContent(contentId: number) {
+    return api.post(`/api/v1/acquisition/contents/${contentId}/publish`);
+  },
+
+  getPublishStatus(contentId: number) {
+    return api.get(`/api/v1/acquisition/contents/${contentId}/publish-status`);
+  },
+
+  connectPlatformOAuth(accountId: number, payload: { accessToken: string; refreshToken?: string }) {
+    return api.post(`/api/platform-account/${accountId}/oauth`, payload);
   },
 };
