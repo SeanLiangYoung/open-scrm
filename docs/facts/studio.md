@@ -31,6 +31,8 @@
 | `LLM_API_BASE` / `LLM_API_KEY` / `LLM_MODEL` | content-generation | OpenAI 兼容生成端点 |
 | `ACQUISITION_SERVICE_URL` | content-generation | push-draft 内部调用 |
 | `XHS_PUBLISH_MODE` | acquisition | `mock`（默认）或 `live` |
+| `PLATFORM_PUBLISH_MODE` | acquisition | 抖音/微信/X mock 发布 |
+| `CONTENT_GENERATION_SYNC` | content-generation | `true` 时跳过 Bull，同步生成 |
 
 Docker 内 CGS 访问宿主机 llm-wiki 时使用 `http://host.docker.internal:19828`。
 

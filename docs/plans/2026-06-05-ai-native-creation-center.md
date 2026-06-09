@@ -1,6 +1,6 @@
 # AI 原生个人创作中心 — 架构与实施计划
 
-> **状态：** 待实施（草案）  
+> **状态：** 实施中（P0–P5 主体完成；P4 live API 与 E2E 待办）  
 > **创建日期：** 2026-06-05  
 > **概述：** 在 open-scrm 上构建「llm-wiki 知识库 → 内容系统核心 → 多平台生成/发布外围」三层架构的个人 AI 原生创作中心。本地优先：llm-wiki 跑在本机 `:19828`；目标闭环为检索 grounding → 核心内容源 → 多平台变体 → 草稿 → 平台发布 API。  
 > **扩展：** 本计划扩展 [多平台内容生成服务](./2026-06-04-content-generation-service.md)，新增 llm-wiki 知识层与发布闭环。
@@ -9,14 +9,14 @@
 
 ## 实施清单
 
-- [ ] 在 LLM Wiki App 生成 API Token，配置 `LLM_WIKI_API_TOKEN` 环境变量
-- [ ] 新增 `packages/llm-wiki-client`：`health` / `search` / `readPage` / `graph` 封装
-- [ ] 搭建 `content-generation-service`（7010）：数据模型、gateway、KB grounding 管线
-- [ ] `acquisition-service` 实现 Content CRUD + `push-draft` 映射
-- [ ] `admin-platform` 创作中心 UI：源编辑、KB 检索、生成、变体、citations
-- [ ] 首平台闭环：小红书 OAuth + publish API + E2E
-- [ ] 扩展抖音、微信公众号、X 发布 Adapter（按 P4 逐个）
-- [ ] 编写 `docs/facts/studio.md` 与 API 契约文档
+- [ ] 在 LLM Wiki App 生成 API Token，配置 `LLM_WIKI_API_TOKEN` 环境变量（需用户本地操作）
+- [x] 新增 `packages/llm-wiki-client`：`health` / `search` / `readPage` / `graph` 封装
+- [x] 搭建 `content-generation-service`（7010）：数据模型、gateway、KB grounding 管线
+- [x] `acquisition-service` 实现 Content CRUD + `push-draft` 映射
+- [x] `admin-platform` 创作中心 UI：源编辑、KB 检索、生成、变体、citations
+- [x] 首平台闭环：小红书 OAuth + publish API + E2E（mock 模式）
+- [x] 扩展抖音、微信公众号、X 发布 Adapter（mock 模式，按 P4 逐个）
+- [x] 编写 `docs/facts/studio.md` 与 API 契约文档
 
 ---
 
