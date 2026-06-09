@@ -37,6 +37,7 @@ export class GenerationJobRunner {
     llmApiBase: string;
     llmApiKey: string;
     llmModel: string;
+    llmTemperature?: number;
     promptVersion: string;
     mockLlm: boolean;
   };
@@ -48,6 +49,7 @@ export class GenerationJobRunner {
       apiBase: this.contentGenerationConfig.llmApiBase,
       apiKey: this.contentGenerationConfig.llmApiKey,
       model: this.contentGenerationConfig.llmModel,
+      temperature: this.contentGenerationConfig.llmTemperature,
     });
     orchestrator.kbService = this.llmWikiKbService;
     orchestrator.jobRepository = this.jobRepository;

@@ -7,6 +7,7 @@ export function createLlmAdapter(config: {
   apiBase: string;
   apiKey: string;
   model: string;
+  temperature?: number;
 }): LlmAdapter {
   if (config.mockLlm) {
     return new MockLlmAdapter();
@@ -16,5 +17,6 @@ export function createLlmAdapter(config: {
     apiBase: config.apiBase,
     apiKey: config.apiKey,
     model: config.model,
+    temperature: config.temperature,
   });
 }

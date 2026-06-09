@@ -22,6 +22,8 @@ export class OpenAiCompatibleLlmAdapter implements LlmAdapter {
       apiBase: string;
       apiKey: string;
       model: string;
+      /** Omit to use provider/model default (required for some reasoning models). */
+      temperature?: number;
     },
     private readonly fetchFn: FetchFn = fetch
   ) {}
@@ -30,20 +32,24 @@ export class OpenAiCompatibleLlmAdapter implements LlmAdapter {
     const base = this.config.apiBase.replace(/\/$/, '');
     const url = `${base}/chat/completions`;
 
+    const payload: Record<string, unknown> = {
+      model: this.config.model,
+      messages: [
+        { role: 'system', content: request.system },
+        { role: 'user', content: request.user },
+      ],
+    };
+    if (this.config.temperature !== undefined) {
+      payload.temperature = this.config.temperature;
+    }
+
     const response = await this.fetchFn(url, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: this.config.model,
-        messages: [
-          { role: 'system', content: request.system },
-          { role: 'user', content: request.user },
-        ],
-        temperature: 0.7,
-      }),
+      body: JSON.stringify(payload),
     });
 
     const data = (await response.json()) as {

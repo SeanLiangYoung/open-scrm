@@ -26,6 +26,7 @@ export class ContentComposeService {
     llmApiBase: string;
     llmApiKey: string;
     llmModel: string;
+    llmTemperature?: number;
     mockLlm: boolean;
   };
 
@@ -39,6 +40,7 @@ export class ContentComposeService {
         apiBase: this.contentGenerationConfig.llmApiBase,
         apiKey: this.contentGenerationConfig.llmApiKey,
         model: this.contentGenerationConfig.llmModel,
+        temperature: this.contentGenerationConfig.llmTemperature,
       });
     }
     return this.llmAdapter;

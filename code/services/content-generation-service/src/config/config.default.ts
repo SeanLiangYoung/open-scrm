@@ -58,6 +58,11 @@ export default {
     llmApiBase: process.env.LLM_API_BASE || '',
     llmApiKey: process.env.LLM_API_KEY || '',
     llmModel: process.env.LLM_MODEL || 'gpt-4o-mini',
+    llmTemperature:
+      process.env.LLM_TEMPERATURE !== undefined &&
+      process.env.LLM_TEMPERATURE !== ''
+        ? parseFloat(process.env.LLM_TEMPERATURE)
+        : undefined,
     promptVersion: process.env.CONTENT_PROMPT_VERSION || 'v1',
     acquisitionServiceUrl:
       process.env.ACQUISITION_SERVICE_URL || 'http://localhost:7003',
