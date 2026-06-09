@@ -23,31 +23,31 @@ export class ContentEntity {
   contentType: number;
 
   @Column({ type: 'varchar', length: 255, nullable: true, comment: '标题' })
-  title: string;
+  title: string | null;
 
   @Column({ type: 'text', nullable: true, comment: '内容' })
-  content: string;
+  content: string | null;
 
   @Column({ name: 'media_urls', type: 'json', nullable: true, comment: '媒体文件URLs' })
-  mediaUrls: any;
+  mediaUrls: string[] | null;
 
   @Column({ name: 'cover_url', type: 'varchar', length: 255, nullable: true, comment: '封面URL' })
-  coverUrl: string;
+  coverUrl: string | null;
 
   @Column({ type: 'json', nullable: true, comment: '话题标签' })
-  topics: any;
+  topics: string[] | null;
 
   @Column({ type: 'smallint', default: 0, comment: '状态: 0-草稿 1-已发布 2-失败' })
   status: number;
 
   @Column({ name: 'publish_time', type: 'timestamp', nullable: true, comment: '发布时间' })
-  publishTime: Date;
+  publishTime: Date | null;
 
   @Column({ name: 'platform_content_id', type: 'varchar', length: 100, nullable: true, comment: '平台内容ID' })
-  platformContentId: string;
+  platformContentId: string | null;
 
   @Column({ name: 'create_user_id', type: 'bigint', unsigned: true, nullable: true, comment: '创建人ID' })
-  createUserId: number;
+  createUserId: number | null;
 
   @CreateDateColumn({ name: 'create_time' })
   createTime: Date;

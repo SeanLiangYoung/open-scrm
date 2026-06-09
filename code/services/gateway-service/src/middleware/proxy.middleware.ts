@@ -40,13 +40,16 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
           headers['x-is-admin'] = String(ctx.state.user.isAdmin || false);
         }
 
+        const isLlmHeavyRoute = ctx.path.startsWith('/api/v1/content-studio/');
+        const proxyTimeoutMs = isLlmHeavyRoute ? 120_000 : 30_000;
+
         const response = await this.httpService.request({
           method: ctx.method as any,
           url: targetUrl,
           headers,
           data: ctx.method !== 'GET' ? ctx.request.body : undefined,
           params: ctx.query,
-          timeout: 30000,
+          timeout: proxyTimeoutMs,
           validateStatus: () => true,
         });
 

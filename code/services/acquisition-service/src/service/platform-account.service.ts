@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { PlatformAccountEntity } from '../entity/platform-account.entity';
 import { CreatePlatformAccountDto, QueryPlatformAccountDto } from '../dto/platform-account.dto';
+import type { ConnectPlatformAccountDto } from '../dto/platform-oauth.dto';
 
 @Provide()
 export class PlatformAccountService {
@@ -55,6 +56,27 @@ export class PlatformAccountService {
       pageSize,
       totalPages: Math.ceil(total / pageSize),
     };
+  }
+
+  async connectOAuth(
+    corpId: number,
+    accountId: number,
+    dto: ConnectPlatformAccountDto
+  ): Promise<PlatformAccountEntity> {
+    const account = await this.accountRepository.findOne({
+      where: { corpId, id: accountId },
+    });
+
+    if (!account) {
+      throw new Error('Platform account not found');
+    }
+
+    account.accessToken = dto.accessToken;
+    account.refreshToken = dto.refreshToken ?? account.refreshToken;
+    account.expiresTime = dto.expiresTime ?? account.expiresTime;
+    account.status = 1;
+
+    return this.accountRepository.save(account);
   }
 }
 

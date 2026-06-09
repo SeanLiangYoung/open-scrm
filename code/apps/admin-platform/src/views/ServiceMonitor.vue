@@ -71,6 +71,7 @@ const services = ref<ServiceInfo[]>([
   { name: 'integration-service', port: 7007, description: '第三方集成 — 企微/抖音/小红书', status: 'unknown', responseTime: -1 },
   { name: 'message-service', port: 7008, description: '消息推送 — 模板、通知', status: 'unknown', responseTime: -1 },
   { name: 'finance-service', port: 7009, description: '财务管理 — 订单、支付', status: 'unknown', responseTime: -1 },
+  { name: 'content-generation-service', port: 7010, description: '内容工坊 — 多平台 AI 生成', status: 'unknown', responseTime: -1 },
 ]);
 
 async function checkService(svc: ServiceInfo) {

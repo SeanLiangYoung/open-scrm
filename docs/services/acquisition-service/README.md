@@ -80,6 +80,45 @@ Content-Type: application/json
 GET /api/channel-code/list?channel=douyin&page=1
 ```
 
+### 内容草稿与发布（创作中心）
+
+#### 创建草稿
+```http
+POST /api/v1/acquisition/contents
+Content-Type: application/json
+
+{
+  "accountId": 1,
+  "platform": "xiaohongshu",
+  "contentType": 1,
+  "title": "标题",
+  "content": "正文",
+  "topics": ["AI"]
+}
+```
+
+#### 发布草稿（小红书 MVP）
+```http
+POST /api/v1/acquisition/contents/:id/publish
+```
+
+#### 查询发布状态
+```http
+GET /api/v1/acquisition/contents/:id/publish-status
+```
+
+#### 本地开发：绑定平台 OAuth Token
+```http
+POST /api/platform-account/:id/oauth
+Content-Type: application/json
+
+{
+  "accessToken": "dev-token"
+}
+```
+
+内容状态：`0` 草稿 · `3` 发布中 · `1` 已发布 · `2` 失败。本地默认 `XHS_PUBLISH_MODE=mock`。
+
 ## 环境配置
 
 ```env
@@ -99,6 +138,9 @@ OSS_ENDPOINT=xxx
 # 依赖服务
 CUSTOMER_SERVICE_URL=http://localhost:7002
 INTEGRATION_SERVICE_URL=http://localhost:7007
+
+# 小红书发布（创作中心 P3）
+XHS_PUBLISH_MODE=mock
 ```
 
 ## 开发指南

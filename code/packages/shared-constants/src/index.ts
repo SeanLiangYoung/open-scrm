@@ -6,4 +6,5 @@ export * from './status-code';
 export * from './config';
 export * from './regex';
 export * from './platform';
+export * from './content-channel';
 

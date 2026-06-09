@@ -139,6 +139,11 @@ export default {
       {
         path: '/api/v1/finance/*',
         target: process.env.FINANCE_SERVICE_URL || 'http://localhost:7009'
+      },
+      {
+        path: '/api/v1/content-studio/*',
+        target:
+          process.env.CONTENT_GENERATION_SERVICE_URL || 'http://localhost:7010'
       }
     ]
   },
