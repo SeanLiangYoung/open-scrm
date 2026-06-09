@@ -98,6 +98,13 @@ export default defineConfig({
       },
     },
     {
+      name: 'content-studio',
+      testMatch: /content-studio\.spec\.ts/,
+      use: {
+        baseURL: gatewayUrl,
+      },
+    },
+    {
       name: 'sprint1-admin',
       testMatch: /sprint1-admin\.spec\.ts/,
       use: {

@@ -31,6 +31,7 @@
 - **Sprint 6 仅官网 E2E**：`pnpm test:e2e:sprint6-official`（需已启动 `official-website`；见 [本地启动与验证-Sprint6.md](./本地启动与验证-Sprint6.md)）
 - **Sprint 8 仅 API**：`pnpm test:e2e:sprint8`（需 gateway + auth + message + DB 含 `consent_record`；见 [本地启动与验证-Sprint8.md](./本地启动与验证-Sprint8.md)）
 - **Sprint 9 仅 API**：`pnpm test:e2e:sprint9`（需 gateway + auth + message + redis + acquisition + integration + analytics + DB 含 `channel_scan_touch`；见 [本地启动与验证-Sprint9.md](./本地启动与验证-Sprint9.md)）
+- **Content Studio 仅 API**：`pnpm test:e2e:content-studio`（需 gateway + auth + acquisition + content-generation + Redis + DB；见 [本地启动与验证-ContentStudio.md](./本地启动与验证-ContentStudio.md)）
 - **全量门禁**：`pnpm test`（含单元测试 + build + type-check + lint）
 
 E2E 包位置：`code/e2e/`（`@scrm/e2e`）。

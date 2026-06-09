@@ -23,6 +23,7 @@
     "test:e2e:sprint5": "bash ./e2e/run-sprint5-api.sh",
     "test:e2e:sprint8": "bash ./e2e/run-sprint8-api.sh",
     "test:e2e:sprint9": "bash ./e2e/run-sprint9-api.sh",
+    "test:e2e:content-studio": "bash ./e2e/run-content-studio-api.sh",
     "test:e2e:sprint6-official": "PLAYWRIGHT_SKIP_WEBSERVER=1 pnpm --filter @scrm/e2e exec playwright test --project=sprint6-official",
     "test:build": "bash ./scripts/test/build-test.sh",
     "test:type": "bash ./scripts/test/type-check.sh",
