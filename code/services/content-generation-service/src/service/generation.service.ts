@@ -12,6 +12,8 @@ import {
 } from './generation-orchestrator.service';
 import { OpenAiCompatibleLlmAdapter } from './llm/llm.adapter';
 import type { GenerateContentDto } from '../dto/generation.dto';
+import type { PushDraftDto } from '../dto/push-draft.dto';
+import { AcquisitionClientService } from './acquisition-client.service';
 
 @Provide()
 export class GenerationService {
@@ -26,6 +28,9 @@ export class GenerationService {
 
   @Inject()
   llmWikiKbService!: LlmWikiKbService;
+
+  @Inject()
+  acquisitionClient!: AcquisitionClientService;
 
   @Config('contentGeneration')
   contentGenerationConfig!: {
@@ -125,5 +130,23 @@ export class GenerationService {
       version: variant.version + 1,
     });
     return this.variantRepository.save(variant);
+  }
+
+  async pushVariantDraft(
+    corpId: number,
+    variantId: number,
+    dto: import('../dto/push-draft.dto').PushDraftDto,
+    headers: Record<string, string>
+  ) {
+    const variant = await this.getVariant(corpId, variantId);
+    const result = await this.acquisitionClient.pushVariantDraft(
+      variant,
+      dto,
+      headers
+    );
+    return {
+      variantId: variant.id,
+      acquisition: result,
+    };
   }
 }
