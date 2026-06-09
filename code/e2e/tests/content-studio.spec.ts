@@ -38,7 +38,42 @@ async function pollGenerationJob(
 }
 
 test.describe('Content Studio — 创作中心 API 闭环', () => {
-  test('创建源 → 生成 → 推送草稿 → 发布（mock LLM + mock publish）', async ({ request }) => {
+  test('PATCH 持久化 kbSelectedPaths', async ({ request }) => {
+    const health = await request.get(`${GATEWAY}/health`).catch(() => null);
+    test.skip(!health?.ok(), 'Gateway 未启动');
+
+    const token = await loginAccessToken(request);
+    const auth = { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' };
+    const paths = ['notes/e2e-topic-a.md', 'notes/e2e-topic-b.md'];
+
+    const sourceRes = await request.post(`${GATEWAY}/api/v1/content-studio/sources`, {
+      headers: auth,
+      data: { title: `E2E 选材 ${Date.now()}`, kbEnabled: true },
+    });
+    if (sourceRes.status() >= 500 || sourceRes.status() === 503) {
+      test.skip(true, 'content-generation-service 不可用');
+    }
+    expect(sourceRes.ok(), await sourceRes.text()).toBeTruthy();
+    const sourceId = (await sourceRes.json()).data.id as number;
+
+    const patchRes = await request.patch(`${GATEWAY}/api/v1/content-studio/sources/${sourceId}`, {
+      headers: auth,
+      data: {
+        kbSelectedPaths: paths,
+        kbCitations: paths.map(path => ({ path, title: path })),
+      },
+    });
+    expect(patchRes.ok(), await patchRes.text()).toBeTruthy();
+
+    const getRes = await request.get(`${GATEWAY}/api/v1/content-studio/sources/${sourceId}`, {
+      headers: auth,
+    });
+    expect(getRes.ok(), await getRes.text()).toBeTruthy();
+    const source = (await getRes.json()).data;
+    expect(source.kbSelectedPaths).toEqual(paths);
+  });
+
+  test('创建源 → 生成 → 批量推送 → 批量发布（mock LLM + mock publish）', async ({ request }) => {
     const health = await request.get(`${GATEWAY}/health`).catch(() => null);
     test.skip(!health?.ok(), 'Gateway 未启动');
 
@@ -96,32 +131,56 @@ test.describe('Content Studio — 创作中心 API 闭环', () => {
     }
 
     expect(variants.length).toBeGreaterThan(0);
-    const variantId = variants[0].id as number;
+
+    const twitterAccountRes = await request.post(`${GATEWAY}/api/platform-account`, {
+      headers: auth,
+      data: {
+        platform: 'twitter',
+        accountName: `studio-e2e-twitter-${Date.now()}`,
+        accessToken: 'e2e-dev-token',
+      },
+    });
+    expect(twitterAccountRes.ok(), await twitterAccountRes.text()).toBeTruthy();
+    const twitterAccountId = (await twitterAccountRes.json()).data.id as number;
 
     const pushRes = await request.post(
-      `${GATEWAY}/api/v1/content-studio/variants/${variantId}/push-draft`,
+      `${GATEWAY}/api/v1/content-studio/sources/${sourceId}/push-drafts`,
       {
         headers: auth,
         data: {
-          platform: 'xiaohongshu',
-          accountId,
-          contentType: 1,
+          items: variants.map((variant: { id: number; channel: string }, index: number) => ({
+            variantId: variant.id,
+            platform: variant.channel === 'tweet' ? 'twitter' : 'xiaohongshu',
+            accountId: variant.channel === 'tweet' ? twitterAccountId : accountId,
+            contentType: 1,
+          })),
         },
       }
     );
     expect(pushRes.ok(), await pushRes.text()).toBeTruthy();
-    const pushBody = await pushRes.json();
-    const contentId = (pushBody.data?.contentId ?? pushBody.contentId) as number;
-    expect(contentId).toBeGreaterThan(0);
+    const pushResults = ((await pushRes.json()).data?.results ?? []) as Array<{
+      success: boolean;
+      contentId?: number;
+    }>;
+    const contentIds = pushResults.filter(r => r.success && r.contentId).map(r => r.contentId as number);
+    expect(contentIds.length).toBeGreaterThan(0);
 
-    const publishRes = await request.post(
-      `${GATEWAY}/api/v1/acquisition/contents/${contentId}/publish`,
-      { headers: auth }
+    const batchPublishRes = await request.post(
+      `${GATEWAY}/api/v1/acquisition/contents/batch-publish`,
+      {
+        headers: auth,
+        data: { contentIds },
+      }
     );
-    expect(publishRes.ok(), await publishRes.text()).toBeTruthy();
-    const published = (await publishRes.json()).data;
-    expect(published.status).toBe(1);
-    expect(published.platformContentId).toMatch(/^xhs-mock-/);
+    expect(batchPublishRes.ok(), await batchPublishRes.text()).toBeTruthy();
+    const publishResults = ((await batchPublishRes.json()).data?.results ?? []) as Array<{
+      success: boolean;
+      content?: { status: number; platformContentId?: string };
+    }>;
+    expect(publishResults.every(r => r.success)).toBeTruthy();
+    expect(publishResults[0].content?.status).toBe(1);
+
+    const contentId = contentIds[0];
 
     const statusRes = await request.get(
       `${GATEWAY}/api/v1/acquisition/contents/${contentId}/publish-status`,

@@ -3,7 +3,8 @@
 > **状态：** 实施中（P0–P5 主体完成；E2E harness 已补全；live API 待办）  
 > **创建日期：** 2026-06-05  
 > **概述：** 在 open-scrm 上构建「llm-wiki 知识库 → 内容系统核心 → 多平台生成/发布外围」三层架构的个人 AI 原生创作中心。本地优先：llm-wiki 跑在本机 `:19828`；目标闭环为检索 grounding → 核心内容源 → 多平台变体 → 草稿 → 平台发布 API。  
-> **扩展：** 本计划扩展 [多平台内容生成服务](./2026-06-04-content-generation-service.md)，新增 llm-wiki 知识层与发布闭环。
+> **扩展：** 本计划扩展 [多平台内容生成服务](./2026-06-04-content-generation-service.md)，新增 llm-wiki 知识层与发布闭环。  
+> **UI 流程：** 创作中心 **产品交互流程** 以 [2026-06-09 用户流程对齐计划](./2026-06-09-content-studio-wiki-compose-flow.md) 为准（wiki 选材 → 核心稿合成 → 定稿 → 发布）。
 
 ---
 
