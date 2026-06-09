@@ -27,6 +27,7 @@
     "@scrm/shared-constants": "workspace:*",
     "@scrm/shared-types": "workspace:*",
     "@scrm/shared-utils": "workspace:*",
+    "bull": "^4.16.5",
     "pg": "^8.13.1",
     "typeorm": "^0.3.20"
   },
