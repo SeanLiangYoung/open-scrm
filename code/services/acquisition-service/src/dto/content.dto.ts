@@ -39,3 +39,8 @@ export class QueryContentDto {
   @Rule(RuleType.number().min(1).max(100).optional())
   pageSize?: number;
 }
+
+export class BatchPublishContentDto {
+  @Rule(RuleType.array().items(RuleType.number().integer().min(1)).min(1).required())
+  contentIds!: number[];
+}

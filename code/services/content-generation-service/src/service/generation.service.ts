@@ -9,6 +9,7 @@ import { VariantPublishLinkEntity } from '../entity/variant-publish-link.entity'
 import { ContentSourceService } from './content-source.service';
 import type { GenerateContentDto } from '../dto/generation.dto';
 import type { PushDraftDto } from '../dto/push-draft.dto';
+import type { BatchPushDraftsDto } from '../dto/batch-push-draft.dto';
 import { AcquisitionClientService } from './acquisition-client.service';
 import { GenerationJobRunner, type GenerationQueuePayload } from './generation-job.runner';
 
@@ -167,5 +168,44 @@ export class GenerationService {
       contentId,
       acquisition: result,
     };
+  }
+
+  async batchPushDrafts(
+    corpId: number,
+    sourceId: number,
+    dto: BatchPushDraftsDto,
+    headers: Record<string, string>
+  ) {
+    await this.contentSourceService.getSource(corpId, sourceId);
+
+    const results: Array<{
+      variantId: number;
+      success: boolean;
+      contentId?: number;
+      error?: string;
+    }> = [];
+
+    for (const item of dto.items) {
+      try {
+        const variant = await this.getVariant(corpId, item.variantId);
+        if (variant.sourceId !== sourceId) {
+          throw new Error('Variant does not belong to this content source');
+        }
+        const pushed = await this.pushVariantDraft(corpId, item.variantId, item, headers);
+        results.push({
+          variantId: item.variantId,
+          success: true,
+          contentId: pushed.contentId,
+        });
+      } catch (error: unknown) {
+        results.push({
+          variantId: item.variantId,
+          success: false,
+          error: error instanceof Error ? error.message : 'Push draft failed',
+        });
+      }
+    }
+
+    return results;
   }
 }

@@ -109,4 +109,29 @@ describe('ContentPublishService', () => {
 
     await expect(service.publishContent(1, 11)).rejects.toThrow('Only draft content can be published');
   });
+
+  it('batchPublish returns per-item results and continues after a failure', async () => {
+    const draft = buildDraft();
+    const account = buildAccount();
+    let callCount = 0;
+
+    const service = new ContentPublishService();
+    service.publisherRegistry = createPublisherRegistry({ xhs: { mode: 'mock' } });
+    service.publishContent = vi.fn(async (_corpId, contentId) => {
+      callCount += 1;
+      if (contentId === 12) {
+        throw new Error('publish failed');
+      }
+      return { ...draft, id: contentId, status: CONTENT_STATUS.PUBLISHED };
+    }) as unknown as ContentPublishService['publishContent'];
+
+    const results = await service.batchPublish(1, [11, 12, 13]);
+
+    expect(callCount).toBe(3);
+    expect(results).toEqual([
+      { contentId: 11, success: true, content: expect.objectContaining({ id: 11 }) },
+      { contentId: 12, success: false, error: 'publish failed' },
+      { contentId: 13, success: true, content: expect.objectContaining({ id: 13 }) },
+    ]);
+  });
 });

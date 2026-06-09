@@ -63,6 +63,30 @@ export class ContentPublishService {
     }
   }
 
+  async batchPublish(corpId: number, contentIds: number[]) {
+    const results: Array<{
+      contentId: number;
+      success: boolean;
+      content?: ContentEntity;
+      error?: string;
+    }> = [];
+
+    for (const contentId of contentIds) {
+      try {
+        const content = await this.publishContent(corpId, contentId);
+        results.push({ contentId, success: true, content });
+      } catch (error: unknown) {
+        results.push({
+          contentId,
+          success: false,
+          error: error instanceof Error ? error.message : 'Publish failed',
+        });
+      }
+    }
+
+    return results;
+  }
+
   async getPublishStatus(corpId: number, contentId: number) {
     const content = await this.contentRepository.findOne({
       where: { corpId, id: contentId },

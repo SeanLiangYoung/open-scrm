@@ -4,7 +4,7 @@ import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
 import { ContentService } from '../service/content.service';
 import { ContentPublishService } from '../service/content-publish.service';
-import { CreateContentDto, QueryContentDto } from '../dto/content.dto';
+import { CreateContentDto, QueryContentDto, BatchPublishContentDto } from '../dto/content.dto';
 
 @Controller('/api/v1/acquisition/contents')
 export class ContentController {
@@ -45,6 +45,14 @@ export class ContentController {
     const { corpId } = getTenantContext(this.ctx);
     const content = await this.contentPublishService.publishContent(corpId, Number(id));
     return { success: true, data: content };
+  }
+
+  @Post('/batch-publish')
+  @Validate()
+  async batchPublish(@Body() dto: BatchPublishContentDto) {
+    const { corpId } = getTenantContext(this.ctx);
+    const results = await this.contentPublishService.batchPublish(corpId, dto.contentIds);
+    return { success: true, data: { results } };
   }
 
   @Get('/:id/publish-status')

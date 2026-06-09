@@ -113,9 +113,20 @@
       <div v-show="activeStep === 3">
         <div class="card-header">
           <span>选择渠道并生成变体</span>
-          <el-button type="success" :loading="generating" @click="runGenerate">
-            生成变体
-          </el-button>
+          <div class="header-actions">
+            <el-button type="success" :loading="generating" @click="runGenerate">
+              生成变体
+            </el-button>
+            <el-button
+              v-if="variants.length"
+              type="primary"
+              :loading="batchPublishing"
+              :disabled="!canBatchPublish"
+              @click="batchPushAndPublish"
+            >
+              推送并发布
+            </el-button>
+          </div>
         </div>
         <el-checkbox-group v-model="selectedChannels">
           <el-checkbox label="tweet">Tweet</el-checkbox>
@@ -141,9 +152,32 @@
                 {{ c.title }} · {{ c.path }}
               </el-tag>
             </div>
-            <div style="margin-top: 12px">
-              <el-button type="primary" @click="openPushDialog(variant)">推送草稿</el-button>
-            </div>
+            <el-form label-width="90px" style="margin-top: 12px">
+              <el-form-item label="平台">
+                <el-input :model-value="platformLabel(variantPushPlan(variant.id).platform)" disabled />
+              </el-form-item>
+              <el-form-item label="发布账号">
+                <el-select
+                  v-model="variantPushPlan(variant.id).accountId"
+                  style="width: 100%"
+                  placeholder="选择平台账号"
+                  @visible-change="visible => visible && loadAccountsForVariant(variant)"
+                >
+                  <el-option
+                    v-for="account in accountsForPlatform(variantPushPlan(variant.id).platform)"
+                    :key="account.id"
+                    :label="account.accountName"
+                    :value="account.id"
+                  />
+                </el-select>
+              </el-form-item>
+              <el-form-item label="内容类型">
+                <el-select v-model="variantPushPlan(variant.id).contentType" style="width: 100%">
+                  <el-option label="图文" :value="1" />
+                  <el-option label="视频" :value="2" />
+                </el-select>
+              </el-form-item>
+            </el-form>
           </el-tab-pane>
         </el-tabs>
 
@@ -177,45 +211,44 @@
       <el-button :disabled="activeStep === 0" @click="prevStep">上一步</el-button>
       <el-button v-if="activeStep < 3" type="primary" @click="nextStep">下一步</el-button>
     </div>
-
-    <el-dialog v-model="pushDialogVisible" title="推送草稿" width="420px">
-      <el-form label-width="90px">
-        <el-form-item label="平台">
-          <el-select v-model="pushForm.platform" style="width: 100%">
-            <el-option label="小红书" value="xiaohongshu" />
-            <el-option label="抖音" value="douyin" />
-            <el-option label="微信公众号" value="wechat" />
-            <el-option label="X / Twitter" value="twitter" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="账号 ID">
-          <el-input-number v-model="pushForm.accountId" :min="1" />
-        </el-form-item>
-        <el-form-item label="内容类型">
-          <el-select v-model="pushForm.contentType" style="width: 100%">
-            <el-option label="图文" :value="1" />
-            <el-option label="视频" :value="2" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="平台 Token">
-          <el-input v-model="pushForm.accessToken" placeholder="本地开发：模拟 OAuth token" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="pushDialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="pushing" @click="confirmPush">推送</el-button>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { contentStudioApi, type ContentSource, type ContentVariant, type KbCitation } from '@/api/contentStudio';
 
 interface Citation extends KbCitation {}
+
+interface PlatformAccount {
+  id: number;
+  platform: string;
+  accountName: string;
+}
+
+interface VariantPushPlan {
+  platform: string;
+  accountId: number | null;
+  contentType: number;
+}
+
+const CHANNEL_PLATFORM: Record<string, string> = {
+  tweet: 'twitter',
+  xhs_graphic: 'xiaohongshu',
+  wechat_article: 'wechat',
+  short_video_script: 'douyin',
+  long_video_script: 'douyin',
+  douyin_caption: 'douyin',
+};
+
+const PLATFORM_LABELS: Record<string, string> = {
+  xiaohongshu: '小红书',
+  douyin: '抖音',
+  wechat: '微信公众号',
+  twitter: 'X / Twitter',
+};
 
 const route = useRoute();
 const sourceId = Number(route.params.sourceId);
@@ -224,8 +257,8 @@ const loading = ref(false);
 const saving = ref(false);
 const composing = ref(false);
 const generating = ref(false);
+const batchPublishing = ref(false);
 const kbSearching = ref(false);
-const pushing = ref(false);
 const publishing = ref(false);
 const kbStatusOk = ref(false);
 const kbStatusText = ref('检查中...');
@@ -241,8 +274,8 @@ const variants = ref<ContentVariant[]>([]);
 const drafts = ref<Array<{ id: number; title?: string | null; platform: string; status: number; platformContentId?: string | null }>>([]);
 const activeVariantTab = ref('');
 const selectedChannels = ref(['tweet', 'xhs_graphic']);
-const pushDialogVisible = ref(false);
-const pushTarget = ref<ContentVariant | null>(null);
+const variantPushPlans = reactive<Record<number, VariantPushPlan>>({});
+const platformAccounts = reactive<Record<string, PlatformAccount[]>>({});
 
 const form = reactive({
   title: '',
@@ -255,14 +288,65 @@ const form = reactive({
   kbQuery: '',
 });
 
-const pushForm = reactive({
-  platform: 'xiaohongshu',
-  accountId: 1,
-  contentType: 1,
-  accessToken: 'dev-token',
-});
-
 const publishingDraftId = ref<number | null>(null);
+
+const canBatchPublish = computed(() =>
+  variants.value.length > 0 &&
+  variants.value.every(v => {
+    const plan = variantPushPlans[v.id];
+    return plan?.accountId != null && plan.accountId > 0;
+  })
+);
+
+function platformForChannel(channel: string): string {
+  return CHANNEL_PLATFORM[channel] ?? 'xiaohongshu';
+}
+
+function platformLabel(platform: string): string {
+  return PLATFORM_LABELS[platform] ?? platform;
+}
+
+function variantPushPlan(variantId: number): VariantPushPlan {
+  if (!variantPushPlans[variantId]) {
+    const variant = variants.value.find(v => v.id === variantId);
+    variantPushPlans[variantId] = {
+      platform: platformForChannel(variant?.channel ?? ''),
+      accountId: null,
+      contentType: 1,
+    };
+  }
+  return variantPushPlans[variantId];
+}
+
+function accountsForPlatform(platform: string): PlatformAccount[] {
+  return platformAccounts[platform] ?? [];
+}
+
+async function loadAccountsForPlatform(platform: string) {
+  if (platformAccounts[platform]?.length) return;
+  try {
+    const res = await contentStudioApi.listPlatformAccounts({ platform });
+    platformAccounts[platform] = res.data?.data?.list ?? res.data?.list ?? [];
+  } catch {
+    platformAccounts[platform] = [];
+  }
+}
+
+async function loadAccountsForVariant(variant: ContentVariant) {
+  const platform = variantPushPlan(variant.id).platform;
+  await loadAccountsForPlatform(platform);
+  const accounts = accountsForPlatform(platform);
+  if (!variantPushPlan(variant.id).accountId && accounts.length) {
+    variantPushPlan(variant.id).accountId = accounts[0].id;
+  }
+}
+
+watch(variants, newVariants => {
+  for (const variant of newVariants) {
+    variantPushPlan(variant.id);
+    void loadAccountsForVariant(variant);
+  }
+});
 
 function inferInitialStep(data: ContentSource): number {
   if (!data.kbSelectedPaths?.length) return 0;
@@ -512,38 +596,51 @@ function prevStep() {
   }
 }
 
-function openPushDialog(variant: ContentVariant) {
-  pushTarget.value = variant;
-  pushDialogVisible.value = true;
-}
-
 async function loadDrafts() {
   try {
-    const res = await contentStudioApi.listDrafts({ status: 0, platform: 'xiaohongshu' });
+    const res = await contentStudioApi.listDrafts({ status: 0 });
     drafts.value = res.data?.data?.list ?? res.data?.list ?? [];
   } catch {
     drafts.value = [];
   }
 }
 
-async function confirmPush() {
-  if (!pushTarget.value) return;
-  pushing.value = true;
+async function batchPushAndPublish() {
+  if (!canBatchPublish.value) {
+    ElMessage.warning('请为每个变体选择发布账号');
+    return;
+  }
+  batchPublishing.value = true;
   try {
-    const { accessToken, ...draftPayload } = pushForm;
-    if (accessToken.trim()) {
-      await contentStudioApi.connectPlatformOAuth(draftPayload.accountId, {
-        accessToken: accessToken.trim(),
-      });
+    const items = variants.value.map(variant => {
+      const plan = variantPushPlan(variant.id);
+      return {
+        variantId: variant.id,
+        platform: plan.platform,
+        accountId: plan.accountId as number,
+        contentType: plan.contentType,
+      };
+    });
+    const pushRes = await contentStudioApi.pushDrafts(sourceId, { items });
+    const pushResults = pushRes.data?.results ?? pushRes.data?.data?.results ?? [];
+    const contentIds = pushResults
+      .filter((r: { success: boolean; contentId?: number }) => r.success && r.contentId)
+      .map((r: { contentId: number }) => r.contentId);
+
+    if (!contentIds.length) {
+      ElMessage.error('批量推送失败，请检查账号配置');
+      return;
     }
-    const res = await contentStudioApi.pushDraft(pushTarget.value.id, draftPayload);
-    ElMessage.success(`已推送草稿${res.data?.contentId ? ` #${res.data.contentId}` : ''}`);
-    pushDialogVisible.value = false;
+
+    const publishRes = await contentStudioApi.batchPublishContents(contentIds);
+    const publishResults = publishRes.data?.results ?? publishRes.data?.data?.results ?? [];
+    const succeeded = publishResults.filter((r: { success: boolean }) => r.success).length;
+    ElMessage.success(`已推送 ${contentIds.length} 条，成功发布 ${succeeded} 条`);
     await loadDrafts();
   } catch (error: unknown) {
-    ElMessage.error(error instanceof Error ? error.message : '推送失败');
+    ElMessage.error(error instanceof Error ? error.message : '批量发布失败');
   } finally {
-    pushing.value = false;
+    batchPublishing.value = false;
   }
 }
 
@@ -590,6 +687,10 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
+}
+.header-actions {
+  display: flex;
+  gap: 8px;
 }
 .kb-hit {
   margin-top: 12px;

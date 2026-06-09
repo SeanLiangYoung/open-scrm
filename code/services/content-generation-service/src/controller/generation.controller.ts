@@ -5,6 +5,7 @@ import { getTenantContext } from '@scrm/server-common';
 import { GenerationService } from '../service/generation.service';
 import { GenerateContentDto, UpdateContentVariantDto } from '../dto/generation.dto';
 import { PushDraftDto } from '../dto/push-draft.dto';
+import { BatchPushDraftsDto } from '../dto/batch-push-draft.dto';
 
 @Controller('/api/v1/content-studio')
 export class GenerationController {
@@ -74,5 +75,29 @@ export class GenerationController {
       headers
     );
     return { success: true, data: result };
+  }
+
+  @Post('/sources/:id/push-drafts')
+  @Validate()
+  async pushDrafts(@Param('id') id: string, @Body() dto: BatchPushDraftsDto) {
+    const { corpId } = getTenantContext(this.ctx);
+    const headers: Record<string, string> = {};
+    if (this.ctx.headers['x-corp-id']) {
+      headers['x-corp-id'] = String(this.ctx.headers['x-corp-id']);
+    }
+    if (this.ctx.headers['x-user-id']) {
+      headers['x-user-id'] = String(this.ctx.headers['x-user-id']);
+    }
+    if (this.ctx.headers.authorization) {
+      headers.authorization = String(this.ctx.headers.authorization);
+    }
+
+    const results = await this.generationService.batchPushDrafts(
+      corpId,
+      Number(id),
+      dto,
+      headers
+    );
+    return { success: true, data: { results } };
   }
 }

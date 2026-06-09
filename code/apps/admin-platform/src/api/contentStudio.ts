@@ -96,6 +96,20 @@ export const contentStudioApi = {
     return api.post(`/api/v1/content-studio/variants/${variantId}/push-draft`, payload);
   },
 
+  pushDrafts(
+    sourceId: number,
+    payload: {
+      items: Array<{
+        variantId: number;
+        platform: string;
+        accountId: number;
+        contentType: number;
+      }>;
+    }
+  ) {
+    return api.post(`/api/v1/content-studio/sources/${sourceId}/push-drafts`, payload);
+  },
+
   listPlatformAccounts(params?: { platform?: string }) {
     return api.get('/api/platform-account/list', { params });
   },
@@ -106,6 +120,10 @@ export const contentStudioApi = {
 
   publishContent(contentId: number) {
     return api.post(`/api/v1/acquisition/contents/${contentId}/publish`);
+  },
+
+  batchPublishContents(contentIds: number[]) {
+    return api.post('/api/v1/acquisition/contents/batch-publish', { contentIds });
   },
 
   getPublishStatus(contentId: number) {
