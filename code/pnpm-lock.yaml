@@ -192,6 +192,9 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@18.19.130)
 
   packages/shared-types:
     devDependencies:
@@ -527,6 +530,82 @@ importers:
       vitest:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@18.19.130)
+
+  services/content-generation-service:
+    dependencies:
+      '@midwayjs/axios':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/bootstrap':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/bull':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/core':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/decorator':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/info':
+        specifier: ^3.20.0
+        version: 3.20.16
+      '@midwayjs/koa':
+        specifier: ^3.20.0
+        version: 3.20.16
+      '@midwayjs/logger':
+        specifier: ^3.4.0
+        version: 3.4.2
+      '@midwayjs/redis':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/typeorm':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@midwayjs/validate':
+        specifier: ^3.20.0
+        version: 3.20.16
+      '@scrm/llm-wiki-client':
+        specifier: workspace:*
+        version: link:../../packages/llm-wiki-client
+      '@scrm/server-common':
+        specifier: workspace:*
+        version: link:../../packages/server-common
+      '@scrm/shared-constants':
+        specifier: workspace:*
+        version: link:../../packages/shared-constants
+      '@scrm/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@scrm/shared-utils':
+        specifier: workspace:*
+        version: link:../../packages/shared-utils
+      pg:
+        specifier: ^8.13.1
+        version: 8.20.0
+      typeorm:
+        specifier: ^0.3.20
+        version: 0.3.27(pg@8.20.0)(reflect-metadata@0.2.2)
+    devDependencies:
+      '@midwayjs/cli':
+        specifier: ^2.0.0
+        version: 2.1.1(@midwayjs/mock@3.20.11)(@types/node@20.19.23)(typescript@5.9.3)
+      '@midwayjs/mock':
+        specifier: ^3.20.0
+        version: 3.20.11
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.23
+      cross-env:
+        specifier: ^7.0.3
+        version: 7.0.3
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@20.19.23)
 
   services/customer-service:
     dependencies:
@@ -3193,7 +3272,7 @@ packages:
       cron-parser: 4.9.0
       get-port: 5.1.1
       ioredis: 5.4.2
-      lodash: 4.17.21
+      lodash: 4.17.23
       msgpackr: 1.11.5
       semver: 7.7.3
       uuid: 8.3.2

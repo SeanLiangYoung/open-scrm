@@ -25,6 +25,7 @@ x-gateway-env: &gateway-env
   INTEGRATION_SERVICE_URL: http://integration-service:7007
   MESSAGE_SERVICE_URL: http://message-service:7008
   FINANCE_SERVICE_URL: http://finance-service:7009
+  CONTENT_GENERATION_SERVICE_URL: http://content-generation-service:7010
 
 x-backend-build: &backend-build
   context: .
@@ -340,6 +341,27 @@ services:
         condition: service_started
     restart: unless-stopped
 
+  content-generation-service:
+    image: scrm-backend:latest
+    build: *backend-build
+    container_name: scrm-content-generation-service
+    working_dir: /app/services/content-generation-service
+    command: ['node', 'bootstrap.js']
+    ports:
+      - '7010:7010'
+    environment:
+      <<: *backend-env
+    networks:
+      - scrm-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    restart: unless-stopped
+
   gateway-service:
     image: scrm-backend:latest
     build: *backend-build
@@ -373,6 +395,8 @@ services:
       message-service:
         condition: service_started
       finance-service:
+        condition: service_started
+      content-generation-service:
         condition: service_started
     restart: unless-stopped
 
