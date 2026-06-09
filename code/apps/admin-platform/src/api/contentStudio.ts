@@ -68,6 +68,22 @@ export const contentStudioApi = {
     return api.post('/api/v1/content-studio/kb/search', payload);
   },
 
+  kbReadPages(payload: { paths: string[]; projectId?: string }) {
+    return api.post('/api/v1/content-studio/kb/read-pages', payload);
+  },
+
+  composeSource(
+    sourceId: number,
+    payload?: {
+      paths?: string[];
+      tone?: string;
+      targetAudience?: string;
+      instruction?: string;
+    }
+  ) {
+    return api.post(`/api/v1/content-studio/sources/${sourceId}/compose`, payload ?? {});
+  },
+
   generate(sourceId: number, payload: { channels: string[]; kbEnabled?: boolean; kbQuery?: string }) {
     return api.post(`/api/v1/content-studio/sources/${sourceId}/generate`, payload);
   },

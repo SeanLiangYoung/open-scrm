@@ -1,152 +1,182 @@
 <template>
   <div class="content-studio-editor" v-loading="loading">
-    <el-row :gutter="16">
-      <el-col :span="16">
-        <el-card>
-          <template #header>核心内容源</template>
-          <el-form :model="form" label-width="100px">
-            <el-form-item label="标题">
-              <el-input v-model="form.title" />
-            </el-form-item>
-            <el-form-item label="摘要">
-              <el-input v-model="form.summary" type="textarea" :rows="2" />
-            </el-form-item>
-            <el-form-item label="正文">
-              <el-input v-model="form.body" type="textarea" :rows="8" />
-            </el-form-item>
-            <el-form-item label="关键词">
-              <el-select v-model="form.keywords" multiple filterable allow-create default-first-option style="width: 100%" />
-            </el-form-item>
-            <el-form-item label="知识库">
-              <el-switch v-model="form.kbEnabled" active-text="启用 grounding" />
-            </el-form-item>
-            <el-form-item label="KB 检索词">
-              <el-input v-model="form.kbQuery" placeholder="留空则使用标题+关键词" />
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" :loading="saving" @click="saveSource">保存</el-button>
-            </el-form-item>
-          </el-form>
-        </el-card>
+    <el-steps :active="activeStep" finish-status="success" align-center class="wizard-steps">
+      <el-step title="选材" description="搜索并勾选 wiki 记录" />
+      <el-step title="合成核心稿" description="LLM 生成标题与正文" />
+      <el-step title="定稿" description="人工调整并保存" />
+      <el-step title="发布" description="生成变体并推送" />
+    </el-steps>
 
-        <el-card style="margin-top: 16px">
-          <template #header>
-            <div class="card-header">
-              <span>多平台生成</span>
-              <el-button type="success" :loading="generating" @click="runGenerate">
-                一键生成
-              </el-button>
-            </div>
-          </template>
-          <el-checkbox-group v-model="selectedChannels">
-            <el-checkbox label="tweet">Tweet</el-checkbox>
-            <el-checkbox label="xhs_graphic">小红书图文</el-checkbox>
-            <el-checkbox label="wechat_article">公众号文章</el-checkbox>
-            <el-checkbox label="short_video_script">短视频脚本</el-checkbox>
-            <el-checkbox label="long_video_script">长视频脚本</el-checkbox>
-            <el-checkbox label="douyin_caption">抖音文案</el-checkbox>
-          </el-checkbox-group>
-        </el-card>
+    <el-card class="wizard-panel">
+      <!-- Step 1: 选材 -->
+      <div v-show="activeStep === 0">
+        <div class="card-header">
+          <span>知识库检索</span>
+          <el-tag size="small" :type="kbStatusOk ? 'success' : 'warning'">
+            {{ kbStatusText }}
+          </el-tag>
+        </div>
+        <el-alert
+          v-if="!kbStatusOk"
+          type="warning"
+          show-icon
+          :closable="false"
+          title="LLM Wiki 不可用，请先启动 llm-wiki 后再选材"
+          style="margin-bottom: 12px"
+        />
+        <el-input v-model="kbSearchQuery" placeholder="搜索 llm-wiki" />
+        <el-button style="margin-top: 8px" @click="searchKb" :loading="kbSearching">检索</el-button>
+        <el-empty v-if="!kbHits.length" description="暂无命中" />
+        <el-checkbox-group v-model="selectedKbPaths" style="width: 100%">
+          <div v-for="hit in kbHits" :key="hit.path" class="kb-hit">
+            <el-checkbox :label="hit.path">
+              <div class="kb-hit-title">{{ hit.title }}</div>
+            </el-checkbox>
+            <div class="kb-hit-snippet">{{ hit.snippet }}</div>
+            <div class="kb-hit-path">{{ hit.path }}</div>
+          </div>
+        </el-checkbox-group>
+        <div v-if="selectedKbPaths.length" class="kb-selected">
+          <div class="citations-title">已选 {{ selectedKbPaths.length }} 条</div>
+          <el-tag
+            v-for="path in selectedKbPaths"
+            :key="path"
+            size="small"
+            closable
+            style="margin: 4px"
+            @close="removeSelectedPath(path)"
+          >
+            {{ citationTitle(path) }}
+          </el-tag>
+        </div>
+      </div>
 
-        <el-card v-if="variants.length" style="margin-top: 16px">
-          <template #header>生成结果</template>
-          <el-tabs v-model="activeVariantTab">
-            <el-tab-pane
-              v-for="variant in variants"
-              :key="variant.id"
-              :label="variant.channel"
-              :name="String(variant.id)"
-            >
-              <el-input v-model="variant.title" placeholder="标题" style="margin-bottom: 12px" />
-              <el-input v-model="variant.body" type="textarea" :rows="10" />
-              <div v-if="citations(variant).length" class="citations">
-                <div class="citations-title">引用来源</div>
-                <el-tag v-for="c in citations(variant)" :key="c.path" size="small" style="margin: 4px">
-                  {{ c.title }} · {{ c.path }}
-                </el-tag>
-              </div>
-              <div style="margin-top: 12px">
-                <el-button type="primary" @click="openPushDialog(variant)">推送草稿</el-button>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-card>
+      <!-- Step 2: 合成 -->
+      <div v-show="activeStep === 1">
+        <p class="step-hint">基于已选 {{ selectedKbPaths.length }} 条 wiki 记录，由 LLM 合成核心标题、摘要与正文。</p>
+        <el-form label-width="100px">
+          <el-form-item label="语气">
+            <el-input v-model="form.tone" placeholder="如：专业、轻松" />
+          </el-form-item>
+          <el-form-item label="目标读者">
+            <el-input v-model="form.targetAudience" placeholder="如：创作者、运营" />
+          </el-form-item>
+          <el-form-item label="补充意图">
+            <el-input v-model="composeInstruction" type="textarea" :rows="2" placeholder="可选：希望强调的角度" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :loading="composing" @click="runCompose">
+              从选中页生成
+            </el-button>
+          </el-form-item>
+        </el-form>
+        <div v-if="composeCitations.length" class="citations">
+          <div class="citations-title">引用来源</div>
+          <el-tag v-for="c in composeCitations" :key="c.path" size="small" style="margin: 4px">
+            {{ c.title }} · {{ c.path }}
+          </el-tag>
+        </div>
+        <el-alert
+          v-if="form.body"
+          type="success"
+          show-icon
+          :closable="false"
+          title="核心稿已生成，可进入下一步定稿"
+          style="margin-top: 12px"
+        />
+      </div>
 
-        <el-card v-if="drafts.length" style="margin-top: 16px">
-          <template #header>发布草稿</template>
-          <el-table :data="drafts" size="small">
-            <el-table-column prop="id" label="ID" width="70" />
-            <el-table-column prop="title" label="标题" />
-            <el-table-column prop="platform" label="平台" width="110" />
-            <el-table-column label="状态" width="100">
-              <template #default="{ row }">
-                <el-tag size="small">{{ draftStatusLabel(row.status) }}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="120">
-              <template #default="{ row }">
-                <el-button
-                  v-if="row.status === 0"
-                  type="success"
-                  link
-                  :loading="publishing && publishingDraftId === row.id"
-                  @click="publishDraft(row.id)"
-                >
-                  发布
-                </el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-card>
-      </el-col>
+      <!-- Step 3: 定稿 -->
+      <div v-show="activeStep === 2">
+        <el-form :model="form" label-width="100px">
+          <el-form-item label="标题">
+            <el-input v-model="form.title" />
+          </el-form-item>
+          <el-form-item label="摘要">
+            <el-input v-model="form.summary" type="textarea" :rows="2" />
+          </el-form-item>
+          <el-form-item label="正文">
+            <el-input v-model="form.body" type="textarea" :rows="10" />
+          </el-form-item>
+          <el-form-item label="关键词">
+            <el-select v-model="form.keywords" multiple filterable allow-create default-first-option style="width: 100%" />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" :loading="saving" @click="saveFinalizedSource">
+              保存定稿
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
 
-      <el-col :span="8">
-        <el-card>
-          <template #header>
-            <div class="card-header">
-              <span>知识库检索</span>
-              <el-tag size="small" :type="kbStatusOk ? 'success' : 'warning'">
-                {{ kbStatusText }}
+      <!-- Step 4: 发布 -->
+      <div v-show="activeStep === 3">
+        <div class="card-header">
+          <span>选择渠道并生成变体</span>
+          <el-button type="success" :loading="generating" @click="runGenerate">
+            生成变体
+          </el-button>
+        </div>
+        <el-checkbox-group v-model="selectedChannels">
+          <el-checkbox label="tweet">Tweet</el-checkbox>
+          <el-checkbox label="xhs_graphic">小红书图文</el-checkbox>
+          <el-checkbox label="wechat_article">公众号文章</el-checkbox>
+          <el-checkbox label="short_video_script">短视频脚本</el-checkbox>
+          <el-checkbox label="long_video_script">长视频脚本</el-checkbox>
+          <el-checkbox label="douyin_caption">抖音文案</el-checkbox>
+        </el-checkbox-group>
+
+        <el-tabs v-if="variants.length" v-model="activeVariantTab" style="margin-top: 16px">
+          <el-tab-pane
+            v-for="variant in variants"
+            :key="variant.id"
+            :label="variant.channel"
+            :name="String(variant.id)"
+          >
+            <el-input v-model="variant.title" placeholder="标题" style="margin-bottom: 12px" />
+            <el-input v-model="variant.body" type="textarea" :rows="10" />
+            <div v-if="citations(variant).length" class="citations">
+              <div class="citations-title">引用来源</div>
+              <el-tag v-for="c in citations(variant)" :key="c.path" size="small" style="margin: 4px">
+                {{ c.title }} · {{ c.path }}
               </el-tag>
             </div>
-          </template>
-          <el-input v-model="kbSearchQuery" placeholder="搜索 llm-wiki" />
-          <el-button style="margin-top: 8px" @click="searchKb" :loading="kbSearching">检索</el-button>
-          <el-empty v-if="!kbHits.length" description="暂无命中" />
-          <el-checkbox-group v-model="selectedKbPaths" style="width: 100%">
-            <div v-for="hit in kbHits" :key="hit.path" class="kb-hit">
-              <el-checkbox :label="hit.path">
-                <div class="kb-hit-title">{{ hit.title }}</div>
-              </el-checkbox>
-              <div class="kb-hit-snippet">{{ hit.snippet }}</div>
-              <div class="kb-hit-path">{{ hit.path }}</div>
+            <div style="margin-top: 12px">
+              <el-button type="primary" @click="openPushDialog(variant)">推送草稿</el-button>
             </div>
-          </el-checkbox-group>
-          <div v-if="selectedKbPaths.length" class="kb-selected">
-            <div class="citations-title">已选 {{ selectedKbPaths.length }} 条</div>
-            <el-tag
-              v-for="path in selectedKbPaths"
-              :key="path"
-              size="small"
-              closable
-              style="margin: 4px"
-              @close="removeSelectedPath(path)"
-            >
-              {{ citationTitle(path) }}
-            </el-tag>
-            <el-button
-              type="primary"
-              size="small"
-              style="margin-top: 8px"
-              :loading="savingPaths"
-              @click="saveSelectedPaths"
-            >
-              保存选材
-            </el-button>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
+          </el-tab-pane>
+        </el-tabs>
+
+        <el-table v-if="drafts.length" :data="drafts" size="small" style="margin-top: 16px">
+          <el-table-column prop="id" label="ID" width="70" />
+          <el-table-column prop="title" label="标题" />
+          <el-table-column prop="platform" label="平台" width="110" />
+          <el-table-column label="状态" width="100">
+            <template #default="{ row }">
+              <el-tag size="small">{{ draftStatusLabel(row.status) }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="120">
+            <template #default="{ row }">
+              <el-button
+                v-if="row.status === 0"
+                type="success"
+                link
+                :loading="publishing && publishingDraftId === row.id"
+                @click="publishDraft(row.id)"
+              >
+                发布
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-card>
+
+    <div class="wizard-footer">
+      <el-button :disabled="activeStep === 0" @click="prevStep">上一步</el-button>
+      <el-button v-if="activeStep < 3" type="primary" @click="nextStep">下一步</el-button>
+    </div>
 
     <el-dialog v-model="pushDialogVisible" title="推送草稿" width="420px">
       <el-form label-width="90px">
@@ -192,7 +222,7 @@ const sourceId = Number(route.params.sourceId);
 
 const loading = ref(false);
 const saving = ref(false);
-const savingPaths = ref(false);
+const composing = ref(false);
 const generating = ref(false);
 const kbSearching = ref(false);
 const pushing = ref(false);
@@ -203,6 +233,10 @@ const kbSearchQuery = ref('');
 const kbHits = ref<Citation[]>([]);
 const selectedKbPaths = ref<string[]>([]);
 const kbCitationMap = ref<Record<string, Citation>>({});
+const composeCitations = ref<Citation[]>([]);
+const composeInstruction = ref('');
+const composeStatus = ref<ContentSource['composeStatus']>('draft');
+const activeStep = ref(0);
 const variants = ref<ContentVariant[]>([]);
 const drafts = ref<Array<{ id: number; title?: string | null; platform: string; status: number; platformContentId?: string | null }>>([]);
 const activeVariantTab = ref('');
@@ -229,6 +263,13 @@ const pushForm = reactive({
 });
 
 const publishingDraftId = ref<number | null>(null);
+
+function inferInitialStep(data: ContentSource): number {
+  if (!data.kbSelectedPaths?.length) return 0;
+  if (data.composeStatus === 'finalized') return 3;
+  if (data.composeStatus === 'composed' || data.body?.trim()) return 2;
+  return 1;
+}
 
 function draftStatusLabel(status: number) {
   const map: Record<number, string> = {
@@ -267,19 +308,11 @@ function buildSelectedCitations(): Citation[] {
 }
 
 async function saveSelectedPaths() {
-  savingPaths.value = true;
-  try {
-    const kbCitations = buildSelectedCitations();
-    await contentStudioApi.updateSource(sourceId, {
-      kbSelectedPaths: [...selectedKbPaths.value],
-      kbCitations,
-    });
-    ElMessage.success('选材已保存');
-  } catch (error: unknown) {
-    ElMessage.error(error instanceof Error ? error.message : '保存选材失败');
-  } finally {
-    savingPaths.value = false;
-  }
+  const kbCitations = buildSelectedCitations();
+  await contentStudioApi.updateSource(sourceId, {
+    kbSelectedPaths: [...selectedKbPaths.value],
+    kbCitations,
+  });
 }
 
 async function loadSource() {
@@ -296,9 +329,12 @@ async function loadSource() {
     form.kbEnabled = data.kbEnabled ?? false;
     form.kbQuery = data.kbQuery ?? '';
     selectedKbPaths.value = data.kbSelectedPaths ?? [];
+    composeStatus.value = data.composeStatus ?? 'draft';
+    composeCitations.value = data.kbCitations ?? [];
     if (data.kbCitations?.length) {
       syncCitationMapFromHits(data.kbCitations);
     }
+    activeStep.value = inferInitialStep(data);
   } finally {
     loading.value = false;
   }
@@ -315,11 +351,19 @@ async function loadKbHealth() {
   }
 }
 
-async function saveSource() {
+async function saveFinalizedSource() {
+  if (!form.body.trim()) {
+    ElMessage.warning('正文不能为空');
+    return;
+  }
   saving.value = true;
   try {
-    await contentStudioApi.updateSource(sourceId, { ...form });
-    ElMessage.success('已保存');
+    await contentStudioApi.updateSource(sourceId, {
+      ...form,
+      composeStatus: 'finalized',
+    });
+    composeStatus.value = 'finalized';
+    ElMessage.success('定稿已保存');
   } catch (error: unknown) {
     ElMessage.error(error instanceof Error ? error.message : '保存失败');
   } finally {
@@ -348,6 +392,36 @@ async function searchKb() {
   }
 }
 
+async function runCompose() {
+  if (!selectedKbPaths.value.length) {
+    ElMessage.warning('请先选择 wiki 记录');
+    return;
+  }
+  composing.value = true;
+  try {
+    await saveSelectedPaths();
+    const res = await contentStudioApi.composeSource(sourceId, {
+      paths: [...selectedKbPaths.value],
+      tone: form.tone || undefined,
+      targetAudience: form.targetAudience || undefined,
+      instruction: composeInstruction.value || undefined,
+    });
+    const data = res.data as ContentSource & { citations?: Citation[] };
+    form.title = data.title ?? form.title;
+    form.summary = data.summary ?? form.summary;
+    form.body = data.body ?? form.body;
+    form.keywords = data.keywords ?? form.keywords;
+    composeCitations.value = data.citations ?? data.kbCitations ?? [];
+    composeStatus.value = 'composed';
+    syncCitationMapFromHits(composeCitations.value);
+    ElMessage.success('核心稿已生成');
+  } catch (error: unknown) {
+    ElMessage.error(error instanceof Error ? error.message : '合成失败');
+  } finally {
+    composing.value = false;
+  }
+}
+
 async function pollJob(jobId: number, attempts = 20) {
   for (let i = 0; i < attempts; i += 1) {
     const res = await contentStudioApi.getJob(jobId);
@@ -369,13 +443,16 @@ async function pollJob(jobId: number, attempts = 20) {
 }
 
 async function runGenerate() {
+  if (composeStatus.value !== 'finalized') {
+    ElMessage.warning('请先在定稿步骤保存核心内容');
+    return;
+  }
   if (!selectedChannels.value.length) {
     ElMessage.warning('请至少选择一个渠道');
     return;
   }
   generating.value = true;
   try {
-    await saveSource();
     const res = await contentStudioApi.generate(sourceId, {
       channels: selectedChannels.value,
       kbEnabled: form.kbEnabled,
@@ -397,6 +474,41 @@ async function runGenerate() {
     ElMessage.error(error instanceof Error ? error.message : '生成失败');
   } finally {
     generating.value = false;
+  }
+}
+
+async function nextStep() {
+  if (activeStep.value === 0) {
+    if (!selectedKbPaths.value.length) {
+      ElMessage.warning('请至少选择一条 wiki 记录');
+      return;
+    }
+    try {
+      await saveSelectedPaths();
+      ElMessage.success('选材已保存');
+    } catch (error: unknown) {
+      ElMessage.error(error instanceof Error ? error.message : '保存选材失败');
+      return;
+    }
+  }
+  if (activeStep.value === 2) {
+    if (!form.body.trim()) {
+      ElMessage.warning('请先编辑并保存定稿');
+      return;
+    }
+    if (composeStatus.value !== 'finalized') {
+      ElMessage.warning('请先点击「保存定稿」');
+      return;
+    }
+  }
+  if (activeStep.value < 3) {
+    activeStep.value += 1;
+  }
+}
+
+function prevStep() {
+  if (activeStep.value > 0) {
+    activeStep.value -= 1;
   }
 }
 
@@ -457,10 +569,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.wizard-steps {
+  margin-bottom: 20px;
+}
+.wizard-panel {
+  min-height: 420px;
+}
+.wizard-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+.step-hint {
+  color: #606266;
+  margin-bottom: 16px;
+}
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-bottom: 12px;
 }
 .kb-hit {
   margin-top: 12px;
