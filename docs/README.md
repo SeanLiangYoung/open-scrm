@@ -73,6 +73,7 @@ docs/
 - [系统分阶段实施路线](./plans/2026-04-18-system-execution-roadmap.md)
 - [多平台内容生成服务](./plans/2026-06-04-content-generation-service.md) — 核心内容源 → 多平台形态（参照 dbskill 方法论）
 - [AI 原生个人创作中心](./plans/2026-06-05-ai-native-creation-center.md) — llm-wiki 知识库 + 内容系统核心 + 多平台生成/发布闭环
+- **[Studio 运行契约](./facts/studio.md)** — 创作中心三层架构、env、API 与失败模式
 
 ### 仓库入口
 
