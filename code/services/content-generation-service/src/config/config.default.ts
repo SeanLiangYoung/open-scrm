@@ -44,6 +44,14 @@ export default {
         db: parseInt(process.env.REDIS_DB || '2'),
       },
     },
+    queues: {
+      generation: {
+        defaultJobOptions: {
+          removeOnComplete: 20,
+          removeOnFail: 20,
+        },
+      },
+    },
   },
 
   contentGeneration: {
@@ -56,5 +64,6 @@ export default {
     llmWikiBaseUrl: process.env.LLM_WIKI_BASE_URL || 'http://127.0.0.1:19828',
     llmWikiApiToken: process.env.LLM_WIKI_API_TOKEN || '',
     llmWikiProjectId: process.env.LLM_WIKI_PROJECT_ID || 'current',
+    syncGeneration: process.env.CONTENT_GENERATION_SYNC === 'true',
   },
 } as MidwayConfig;

@@ -1,19 +1,16 @@
 import { Provide, Inject, Config } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
+import { InjectQueue } from '@midwayjs/bull';
+import type { Queue } from 'bull';
 import { Repository } from 'typeorm';
-import { ContentSourceEntity } from '../entity/content-source.entity';
 import { GenerationJobEntity } from '../entity/generation-job.entity';
 import { ContentVariantEntity } from '../entity/content-variant.entity';
+import { VariantPublishLinkEntity } from '../entity/variant-publish-link.entity';
 import { ContentSourceService } from './content-source.service';
-import { LlmWikiKbService } from './llm-wiki-kb.service';
-import {
-  GenerationOrchestrator,
-  type RunJobOptions,
-} from './generation-orchestrator.service';
-import { OpenAiCompatibleLlmAdapter } from './llm/llm.adapter';
 import type { GenerateContentDto } from '../dto/generation.dto';
 import type { PushDraftDto } from '../dto/push-draft.dto';
 import { AcquisitionClientService } from './acquisition-client.service';
+import { GenerationJobRunner, type GenerationQueuePayload } from './generation-job.runner';
 
 @Provide()
 export class GenerationService {
@@ -23,14 +20,20 @@ export class GenerationService {
   @InjectEntityModel(ContentVariantEntity)
   variantRepository!: Repository<ContentVariantEntity>;
 
+  @InjectEntityModel(VariantPublishLinkEntity)
+  variantPublishLinkRepository!: Repository<VariantPublishLinkEntity>;
+
   @Inject()
   contentSourceService!: ContentSourceService;
 
   @Inject()
-  llmWikiKbService!: LlmWikiKbService;
+  generationJobRunner!: GenerationJobRunner;
 
   @Inject()
   acquisitionClient!: AcquisitionClientService;
+
+  @InjectQueue('generation')
+  generationQueue!: Queue;
 
   @Config('contentGeneration')
   contentGenerationConfig!: {
@@ -38,34 +41,20 @@ export class GenerationService {
     llmApiKey: string;
     llmModel: string;
     promptVersion: string;
+    syncGeneration: boolean;
   };
-
-  private createOrchestrator(): GenerationOrchestrator {
-    const orchestrator = new GenerationOrchestrator();
-    orchestrator.llmAdapter = new OpenAiCompatibleLlmAdapter({
-      apiBase: this.contentGenerationConfig.llmApiBase,
-      apiKey: this.contentGenerationConfig.llmApiKey,
-      model: this.contentGenerationConfig.llmModel,
-    });
-    orchestrator.kbService = this.llmWikiKbService;
-    orchestrator.jobRepository = this.jobRepository;
-    orchestrator.variantRepository = this.variantRepository;
-    orchestrator.llmModel = this.contentGenerationConfig.llmModel;
-    orchestrator.promptVersion = this.contentGenerationConfig.promptVersion;
-    return orchestrator;
-  }
 
   async startGeneration(
     corpId: number,
     sourceId: number,
     dto: GenerateContentDto
   ) {
-    const source = await this.contentSourceService.getSource(corpId, sourceId);
+    await this.contentSourceService.getSource(corpId, sourceId);
 
     const job = await this.jobRepository.save(
       this.jobRepository.create({
         corpId,
-        sourceId: source.id,
+        sourceId,
         channels: dto.channels,
         status: 'pending',
         kbMode: 'off',
@@ -75,21 +64,36 @@ export class GenerationService {
       })
     );
 
-    const options: RunJobOptions = {
-      channels: dto.channels,
-      kbEnabled: dto.kbEnabled,
-      kbQuery: dto.kbQuery,
+    const payload: GenerationQueuePayload = {
+      corpId,
+      jobId: job.id,
+      sourceId,
+      options: {
+        channels: dto.channels,
+        kbEnabled: dto.kbEnabled,
+        kbQuery: dto.kbQuery,
+      },
     };
 
-    const orchestrator = this.createOrchestrator();
-    const result = await orchestrator.runJob(job, source, options);
+    if (this.contentGenerationConfig.syncGeneration) {
+      const result = await this.generationJobRunner.runQueuedJob(payload);
+      return {
+        jobId: result.job.id,
+        status: result.status,
+        kbMode: result.kbMode,
+        kbHits: result.kbHits,
+        variants: result.variants,
+      };
+    }
+
+    await this.generationQueue.add(payload);
 
     return {
-      jobId: result.job.id,
-      status: result.status,
-      kbMode: result.kbMode,
-      kbHits: result.kbHits,
-      variants: result.variants,
+      jobId: job.id,
+      status: job.status,
+      kbMode: job.kbMode,
+      kbHits: job.kbHits,
+      variants: [],
     };
   }
 
@@ -135,7 +139,7 @@ export class GenerationService {
   async pushVariantDraft(
     corpId: number,
     variantId: number,
-    dto: import('../dto/push-draft.dto').PushDraftDto,
+    dto: PushDraftDto,
     headers: Record<string, string>
   ) {
     const variant = await this.getVariant(corpId, variantId);
@@ -145,6 +149,18 @@ export class GenerationService {
       headers
     );
     const contentId = result?.data?.id ?? result?.data?.data?.id;
+
+    if (contentId) {
+      await this.variantPublishLinkRepository.save(
+        this.variantPublishLinkRepository.create({
+          corpId,
+          variantId: variant.id,
+          contentId: Number(contentId),
+          platform: dto.platform,
+        })
+      );
+    }
+
     return {
       variantId: variant.id,
       contentId,
