@@ -1,6 +1,6 @@
 # 多平台内容生成服务实施计划
 
-> **状态：** 实施中（P0–P3 已完成，P1 Bull/ai_check 已补全；E2E harness 待办）  
+> **状态：** 实施中（P0–P3 已完成；E2E harness 已补全；live LLM/平台 API 待办）  
 > **创建日期：** 2026-06-04  
 > **概述：** 在 open-scrm monorepo 新增第 11 个微服务 `content-generation-service`（端口 7010），以「核心内容源」为单一事实源，经可配置的渠道 Prompt 管线一键生成多平台形态，并在 admin-platform 提供运营界面，生成结果可推送为 acquisition-service 的发布草稿。  
 > **参照：** [dbskill](https://github.com/dontbesilent2025/dbskill)
@@ -14,7 +14,7 @@
 - [x] 实现 content-studio REST API（严格 DTO）+ `docs/services` 文档与端口表更新
 - [x] `acquisition-service` 新增 Content CRUD/草稿 API；cgs `push-draft` 内部调用
 - [x] admin-platform：内容工坊列表/编辑/生成/变体/推送草稿页面与菜单
-- [ ] curl + 可选 Playwright：登录 → 创建源 → 生成 → 推送草稿链路；更新 harness 说明
+- [x] curl + 可选 Playwright：登录 → 创建源 → 生成 → 推送草稿链路；更新 harness 说明
 
 ---
 

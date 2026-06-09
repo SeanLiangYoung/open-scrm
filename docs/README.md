@@ -20,7 +20,7 @@ docs/
 ├── scripts/                # scripts 目录说明（含 test/、run/）
 ├── tests/                  # 测试报告归档
 ├── plans/                  # 路线图等
-└── api/ …                  # （待创建）API 专题文档
+└── api/ …                  # API 专题文档（含 content-studio）
 ```
 
 ---
@@ -74,6 +74,10 @@ docs/
 - [多平台内容生成服务](./plans/2026-06-04-content-generation-service.md) — 核心内容源 → 多平台形态（参照 dbskill 方法论）
 - [AI 原生个人创作中心](./plans/2026-06-05-ai-native-creation-center.md) — llm-wiki 知识库 + 内容系统核心 + 多平台生成/发布闭环
 - **[Studio 运行契约](./facts/studio.md)** — 创作中心三层架构、env、API 与失败模式
+
+### API 契约（`api/`）
+
+- [Content Studio / 内容工坊](./api/content-studio/README.md) — `/api/v1/content-studio/*` 与 E2E 验证
 
 ### 仓库入口
 
