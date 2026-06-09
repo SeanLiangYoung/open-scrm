@@ -5,6 +5,7 @@ import type { ContentSourceEntity } from '../entity/content-source.entity';
 import type { GenerationJobEntity } from '../entity/generation-job.entity';
 import type { ContentVariantEntity } from '../entity/content-variant.entity';
 import { ChannelPromptRegistry } from '../prompt/channel-prompt.registry';
+import { applyChannelPostProcess } from '../prompt/post-process/channel-post-process.util';
 import { runAiCheck } from '../prompt/post-process/ai-check.util';
 import { toCitationRecords } from '../util/citations.util';
 import type { LlmAdapter } from './llm/llm.adapter';
@@ -98,7 +99,10 @@ export class GenerationOrchestrator {
         channels.map(async channel => {
           const prompt = this.promptRegistry.build(channel as ContentChannel, promptContext);
           const llmResult = await this.llmAdapter.complete(prompt);
-          const parsed = this.parseVariantPayload(llmResult.content);
+          const parsed = applyChannelPostProcess(
+            channel as ContentChannel,
+            this.parseVariantPayload(llmResult.content)
+          );
 
           const structured = {
             ...(parsed.structured ?? {}),

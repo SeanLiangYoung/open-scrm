@@ -9,7 +9,7 @@ import {
   GenerationOrchestrator,
   type RunJobOptions,
 } from './generation-orchestrator.service';
-import { OpenAiCompatibleLlmAdapter } from './llm/llm.adapter';
+import { createLlmAdapter } from './llm/create-llm-adapter';
 
 export interface GenerationQueuePayload {
   corpId: number;
@@ -38,11 +38,13 @@ export class GenerationJobRunner {
     llmApiKey: string;
     llmModel: string;
     promptVersion: string;
+    mockLlm: boolean;
   };
 
   private createOrchestrator(): GenerationOrchestrator {
     const orchestrator = new GenerationOrchestrator();
-    orchestrator.llmAdapter = new OpenAiCompatibleLlmAdapter({
+    orchestrator.llmAdapter = createLlmAdapter({
+      mockLlm: this.contentGenerationConfig.mockLlm,
       apiBase: this.contentGenerationConfig.llmApiBase,
       apiKey: this.contentGenerationConfig.llmApiKey,
       model: this.contentGenerationConfig.llmModel,

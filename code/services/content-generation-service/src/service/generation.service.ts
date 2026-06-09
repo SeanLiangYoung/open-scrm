@@ -42,6 +42,7 @@ export class GenerationService {
     llmModel: string;
     promptVersion: string;
     syncGeneration: boolean;
+    mockLlm: boolean;
   };
 
   async startGeneration(

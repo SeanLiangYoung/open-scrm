@@ -65,5 +65,6 @@ export default {
     llmWikiApiToken: process.env.LLM_WIKI_API_TOKEN || '',
     llmWikiProjectId: process.env.LLM_WIKI_PROJECT_ID || 'current',
     syncGeneration: process.env.CONTENT_GENERATION_SYNC === 'true',
+    mockLlm: process.env.CONTENT_GENERATION_MOCK_LLM === 'true',
   },
 } as MidwayConfig;
