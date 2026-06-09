@@ -1,4 +1,7 @@
 const { Bootstrap } = require('@midwayjs/bootstrap');
+const { loadMonorepoEnv } = require('./load-monorepo-env.cjs');
+
+loadMonorepoEnv();
 
 Bootstrap.configure({
   appDir: __dirname,

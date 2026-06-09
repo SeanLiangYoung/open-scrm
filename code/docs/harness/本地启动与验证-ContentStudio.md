@@ -29,9 +29,18 @@ ACQUISITION_SERVICE_URL=http://localhost:7003
 
 可选 llm-wiki（KB grounding 联调）：
 
+```bash
+# 在 code/ 目录复制模板并填入 Token（勿提交 .env）
+cp env.example .env
+# 编辑 LLM_WIKI_API_TOKEN=...
+```
+
+`content-generation-service` 启动时会自动加载 `code/.env`（见 `load-monorepo-env.cjs`）。
+
 ```env
 LLM_WIKI_BASE_URL=http://127.0.0.1:19828
 LLM_WIKI_API_TOKEN=<App 内生成的 Token>
+LLM_WIKI_PROJECT_ID=current
 ```
 
 ## 启动顺序（本地 mw dev）

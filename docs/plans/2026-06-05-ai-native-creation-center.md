@@ -9,7 +9,7 @@
 
 ## 实施清单
 
-- [ ] 在 LLM Wiki App 生成 API Token，配置 `LLM_WIKI_API_TOKEN` 环境变量（需用户本地操作）
+- [x] 在 LLM Wiki App 生成 API Token，配置 `LLM_WIKI_API_TOKEN` 环境变量（写入本地 `code/.env`，勿提交 Git）
 - [x] 新增 `packages/llm-wiki-client`：`health` / `search` / `readPage` / `graph` 封装
 - [x] 搭建 `content-generation-service`（7010）：数据模型、gateway、KB grounding 管线
 - [x] `acquisition-service` 实现 Content CRUD + `push-draft` 映射
