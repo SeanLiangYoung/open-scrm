@@ -57,25 +57,42 @@ export class GenerationOrchestrator {
     let citations: ReturnType<typeof toCitationRecords> = [];
 
     if (useKb) {
-      const query = buildKbSearchQuery({
-        title: source.title,
-        keywords: source.keywords ?? undefined,
-        kbQuery: options.kbQuery ?? source.kbQuery,
-      });
-
-      if (query) {
-        const searchResult = await this.kbService.search({
-          query,
-          topK: 5,
-          includeContent: true,
-          projectId: source.kbProjectId ?? undefined,
+      if (source.kbSelectedPaths?.length) {
+        const pages = await this.kbService.readPages(
+          source.kbSelectedPaths,
+          source.kbProjectId ?? undefined
+        );
+        kbMode = 'selected';
+        kbHits = pages.length;
+        citations = pages.map(page => ({
+          path: page.path,
+          title: page.title,
+          snippet: page.content.slice(0, 200),
+        }));
+        kbContext = pages
+          .map(page => `- [[${page.path}]] ${page.title}:\n${page.content}`)
+          .join('\n\n');
+      } else {
+        const query = buildKbSearchQuery({
+          title: source.title,
+          keywords: source.keywords ?? undefined,
+          kbQuery: options.kbQuery ?? source.kbQuery,
         });
-        kbMode = searchResult.mode ?? 'keyword';
-        kbHits = searchResult.results.length;
-        citations = toCitationRecords(searchResult.results);
-        kbContext = searchResult.results
-          .map(r => `- [[${r.path}]] ${r.title}: ${r.snippet}`)
-          .join('\n');
+
+        if (query) {
+          const searchResult = await this.kbService.search({
+            query,
+            topK: 5,
+            includeContent: true,
+            projectId: source.kbProjectId ?? undefined,
+          });
+          kbMode = searchResult.mode ?? 'keyword';
+          kbHits = searchResult.results.length;
+          citations = toCitationRecords(searchResult.results);
+          kbContext = searchResult.results
+            .map(r => `- [[${r.path}]] ${r.title}: ${r.snippet}`)
+            .join('\n');
+        }
       }
     }
 

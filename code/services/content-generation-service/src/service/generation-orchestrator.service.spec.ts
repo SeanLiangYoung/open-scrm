@@ -95,6 +95,62 @@ describe('GenerationOrchestrator', () => {
     expect(result.variants[0].qualityFlags?.ai_check_passed).toBe(true);
   });
 
+  it('uses readPage for selected paths instead of KB search', async () => {
+    const selectedSource: ContentSourceEntity = {
+      ...source,
+      kbSelectedPaths: ['notes/topic-a.md', 'notes/topic-b.md'],
+      kbCitations: [
+        { path: 'notes/topic-a.md', title: 'Topic A' },
+        { path: 'notes/topic-b.md', title: 'Topic B' },
+      ],
+    };
+
+    const llmComplete = vi.fn().mockResolvedValue({
+      content:
+        '{"title":"Tweet","body":"Hello from selected wiki pages grounding.","structured":{"thread":[]}}',
+    });
+    const kbSearch = vi.fn();
+    const readPages = vi.fn().mockResolvedValue([
+      { path: 'notes/topic-a.md', title: 'Topic A', content: 'Full content A' },
+      { path: 'notes/topic-b.md', title: 'Topic B', content: 'Full content B' },
+    ]);
+    const saveVariant = vi.fn().mockImplementation(async v => ({ ...v, id: 42 }));
+    const updateJob = vi.fn().mockImplementation(async j => j);
+
+    const orchestrator = new GenerationOrchestrator();
+    orchestrator.llmAdapter = { complete: llmComplete };
+    orchestrator.kbService = { search: kbSearch, readPages } as any;
+    orchestrator.variantRepository = { save: saveVariant } as any;
+    orchestrator.jobRepository = { save: updateJob } as any;
+    orchestrator.promptRegistry = new (await import('../prompt/channel-prompt.registry')).ChannelPromptRegistry();
+
+    const result = await orchestrator.runJob(job, selectedSource, {
+      channels: ['tweet'],
+      kbEnabled: true,
+    });
+
+    expect(readPages).toHaveBeenCalledWith(
+      selectedSource.kbSelectedPaths,
+      selectedSource.kbProjectId
+    );
+    expect(kbSearch).not.toHaveBeenCalled();
+    expect(result.kbMode).toBe('selected');
+    expect(result.kbHits).toBe(2);
+    expect(saveVariant).toHaveBeenCalledWith(
+      expect.objectContaining({
+        structured: expect.objectContaining({
+          citations: [
+            { path: 'notes/topic-a.md', title: 'Topic A', snippet: 'Full content A' },
+            { path: 'notes/topic-b.md', title: 'Topic B', snippet: 'Full content B' },
+          ],
+        }),
+      })
+    );
+    const promptArg = llmComplete.mock.calls[0][0];
+    expect(promptArg.user).toContain('Full content A');
+    expect(promptArg.user).toContain('Full content B');
+  });
+
   it('runs LLM generation for all channels in parallel', async () => {
     const llmComplete = vi.fn().mockImplementation(async () => ({
       content: '{"title":"OK title here","body":"This body is long enough for ai check.","structured":{}}',
