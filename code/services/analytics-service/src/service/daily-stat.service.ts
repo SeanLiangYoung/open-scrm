@@ -7,6 +7,14 @@ import { QueryDailyStatDto } from '../dto/stat-query.dto';
 import { summarizeDailyStatRange } from '../util/daily-stat-summary.util';
 import dayjs from 'dayjs';
 
+/** Legacy DB columns store current state, not activity/loss events. */
+const metricSemantics = {
+  customerCounts: 'current_state_at_aggregation',
+  activeCustomerCount: 'deprecated_alias_of_normalCustomerCount',
+  lostCustomerCount: 'deprecated_alias_of_deletedCustomerCount',
+  activeStaffCount: 'deprecated_alias_of_enabledStaffCount',
+} as const;
+
 @Provide()
 export class DailyStatService {
   @Inject()
@@ -26,7 +34,14 @@ export class DailyStatService {
       },
     });
 
-    return stats;
+    return stats.map(s => ({
+      ...s,
+      normalCustomerCount: s.activeCustomerCount,
+      deletedCustomerCount: s.lostCustomerCount,
+      enabledStaffCount: s.activeStaffCount,
+      snapshotObservedAt: s.updateTime ?? null,
+      metricSemantics,
+    }));
   }
 
   async getOverview(corpId: number, date?: string) {
@@ -40,12 +55,18 @@ export class DailyStatService {
 
     if (!todayStat) {
       return {
+        snapshotAvailable: false,
         newCustomerCount: 0,
         lostCustomerCount: 0,
         activeCustomerCount: 0,
         totalCustomerCount: 0,
         activeStaffCount: 0,
         totalStaffCount: 0,
+        normalCustomerCount: 0,
+        deletedCustomerCount: 0,
+        enabledStaffCount: 0,
+        snapshotObservedAt: null,
+        metricSemantics,
         messageSendCount: 0,
         messageSuccessRate: 0,
         sopExecuteCount: 0,
@@ -54,12 +75,18 @@ export class DailyStatService {
     }
 
     return {
+      snapshotAvailable: true,
       newCustomerCount: todayStat.newCustomerCount,
       lostCustomerCount: todayStat.lostCustomerCount,
       activeCustomerCount: todayStat.activeCustomerCount,
       totalCustomerCount: todayStat.totalCustomerCount,
       activeStaffCount: todayStat.activeStaffCount,
       totalStaffCount: todayStat.totalStaffCount,
+      normalCustomerCount: todayStat.activeCustomerCount,
+      deletedCustomerCount: todayStat.lostCustomerCount,
+      enabledStaffCount: todayStat.activeStaffCount,
+      snapshotObservedAt: todayStat.updateTime ?? null,
+      metricSemantics,
       messageSendCount: todayStat.messageSendCount,
       messageSuccessRate:
         todayStat.messageSendCount > 0
@@ -87,6 +114,10 @@ export class DailyStatService {
       newCustomers: stats.map(s => s.newCustomerCount),
       lostCustomers: stats.map(s => s.lostCustomerCount),
       activeCustomers: stats.map(s => s.activeCustomerCount),
+      normalCustomers: stats.map(s => s.normalCustomerCount),
+      deletedCustomers: stats.map(s => s.deletedCustomerCount),
+      snapshotObservedAt: stats.map(s => s.snapshotObservedAt),
+      metricSemantics,
       messageSends: stats.map(s => s.messageSendCount),
     };
   }
@@ -98,6 +129,7 @@ export class DailyStatService {
     const stats = await this.queryDailyStat(corpId, query);
     const mapped = stats.map(s => ({
       statDate: s.statDate,
+      updateTime: s.updateTime,
       newCustomerCount: s.newCustomerCount,
       lostCustomerCount: s.lostCustomerCount,
       activeCustomerCount: s.activeCustomerCount,
@@ -120,6 +152,7 @@ export class DailyStatService {
       endDate: query.endDate,
       additive: core.additive,
       snapshotAtEnd: core.snapshotAtEnd,
+      metricSemantics,
       rates: {
         messageSuccessRate: msgSend > 0 ? Number(((msgOk / msgSend) * 100).toFixed(2)) : 0,
         sopSuccessRate: sopEx > 0 ? Number(((sopOk / sopEx) * 100).toFixed(2)) : 0,
