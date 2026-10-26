@@ -1,0 +1,43 @@
+✖ fresh checkout permits an ignored dist directory before it exists (45.935666ms)
+✔ existing ignored dist remains permitted (42.700917ms)
+✔ unignored directory remains rejected (44.159042ms)
+✔ tracked files remain protected even inside ignored dist (44.563125ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 183.573625
+
+✖ failing tests:
+
+test at code/scripts/test/runtime-boot-safety.selfcheck.cjs:19:1
+✖ fresh checkout permits an ignored dist directory before it exists (45.935666ms)
+  AssertionError [ERR_ASSERTION]: Got unwanted exception.
+  Actual message: "git check-ignore /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-build-safety-716TCs/dist failed: 1"
+      at /Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:20:50
+      at fixture (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:16:101)
+      at TestContext.<anonymous> (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:19:78)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: git check-ignore /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-build-safety-716TCs/dist failed: 1
+        at command (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:11:30)
+        at assertSafeBuildDirectory (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.cjs:6:3)
+        at /Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:20:67
+        at getActual (node:assert:611:5)
+        at strict.doesNotThrow (node:assert:779:32)
+        at /Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:20:50
+        at fixture (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:16:101)
+        at TestContext.<anonymous> (/Users/seanliang/projects/open-scrm/code/scripts/test/runtime-boot-safety.selfcheck.cjs:19:78)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25),
+    expected: undefined,
+    operator: 'doesNotThrow',
+    diff: 'simple'
+  }

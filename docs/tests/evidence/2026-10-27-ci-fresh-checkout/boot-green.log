@@ -1,0 +1,71 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-runtime-boot-xoJ0Xr
+Clean build/start acquisition-service 57356
+Clean build/start integration-service 57357
+Clean build/start analytics-service 57358
+Clean build/start asset-service 57359
+Clean build/start content-generation-service 57360
+{
+  "profile": "inert-oss-fixture",
+  "metadataTotals": {
+    "entities": 17,
+    "columns": 200
+  },
+  "services": [
+    {
+      "name": "acquisition-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "integration-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "analytics-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "asset-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "content-generation-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 404,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    }
+  ]
+}
+Verified owned processes stopped and disposable containers absent.

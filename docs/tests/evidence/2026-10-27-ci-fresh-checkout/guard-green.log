@@ -1,0 +1,12 @@
+✔ fresh checkout permits an ignored dist directory before it exists (46.152667ms)
+✔ existing ignored dist remains permitted (43.707042ms)
+✔ unignored directory remains rejected (44.543458ms)
+✔ tracked files remain protected even inside ignored dist (45.37825ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.241417

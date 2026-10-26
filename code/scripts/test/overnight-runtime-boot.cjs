@@ -11,6 +11,7 @@ const dns = require('node:dns');
 const dgram = require('node:dgram');
 const cp = require('node:child_process');
 const assert = require('node:assert/strict');
+const { assertSafeBuildDirectory } = require('./runtime-boot-safety.cjs');
 const { createRequire } = require('node:module');
 const root = path.resolve(__dirname, '../..');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -221,8 +222,7 @@ async function main() {
       const serviceEnv = { ...env, TMPDIR: path.join(output, 'tmp'), MIDWAY_LOGGER_WRITEABLE_DIR: output, BOOT_OUTPUT_DIR: output, BOOT_GUARD_LOG: path.join(output, 'network.jsonl'), BOOT_OSS_FIXTURE: ossFixture ? '1' : '0' };
       try {
         console.log(`Clean build/start ${name} ${ports[name]}`);
-        assert.equal(command('git', ['ls-files', '--', path.join(dir, 'dist')], { cwd: root }), '', 'Clean build cannot delete tracked files');
-        command('git', ['check-ignore', path.join(dir, 'dist')], { cwd: root });
+        assertSafeBuildDirectory(root, path.join(dir, 'dist'), command);
         command(path.join(dir, 'node_modules/.bin/mw'), ['build', '--clean'], { cwd: dir, env: serviceEnv }); state.build = 'passed';
         const requireService = createRequire(path.join(dir, 'package.json'));
         const { DataSource } = requireService('typeorm');

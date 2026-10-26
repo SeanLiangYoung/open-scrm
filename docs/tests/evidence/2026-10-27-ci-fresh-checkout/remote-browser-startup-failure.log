@@ -1,0 +1,126 @@
+pnpm exec playwright test --config notification-history.config.ts
+
+Running 12 tests using 1 worker
+
+  ✘   1 tests/notification-history.spec.ts:58:5 › initial request explicitly uses safe page1/size20 without an isRead filter (3ms)
+  ✓   2 tests/notification-history.spec.ts:66:5 › second page exposes older notifications beyond the first20 (927ms)
+  ✓   3 tests/notification-history.spec.ts:73:5 › unread filter preserves numeric zero and resets page2 to page1 (1.2s)
+  ✓   4 tests/notification-history.spec.ts:80:5 › read filter uses1 and all filter removes the parameter (1.5s)
+  ✓   5 tests/notification-history.spec.ts:88:5 › marking read on unread page2 reloads the same safe page and filtered total (1.4s)
+  ✓   6 tests/notification-history.spec.ts:103:5 › failed page navigation preserves the committed page and allows retry (905ms)
+  ✓   7 tests/notification-history.spec.ts:121:7 › unsafe server total -1 never drives unsafe pagination (562ms)
+  ✓   8 tests/notification-history.spec.ts:121:7 › unsafe server total 1.5 never drives unsafe pagination (535ms)
+  ✓   9 tests/notification-history.spec.ts:121:7 › unsafe server total 9007199254740992 never drives unsafe pagination (607ms)
+  ✓  10 tests/notification-history.spec.ts:131:5 › late old-filter response cannot replace a newer read filter (1.6s)
+  ✓  11 tests/notification-history.spec.ts:168:5 › marking the only unread row on the last page retreats once to the valid previous page (1.6s)
+  ✓  12 tests/notification-history.spec.ts:206:5 › stale filter failure cannot report an error after the newer read filter succeeds (1.6s)
+
+
+  1) tests/notification-history.spec.ts:58:5 › initial request explicitly uses safe page1/size20 without an isRead filter 
+
+    Error: browserType.launch: Target page, context or browser has been closed
+    Browser logs:
+
+    <launching> /home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-S0VZ8Q --remote-debugging-pipe --no-startup-window
+    <launched> pid=6033
+    [pid=6033][err] Received signal 11 SI_KERNEL000000000000
+    [pid=6033][err]  Possibly a General Protection Fault, can be due to a non-canonical address dereference. See "Intel 64 and IA-32 Architectures Software Developer’s Manual", Volume 1, Section 3.3.7.1.
+    [pid=6033][err] #0 0x56297a452f5a (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3954f59)
+    [pid=6033][err] #1 0x56297d884d24 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x6d86d23)
+    [pid=6033][err] #2 0x7f9a3c045330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)
+    [pid=6033][err] #3 0x56297a8a9aca (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3dabac9)
+    [pid=6033][err] #4 0x5629792e1485 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x27e3484)
+    [pid=6033][err] #5 0x562979594d13 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x2a96d12)
+    [pid=6033][err] #6 0x562979596190 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x2a9818f)
+    [pid=6033][err] #7 0x56297a56765d (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3a6965c)
+    [pid=6033][err] #8 0x56297abee699 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x40f0698)
+    [pid=6033][err] #9 0x56297abede12 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x40efe11)
+    [pid=6033][err] #10 0x56297ab9cac3 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409eac2)
+    [pid=6033][err] #11 0x56297ab9b1a9 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409d1a8)
+    [pid=6033][err] #12 0x56297ab9b15e (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409d15d)
+    [pid=6033][err] #13 0x56297a730af6 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3c32af5)
+    [pid=6033][err] #14 0x56297ad45135 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4247134)
+    [pid=6033][err] #15 0x56297ad44f76 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4246f75)
+    [pid=6033][err] #16 0x56297a658c05 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3b5ac04)
+    [pid=6033][err] #17 0x56297a658a69 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3b5aa68)
+    [pid=6033][err] #18 0x56297ad6e5bb (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x42705ba)
+    [pid=6033][err] #19 0x56297aae5e54 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe7e53)
+    [pid=6033][err] #20 0x56297aae5fe6 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe7fe5)
+    [pid=6033][err] #21 0x56297aae9481 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3feb480)
+    [pid=6033][err] #22 0x56297aae6419 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe8418)
+    [pid=6033][err] #23 0x56297aae550e (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe750d)
+    [pid=6033][err] #24 0x56297b480ad0 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4982acf)
+    [pid=6033][err] #25 0x56297b481cf2 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4983cf1)
+    [pid=6033][err] #26 0x7f9a3c02a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)
+    [pid=6033][err] #27 0x7f9a3c02a28b (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a28a)
+    [pid=6033][err] #28 0x56297afb97ca (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x44bb7c9)
+    [pid=6033][err]   r8: 7fffffffffffffff  r9: 00007ffed3c25ea0 r10: 0000000000000000 r11: 00007f9a3bb99e80
+    [pid=6033][err]  r12: 0000114000010000 r13: 0000000000000054 r14: 000056297799fe78 r15: 0000000000000006
+    [pid=6033][err]   di: 000056297799fe78  si: 00001140000315b0  bp: 00007ffed3c25ea0  bx: 0018010000000000
+    [pid=6033][err]   dx: 0000000000000015  ax: 0000000000000006  cx: 0000000000000001  sp: 00007ffed3c25e70
+    [pid=6033][err]   ip: 00007f9a3c048806 efl: 0000000000010206 cgf: 002b000000000033 erf: 0000000000000000
+    [pid=6033][err]  trp: 000000000000000d msk: 0000000000000000 cr2: 0000000000000000
+    [pid=6033][err] [end of stack trace]
+    Call log:
+    [2m  - <launching> /home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/tmp/playwright_chromiumdev_profile-S0VZ8Q --remote-debugging-pipe --no-startup-window[22m
+    [2m  - <launched> pid=6033[22m
+    [2m  - [pid=6033][err] Received signal 11 SI_KERNEL000000000000[22m
+    [2m  - [pid=6033][err]  Possibly a General Protection Fault, can be due to a non-canonical address dereference. See "Intel 64 and IA-32 Architectures Software Developer’s Manual", Volume 1, Section 3.3.7.1.[22m
+    [2m  - [pid=6033][err] #0 0x56297a452f5a (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3954f59)[22m
+    [2m  - [pid=6033][err] #1 0x56297d884d24 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x6d86d23)[22m
+    [2m  - [pid=6033][err] #2 0x7f9a3c045330 (/usr/lib/x86_64-linux-gnu/libc.so.6+0x4532f)[22m
+    [2m  - [pid=6033][err] #3 0x56297a8a9aca (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3dabac9)[22m
+    [2m  - [pid=6033][err] #4 0x5629792e1485 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x27e3484)[22m
+    [2m  - [pid=6033][err] #5 0x562979594d13 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x2a96d12)[22m
+    [2m  - [pid=6033][err] #6 0x562979596190 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x2a9818f)[22m
+    [2m  - [pid=6033][err] #7 0x56297a56765d (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3a6965c)[22m
+    [2m  - [pid=6033][err] #8 0x56297abee699 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x40f0698)[22m
+    [2m  - [pid=6033][err] #9 0x56297abede12 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x40efe11)[22m
+    [2m  - [pid=6033][err] #10 0x56297ab9cac3 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409eac2)[22m
+    [2m  - [pid=6033][err] #11 0x56297ab9b1a9 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409d1a8)[22m
+    [2m  - [pid=6033][err] #12 0x56297ab9b15e (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x409d15d)[22m
+    [2m  - [pid=6033][err] #13 0x56297a730af6 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3c32af5)[22m
+    [2m  - [pid=6033][err] #14 0x56297ad45135 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4247134)[22m
+    [2m  - [pid=6033][err] #15 0x56297ad44f76 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4246f75)[22m
+    [2m  - [pid=6033][err] #16 0x56297a658c05 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3b5ac04)[22m
+    [2m  - [pid=6033][err] #17 0x56297a658a69 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3b5aa68)[22m
+    [2m  - [pid=6033][err] #18 0x56297ad6e5bb (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x42705ba)[22m
+    [2m  - [pid=6033][err] #19 0x56297aae5e54 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe7e53)[22m
+    [2m  - [pid=6033][err] #20 0x56297aae5fe6 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe7fe5)[22m
+    [2m  - [pid=6033][err] #21 0x56297aae9481 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3feb480)[22m
+    [2m  - [pid=6033][err] #22 0x56297aae6419 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe8418)[22m
+    [2m  - [pid=6033][err] #23 0x56297aae550e (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x3fe750d)[22m
+    [2m  - [pid=6033][err] #24 0x56297b480ad0 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4982acf)[22m
+    [2m  - [pid=6033][err] #25 0x56297b481cf2 (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x4983cf1)[22m
+    [2m  - [pid=6033][err] #26 0x7f9a3c02a1ca (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a1c9)[22m
+    [2m  - [pid=6033][err] #27 0x7f9a3c02a28b (/usr/lib/x86_64-linux-gnu/libc.so.6+0x2a28a)[22m
+    [2m  - [pid=6033][err] #28 0x56297afb97ca (/home/runner/.cache/ms-playwright/chromium_headless_shell-1217/chrome-headless-shell-linux64/chrome-headless-shell+0x44bb7c9)[22m
+    [2m  - [pid=6033][err]   r8: 7fffffffffffffff  r9: 00007ffed3c25ea0 r10: 0000000000000000 r11: 00007f9a3bb99e80[22m
+    [2m  - [pid=6033][err]  r12: 0000114000010000 r13: 0000000000000054 r14: 000056297799fe78 r15: 0000000000000006[22m
+    [2m  - [pid=6033][err]   di: 000056297799fe78  si: 00001140000315b0  bp: 00007ffed3c25ea0  bx: 0018010000000000[22m
+    [2m  - [pid=6033][err]   dx: 0000000000000015  ax: 0000000000000006  cx: 0000000000000001  sp: 00007ffed3c25e70[22m
+    [2m  - [pid=6033][err]   ip: 00007f9a3c048806 efl: 0000000000010206 cgf: 002b000000000033 erf: 0000000000000000[22m
+    [2m  - [pid=6033][err]  trp: 000000000000000d msk: 0000000000000000 cr2: 0000000000000000[22m
+    [2m  - [pid=6033][err] [end of stack trace][22m
+    [2m  - [pid=6033] <gracefully close start>[22m
+    [2m  - [pid=6033] <kill>[22m
+    [2m  - [pid=6033] <will force kill>[22m
+    [2m  - [pid=6033] <process did exit: exitCode=null, signal=SIGSEGV>[22m
+    [2m  - [pid=6033] starting temporary directories cleanup[22m
+    [2m  - [pid=6033] finished temporary directories cleanup[22m
+    [2m  - [pid=6033] <gracefully close end>[22m
+
+
+    Error Context: test-results/notification-history/notification-history-initi-d1475-20-without-an-isRead-filter/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/notification-history/notification-history-initi-d1475-20-without-an-isRead-filter/trace.zip
+    Usage:
+
+        pnpm exec playwright show-trace test-results/notification-history/notification-history-initi-d1475-20-without-an-isRead-filter/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/notification-history.spec.ts:58:5 › initial request explicitly uses safe page1/size20 without an isRead filter 
+  11 passed (15.3s)

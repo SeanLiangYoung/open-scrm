@@ -29,6 +29,8 @@ jobs:
           cache-dependency-path: code/pnpm-lock.yaml
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Clean-build guard on a fresh checkout
+        run: node scripts/test/runtime-boot-safety.selfcheck.cjs
       - name: Workspace gates and login-state regression
         run: node scripts/test/verify-reliability.cjs --group static --report-dir "$RUNNER_TEMP/scrm-static"
       - name: Preserve static evidence
