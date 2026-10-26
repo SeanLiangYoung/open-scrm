@@ -2,10 +2,7 @@ import { Config, Inject, Middleware } from '@midwayjs/core';
 import { Context, NextFunction } from '@midwayjs/koa';
 import { IMiddleware } from '@midwayjs/core';
 import { HttpService } from '@midwayjs/axios';
-import {
-  findMatchingGatewayRoute,
-  type GatewayRouteConfig,
-} from '../utils/route-match';
+import { findMatchingGatewayRoute, type GatewayRouteConfig } from '../utils/route-match';
 
 @Middleware()
 export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
@@ -33,6 +30,9 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
         if (ctx.get('content-type')) {
           headers['content-type'] = ctx.get('content-type');
         }
+        if (ctx.get('idempotency-key')) {
+          headers['idempotency-key'] = ctx.get('idempotency-key');
+        }
         if (ctx.state.user) {
           headers['x-user-id'] = String(ctx.state.user.userId || '');
           headers['x-corp-id'] = String(ctx.state.user.corpId || '');
@@ -50,7 +50,7 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
           data: ctx.method !== 'GET' ? ctx.request.body : undefined,
           params: ctx.query,
           timeout: proxyTimeoutMs,
-          validateStatus: () => true,
+          validateStatus: () => true
         });
 
         ctx.status = response.status;
@@ -60,7 +60,7 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
           'content-type',
           'x-request-id',
           'x-ratelimit-limit',
-          'x-ratelimit-remaining',
+          'x-ratelimit-remaining'
         ];
         for (const key of proxyHeaders) {
           if (response.headers[key]) {
@@ -73,14 +73,14 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
           ctx.body = {
             code: 503,
             message: '目标服务不可用',
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
           };
         } else {
           ctx.status = 502;
           ctx.body = {
             code: 502,
             message: '网关代理错误',
-            timestamp: new Date().toISOString(),
+            timestamp: new Date().toISOString()
           };
         }
       }

@@ -7,6 +7,7 @@
 |-----------|---------------------------|---------------------------|
 | `/api/v1/auth/*` | `AUTH_SERVICE_URL` | 7001 |
 | `/api/v1/users/*` | `AUTH_SERVICE_URL` | 7001 |
+| `/api/v1/staff`（本企业启用员工只读目录） | `AUTH_SERVICE_URL` | 7001 |
 | `/api/v1/customers/*` | `CUSTOMER_SERVICE_URL` | 7002 |
 | `/api/v1/tags/*` | `CUSTOMER_SERVICE_URL` | 7002 |
 | `/api/v1/follow-ups`、`/api/v1/follow-ups/*` | `CUSTOMER_SERVICE_URL` | 7002 |
