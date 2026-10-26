@@ -1,11 +1,23 @@
 import { describe, expect, it, vi } from 'vitest';
 import { SopExecutionService } from './sop-execution.service';
+import { SopActionService } from './sop-action.service';
+import { SopScheduler } from './sop-scheduler.service';
+import { sopDelayMs } from '../util/sop-action-validation';
 import { SopTemplateService } from './sop-template.service';
 function setup(patch: Record<string, unknown> = {}) {
  const row: any = { id: 717, corpId: 2, templateId: 3, targetType: 1, customerId: 10, status: 0, currentStep: 0, executionLog: [], ...patch };
  const repository = { findOne: vi.fn(async () => ({ ...row })), update: vi.fn(async (where: any, value: any) => { if (where.status !== undefined && where.status !== row.status) return { affected: 0 }; Object.assign(row, value); return { affected: 1 }; }), create: vi.fn((value: any) => value), save: vi.fn(async (value: any) => value) };
  const http = { post: vi.fn(async () => ({ data: { success: true, data: { success: true, count: 1 } } })), put: vi.fn(async () => ({ data: { code: 200, data: { id: 10, followUserId: 7 } } })) };
- const service = new SopExecutionService(); Object.assign(service, { executionRepository: repository, httpService: http, servicesConfig: { customer: 'fixture://customer', message: 'fixture://message' } });
+ const service = new SopExecutionService(); Object.assign(service, { executionRepository: repository });
+ const action = Object.assign(new SopActionService(), { httpService: http, servicesConfig: { customer: 'fixture://customer', message: 'fixture://message' } });
+ const scheduler = Object.assign(new SopScheduler(), { actionService: action, schedulerConfig: { maxConcurrent: 1, leaseMs: 90000 }, scheduleStore: {
+  recover: async () => {}, claim: async () => row.status === 0 ? [{ ...row, leaseToken: 'test' }] : [],
+  markAction: async () => true, renew: async () => true, release: async () => {},
+  finish: async (_claim:any,error?:Error) => { if(error) { row.status=3;row.errorMessage=error.message; } else { row.currentStep++; row.status=row.currentStep===row.stepsSnapshot.length?1:0; } }
+ } });
+ // Drive the real durable worker instead of retaining the removed local timer runner.
+ (service as any).executeSteps = async (_id:number,steps:any[]) => { row.stepsSnapshot=steps; await scheduler.tick(); };
+ (service as any).calculateDelay = sopDelayMs;
  return { service: service as any, row, repository, http };
 }
 const step = (actionContent: unknown, patch = {}) => ({ stepName: '动作', stepType: 4, delayTime: 0, delayUnit: 'minute', actionContent, ...patch });
@@ -21,7 +33,7 @@ describe('legacy persisted SOP actions fail before side effects', () => {
  it('downstream tag rejection fails without progressing or running assignment', async () => { const t = setup(); t.http.post.mockRejectedValue(new Error('标签必须全部属于本企业')); await t.service.executeSteps(717, [step({ tagIds: [99] }, { stepType: 2 }), step({ followUserId: 7 })]); expect(t.row.status).toBe(3); expect(t.row.currentStep).toBe(0); expect(t.http.put).not.toHaveBeenCalled(); });
  it.each([{delayTime:366,delayUnit:'day'},{delayTime:1,delayUnit:'year'},{delayTime:1,delayUnit:'second'},{delayTime:0.1,delayUnit:'day'}])('invalid delay $delayTime $delayUnit fails before write', async invalid => {const t=setup();t.service.delay=vi.fn().mockResolvedValue(undefined);await t.service.executeSteps(717,[step({followUserId:7},invalid)]);expect(t.row.status).toBe(3);expect(t.http.put).not.toHaveBeenCalled();});
  it.each([{templateType:2,targetType:1},{templateType:1,targetType:2}])('template/trigger mismatch $templateType/$targetType refused before row creation',async ({templateType,targetType})=>{const t=setup();t.service.sopTemplateService={getTemplate:vi.fn().mockResolvedValue({id:3,status:1,templateType,steps:[]})};t.service.startSteps=vi.fn().mockResolvedValue(undefined);await expect(t.service.triggerExecution(2,{templateId:3,targetType,targetIds:10})).rejects.toThrow();expect(t.repository.save).not.toHaveBeenCalled();});
- it('30day duration still reaches chunked wait without short timer overflow', () => { const t = setup(); expect(t.service.calculateDelay(30, 'day')).toBe(2_592_000_000); });
+ it('30day duration remains valid for durable deadline calculation', () => { const t = setup(); expect(t.service.calculateDelay(30, 'day')).toBe(2_592_000_000); });
 });
 describe('direct template persistence validates before writing', () => {
  it('create rejects invalid nested action before any template insert', async () => { const s = new SopTemplateService(); const save = vi.fn(); Object.assign(s, { templateRepository: { create: (x: unknown) => x, save }, stepRepository: { create: (x: unknown) => x, save } }); await expect(s.createTemplate(2, 7, { templateName: '流程', templateType: 1, triggerType: 4, steps: [step({ followUserId: true })] })).rejects.toThrow(); expect(save).not.toHaveBeenCalled(); });

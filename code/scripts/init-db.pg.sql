@@ -160,10 +160,18 @@ CREATE TABLE IF NOT EXISTS sop_execution (
   complete_time TIMESTAMP NULL,
   error_message VARCHAR(500),
   execution_log JSONB,
+  steps_snapshot JSONB,
+  next_run_at TIMESTAMPTZ,
+  lease_token VARCHAR(36),
+  lease_until TIMESTAMPTZ,
+  action_started_at TIMESTAMPTZ,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_sop_exec_template ON sop_execution (template_id);
+
+CREATE INDEX IF NOT EXISTS idx_sop_execution_due ON sop_execution (next_run_at,id) WHERE status=0;
+CREATE INDEX IF NOT EXISTS idx_sop_execution_lease ON sop_execution (lease_until,id) WHERE action_started_at IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS mass_task (
   id BIGSERIAL PRIMARY KEY,
