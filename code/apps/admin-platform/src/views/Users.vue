@@ -11,7 +11,7 @@
         </div>
       </template>
 
-      <el-table :data="users" v-loading="loading" stripe>
+      <el-table v-loading="loading" :data="users" stripe>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="username" label="用户名" width="150" />
         <el-table-column prop="realName" label="姓名" width="120" />
@@ -59,15 +59,11 @@
 
     <el-dialog v-model="dialogVisible" :title="dialogTitle" width="480px">
       <el-form :model="form" label-width="80px">
-        <el-form-item label="用户名" v-if="!editingId">
+        <el-form-item v-if="!editingId" label="用户名">
           <el-input v-model="form.username" placeholder="请输入用户名" />
         </el-form-item>
-        <el-form-item label="密码" v-if="!editingId">
-          <el-input
-            v-model="form.password"
-            type="password"
-            placeholder="请输入密码（至少8位）"
-          />
+        <el-form-item v-if="!editingId" label="密码">
+          <el-input v-model="form.password" type="password" placeholder="请输入密码（至少8位）" />
         </el-form-item>
         <el-form-item label="姓名">
           <el-input v-model="form.realName" placeholder="请输入姓名" />
@@ -81,9 +77,7 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit" :loading="submitting">
-          确定
-        </el-button>
+        <el-button type="primary" :loading="submitting" @click="handleSubmit"> 确定 </el-button>
       </template>
     </el-dialog>
   </div>
@@ -94,30 +88,32 @@ import { ref, reactive, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus } from '@element-plus/icons-vue';
 import api from '@/utils/api';
+import { apiErrorMessage } from '@/utils/error';
+import type { UserInfo, UserList } from '@/types/user';
 
 const loading = ref(false);
 const submitting = ref(false);
-const users = ref<any[]>([]);
+const users = ref<UserInfo[]>([]);
 const page = ref(1);
 const pageSize = ref(20);
 const total = ref(0);
 const dialogVisible = ref(false);
 const dialogTitle = ref('新建用户');
-const editingId = ref<number | null>(null);
+const editingId = ref<number | string | null>(null);
 
 const form = reactive({
   username: '',
   password: '',
   realName: '',
   mobile: '',
-  email: '',
+  email: ''
 });
 
 async function fetchUsers() {
   loading.value = true;
   try {
-    const res = await api.get('/api/v1/users/', {
-      params: { page: page.value, pageSize: pageSize.value },
+    const res = await api.get<UserList>('/api/v1/users/', {
+      params: { page: page.value, pageSize: pageSize.value }
     });
     users.value = res.data.items;
     total.value = res.data.total;
@@ -136,18 +132,18 @@ function showCreateDialog() {
     password: '',
     realName: '',
     mobile: '',
-    email: '',
+    email: ''
   });
   dialogVisible.value = true;
 }
 
-function editUser(row: any) {
+function editUser(row: UserInfo) {
   editingId.value = row.id;
   dialogTitle.value = '编辑用户';
   Object.assign(form, {
     realName: row.realName || '',
     mobile: row.mobile || '',
-    email: row.email || '',
+    email: row.email || ''
   });
   dialogVisible.value = true;
 }
@@ -159,7 +155,7 @@ async function handleSubmit() {
       await api.put(`/api/v1/users/${editingId.value}`, {
         realName: form.realName,
         mobile: form.mobile,
-        email: form.email,
+        email: form.email
       });
       ElMessage.success('更新成功');
     } else {
@@ -169,29 +165,29 @@ async function handleSubmit() {
         corpId: 1,
         realName: form.realName,
         mobile: form.mobile,
-        email: form.email,
+        email: form.email
       });
       ElMessage.success('创建成功');
     }
     dialogVisible.value = false;
     fetchUsers();
-  } catch (err: any) {
-    ElMessage.error(err.response?.data?.message || '操作失败');
+  } catch (err) {
+    ElMessage.error(apiErrorMessage(err, '操作失败'));
   } finally {
     submitting.value = false;
   }
 }
 
-async function deleteUser(row: any) {
+async function deleteUser(row: UserInfo) {
   await ElMessageBox.confirm(`确定删除用户 ${row.username}？`, '提示', {
-    type: 'warning',
+    type: 'warning'
   });
   try {
     await api.delete(`/api/v1/users/${row.id}`);
     ElMessage.success('删除成功');
     fetchUsers();
-  } catch (err: any) {
-    ElMessage.error(err.response?.data?.message || '删除失败');
+  } catch (err) {
+    ElMessage.error(apiErrorMessage(err, '删除失败'));
   }
 }
 
