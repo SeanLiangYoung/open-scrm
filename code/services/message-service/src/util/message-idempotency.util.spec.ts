@@ -96,3 +96,19 @@ describe('resolveIdempotentReplay', () => {
     });
   });
 });
+
+describe('PostgreSQL bigint tenant identity replay', () => {
+  const existing = (corpId: number | string) => ({ id: 99, corpId, sendStatus: 1, content: 'original', failReason: null, externalId: null });
+  it('accepts string-hydrated enterprise identity matching a trusted safe numeric identity', () => {
+    expect(resolveIdempotentReplay(1, 'key', existing('1'))).toMatchObject({ kind: 'replay', messageLogId: 99, content: 'original' });
+  });
+  it('preserves exact large decimal enterprise identities without Number rounding', () => {
+    expect(resolveIdempotentReplay('9223372036854775807', 'key', existing('9223372036854775807'))).toMatchObject({ kind: 'replay' });
+    expect(resolveIdempotentReplay('9007199254740992', 'key', existing('9007199254740993'))).toBeNull();
+    expect(resolveIdempotentReplay(1, 'key', existing('2'))).toBeNull();
+  });
+  it.each(['01', ' 1', '1 ', '+1', '1.0', '1e0', '', '0', '-1', Number.MAX_SAFE_INTEGER + 1, Infinity, NaN])('rejects ambiguous or unsafe enterprise identity %s', identity => {
+    expect(resolveIdempotentReplay(identity, 'key', existing(identity))).toBeNull();
+    expect(resolveIdempotentReplay(1, 'key', existing(identity))).toBeNull();
+  });
+});

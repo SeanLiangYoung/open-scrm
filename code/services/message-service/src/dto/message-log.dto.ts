@@ -34,8 +34,8 @@ export class QueryMessageLogDto {
  */
 export class RetryMessageDto {
   @Rule(RuleType.alternatives().try(
-    RuleType.number(),
-    RuleType.array().items(RuleType.number())
+    RuleType.number().integer().min(1).max(Number.MAX_SAFE_INTEGER).strict(),
+    RuleType.array().min(1).max(100).items(RuleType.number().integer().min(1).max(Number.MAX_SAFE_INTEGER).strict())
   ).required())
   logIds: number | number[];
 }

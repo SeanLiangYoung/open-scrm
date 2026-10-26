@@ -1,3 +1,4 @@
+import { requireMessageNumber } from '../util/message-identity.util';
 import { Provide, Inject } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
@@ -83,6 +84,8 @@ export class MessageLogService {
    * 获取消息日志详情
    */
   async getLog(id: number, corpId: number): Promise<MessageLogEntity | null> {
+    requireMessageNumber(id);
+    requireMessageNumber(corpId);
     return await this.messageLogRepository.findOne({
       where: { id, corpId },
     });

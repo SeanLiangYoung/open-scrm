@@ -1,0 +1,31 @@
+# 消息渠道能力独立只读复核
+
+2026-10-26。审查当前发送服务、v1与旧控制器、幂等两条重放路径、重试查询/响应以及模板和批量DTO。未修改产品代码，未构建或启动真实服务。独立运行消息服务单测：15文件152例全部通过，exit0。
+
+## 已确认发现：历史未接通渠道键在v1营销请求中仍消耗额度
+
+位置：`code/services/message-service/src/controller/message-api.controller.ts` 的send方法先检查请求messageType，然后consent，再调用checkOutboundPolicyOrBlock，最后才调用发送服务。`message-send.service.ts` 的sendMessage在此后查询幂等记录并检查记录自身messageType。
+
+复现输入：企业1请求messageType5、targetType1、targetIds[9001]、consentPurpose marketing、idempotencyKey historical；该企业已有键historical且messageType1的成功历史行；客户有营销授权，策略允许发送。请求类型5通过第一层能力检查，策略消耗一个槽位，发送服务才因历史类型1返回400。结果没有发送、没有新日志，却消耗营销额度。
+
+只读探针使用内存转译当前MessageApiController和实际MessageSendService；仅替换数据库查找为固定历史行、consent为true、策略调用为计数并返回allowed。输出为status400、渠道尚未接通、marketingSlotsConsumed1。探针未连接数据库或外部平台。该探针证明调用顺序及实际失败后的消费次数；实际Redis增量由tryConsumeMarketingSendSlot的INCR路径决定，未在本轮重新启动HTTP验证。
+
+最小验收建议：补一例上述v1组合，要求400且策略调用/槽位无增量；在消费额度前完成同企业已有幂等记录自身渠道检查，保留发送服务原有existing及23505 raced检查。单纯新增前置读取仍需明确并发冲突后失败的额度处理，不应声称解决全部并发或恰好一次语义。现有真实39组验证把换类型旧key覆盖在旧/api/message/send，未覆盖该v1营销组合，因此其通过与本发现不矛盾。
+
+## 其余范围结论
+
+未再发现未接通渠道写入新成功的路径。单发及批量入口仅允许数字5；模板经过同企业模板查询后调用同一单发入口；最终doSendMessage再次检查日志自身类型，仅5正常返回。不存在原先企业微信/短信/邮件打印即成功的方法，类型2也不再空返回成功。显式Mock成功保持无提供方调用语义。
+
+已有记录重放和唯一冲突后的raced重放均先检查该行自身messageType，不能以请求5洗白旧1至4成功记录。查询均带corpId及key；原精确企业标识比较仍保留。历史成功行未批量改写。尚未发现该批改动引入的租户退化。
+
+重试服务仍验证正安全整数corp、1至100条正安全整数ID并去重；查询条件包含corpId、失败状态及ID集合。未接通渠道在doSendMessage抛错后保留sendStatus2、更新失败原因并增加retryCount，响应success0/failed1，无真实外呼。超过重试上限直接失败且不保存；其错误为超过次数而非渠道未接通，符合既有重试上限语义。外企/成功/不存在记录不进入处理集合。控制器保留完整可信身份要求，无默认企业1。外层success true表示请求处理完成，内层失败计数表达目标失败，不应把外层当送达成功。
+
+BatchSendMessageDto与CreateMessageTemplateDto已允许显式5，未改变其他模板状态与目标类型字段。真实站内通知独立NotificationService不受渠道2发送拒绝影响。本轮未扩大为内部网络鉴权、全部DTO或历史分析口径审计。
+
+## 修复回归交付状态
+
+按主执行者授权，仅在既有message-api.channel-capability.spec.ts新增一个负例，原5例保留。实际执行6例为原5通过、新1失败，软断言同时证明consent和policy各已调用1次；spec交付主执行者修业务代码。本轮未修改业务源。capability脚本已另准备v1请求5+旧渠道1同key的营销400及Redis/旧日志不变断言，预期总40组，等待实现与构建窗口后实际验证；未将准备状态称通过。
+
+## 发现修复后的验证
+
+主执行者已在v1 consent/policy之前调用异步assertSendAvailable，按corpId与幂等键读取已有行并检查其自身渠道；实际发送器existing/raced复查保留。随后独立实际PG16真实网关扩展40组全部通过，新增v1营销请求5碰旧渠道1键返回渠道400且Redis键值/历史日志不变，证据`.../open-scrm-message-capability-http-cRlR25/result.json`，exit0、cleanup通过。详见[最终HTTP报告](2026-10-26-message-capability-http.md)。上文发现描述保留其原始复现与红测试历史，当前已验证该已有键副作用修复。

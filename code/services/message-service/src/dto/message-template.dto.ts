@@ -10,7 +10,7 @@ export class CreateMessageTemplateDto {
   @Rule(RuleType.number().valid(1, 2, 3, 4, 5).required())
   templateType: number;
 
-  @Rule(RuleType.number().valid(1, 2, 3, 4).required())
+  @Rule(RuleType.number().valid(1, 2, 3, 4, 5).required())
   messageType: number;
 
   @Rule(RuleType.string().required())
