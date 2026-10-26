@@ -1,0 +1,16 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config customer-form-contracts.config.ts
+[2m[WebServer] [22m(node:95726) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 4 tests using 1 worker
+
+(node:95733) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95733) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/customer-form-contracts.spec.ts:31:5 › create submits supported DTO fields without invented owner or identity and omits blank optionals (1.2s)
+  ✓  2 tests/customer-form-contracts.spec.ts:54:5 › edit does not offer unsupported channel changes or send create-only fields (1.0s)
+  ✓  3 tests/customer-form-contracts.spec.ts:85:5 › clearing existing mobile and remark sends explicit null while leaving assignment omitted (675ms)
+  ✓  4 tests/customer-form-contracts.spec.ts:112:5 › empty customer name is rejected before a create request (642ms)
+
+  4 passed (5.3s)

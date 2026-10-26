@@ -1,0 +1,24 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-consent-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-consent-http-VIud2h
+Build/start auth-service on free loopback port 57067
+Build/start message-service on free loopback port 57068
+Build/start gateway-service on free loopback port 57069
+{"stage":"isolated-services-ready","pgPort":57031,"redisPort":57038,"ports":{"auth":57067,"message":57068,"gateway":57069}}
+PASS: consent-lifecycle Playwright 3 passed (authenticated gateway HTTP)
+corp_id | subject_id |  purpose  |  policy_version  | revoked 
+---------+------------+-----------+------------------+---------
+       1 |       9001 | marketing | e2e-consent-v1   | t
+       1 |       9001 | marketing | e2e-consent-v2   | t
+       2 |       9002 | marketing | e2e-isolation-v1 | t
+       1 |       9003 | marketing | e2e-isolation-v1 | t
+(4 rows)
+
+ corp_id | message_type | send_status | target_id |           idempotency_key           
+---------+--------------+-------------+-----------+-------------------------------------
+       1 |            5 |           1 |      9001 | 
+       2 |            5 |           1 |      9002 | 
+       1 |            5 |           1 |      9003 | 
+       1 |            5 |           1 |      9004 | test-pg-bigint-replay-1793022145488
+       2 |            5 |           1 |      9005 | test-pg-bigint-replay-1793022145488
+(5 rows)
+Verified: owned service processes exited and disposable containers are absent.

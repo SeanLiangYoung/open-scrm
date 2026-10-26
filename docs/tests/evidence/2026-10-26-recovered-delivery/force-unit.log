@@ -1,0 +1,309 @@
+• Packages in scope: @scrm/acquisition-service, @scrm/admin-platform, @scrm/analytics-service, @scrm/asset-service, @scrm/auth-service, @scrm/content-generation-service, @scrm/customer-service, @scrm/e2e, @scrm/finance-service, @scrm/gateway-service, @scrm/integration-service, @scrm/llm-wiki-client, @scrm/message-service, @scrm/official-website, @scrm/operation-platform, @scrm/operation-service, @scrm/server-common, @scrm/shared-constants, @scrm/shared-types, @scrm/shared-utils
+• Running test in 20 packages
+• Remote caching disabled
+@scrm/shared-utils:build: cache bypass, force executing 06e1798dfedaa0d9
+@scrm/shared-utils:test: cache bypass, force executing 97788f21e8409998
+@scrm/shared-types:build: cache bypass, force executing 6ffd862012548ffa
+@scrm/shared-constants:build: cache bypass, force executing 88ca9f6af05c8926
+@scrm/llm-wiki-client:build: cache bypass, force executing 7484ee9e06e7eeb2
+@scrm/shared-constants:test: cache bypass, force executing 2050a0b2b0983d53
+@scrm/llm-wiki-client:test: cache bypass, force executing cb8d2a6f8e76e4f3
+@scrm/shared-utils:build: 
+@scrm/shared-utils:build: > @scrm/shared-utils@1.0.0 build /Users/seanliang/projects/open-scrm/code/packages/shared-utils
+@scrm/shared-utils:build: > tsc
+@scrm/shared-utils:build: 
+@scrm/llm-wiki-client:test: 
+@scrm/llm-wiki-client:test: > @scrm/llm-wiki-client@1.0.0 test /Users/seanliang/projects/open-scrm/code/packages/llm-wiki-client
+@scrm/llm-wiki-client:test: > vitest run
+@scrm/llm-wiki-client:test: 
+@scrm/shared-constants:build: 
+@scrm/shared-constants:build: > @scrm/shared-constants@1.0.0 build /Users/seanliang/projects/open-scrm/code/packages/shared-constants
+@scrm/shared-constants:build: > tsc
+@scrm/shared-constants:build: 
+@scrm/shared-constants:test: 
+@scrm/shared-constants:test: > @scrm/shared-constants@1.0.0 test /Users/seanliang/projects/open-scrm/code/packages/shared-constants
+@scrm/shared-constants:test: > vitest run
+@scrm/shared-constants:test: 
+@scrm/shared-utils:test: 
+@scrm/shared-utils:test: > @scrm/shared-utils@1.0.0 test /Users/seanliang/projects/open-scrm/code/packages/shared-utils
+@scrm/shared-utils:test: > vitest run
+@scrm/shared-utils:test: 
+@scrm/shared-types:build: 
+@scrm/shared-types:build: > @scrm/shared-types@1.0.0 build /Users/seanliang/projects/open-scrm/code/packages/shared-types
+@scrm/shared-types:build: > tsc
+@scrm/shared-types:build: 
+@scrm/llm-wiki-client:build: 
+@scrm/llm-wiki-client:build: > @scrm/llm-wiki-client@1.0.0 build /Users/seanliang/projects/open-scrm/code/packages/llm-wiki-client
+@scrm/llm-wiki-client:build: > tsc
+@scrm/llm-wiki-client:build: 
+@scrm/llm-wiki-client:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/shared-constants:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/shared-utils:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/llm-wiki-client:test: 
+@scrm/llm-wiki-client:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/packages/llm-wiki-client
+@scrm/llm-wiki-client:test: 
+@scrm/shared-constants:test: 
+@scrm/shared-constants:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/packages/shared-constants
+@scrm/shared-constants:test: 
+@scrm/shared-utils:test: 
+@scrm/shared-utils:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/packages/shared-utils
+@scrm/shared-utils:test: 
+@scrm/shared-constants:test:  ✓ src/content-channel.spec.ts (2 tests) 4ms
+@scrm/llm-wiki-client:test:  ✓ src/kb-query.util.spec.ts (3 tests) 2ms
+@scrm/shared-utils:test:  ✓ src/validate.util.spec.ts (3 tests) 4ms
+@scrm/shared-utils:test: 
+@scrm/shared-utils:test:  Test Files  1 passed (1)
+@scrm/shared-utils:test:       Tests  3 passed (3)
+@scrm/shared-utils:test:    Start at  21:47:34
+@scrm/shared-constants:test: 
+@scrm/shared-constants:test:  Test Files  1 passed (1)
+@scrm/shared-constants:test:       Tests  2 passed (2)
+@scrm/shared-constants:test:    Start at  21:47:34
+@scrm/shared-constants:test:    Duration  2.42s (transform 62ms, setup 0ms, collect 60ms, tests 4ms, environment 0ms, prepare 400ms)
+@scrm/shared-constants:test: 
+@scrm/shared-utils:test:    Duration  2.40s (transform 135ms, setup 0ms, collect 208ms, tests 4ms, environment 0ms, prepare 793ms)
+@scrm/shared-utils:test: 
+@scrm/llm-wiki-client:test:  ✓ src/llm-wiki.client.spec.ts (4 tests) 71ms
+@scrm/llm-wiki-client:test: 
+@scrm/llm-wiki-client:test:  Test Files  2 passed (2)
+@scrm/llm-wiki-client:test:       Tests  7 passed (7)
+@scrm/llm-wiki-client:test:    Start at  21:47:34
+@scrm/llm-wiki-client:test:    Duration  2.61s (transform 318ms, setup 0ms, collect 367ms, tests 73ms, environment 0ms, prepare 1.65s)
+@scrm/llm-wiki-client:test: 
+@scrm/server-common:build: cache bypass, force executing 4de0d420a98506f5
+@scrm/auth-service:test: cache bypass, force executing d02d090da166efec
+@scrm/gateway-service:test: cache bypass, force executing f7e851ef9d920d5e
+@scrm/gateway-service:test: 
+@scrm/gateway-service:test: > @scrm/gateway-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/gateway-service
+@scrm/gateway-service:test: > vitest run
+@scrm/gateway-service:test: 
+@scrm/auth-service:test: 
+@scrm/auth-service:test: > @scrm/auth-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/auth-service
+@scrm/auth-service:test: > vitest run
+@scrm/auth-service:test: 
+@scrm/server-common:build: 
+@scrm/server-common:build: > @scrm/server-common@1.0.0 build /Users/seanliang/projects/open-scrm/code/packages/server-common
+@scrm/server-common:build: > tsc -b
+@scrm/server-common:build: 
+@scrm/message-service:test: cache bypass, force executing fa54bf43e641337e
+@scrm/acquisition-service:test: cache bypass, force executing edc74a3a84dd4a12
+@scrm/integration-service:test: cache bypass, force executing 2105e89523d4d0de
+@scrm/content-generation-service:test: cache bypass, force executing 6ad6e6744da48091
+@scrm/customer-service:test: cache bypass, force executing 7a26a00e1ec0b63d
+@scrm/analytics-service:test: cache bypass, force executing eefc6327860900ad
+@scrm/operation-service:test: cache bypass, force executing 095f3786421edd76
+@scrm/gateway-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/auth-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/auth-service:test: 
+@scrm/auth-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/auth-service
+@scrm/auth-service:test: 
+@scrm/gateway-service:test: 
+@scrm/gateway-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/gateway-service
+@scrm/gateway-service:test: 
+@scrm/customer-service:test: 
+@scrm/customer-service:test: > @scrm/customer-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/customer-service
+@scrm/customer-service:test: > vitest run
+@scrm/customer-service:test: 
+@scrm/integration-service:test: 
+@scrm/integration-service:test: > @scrm/integration-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/integration-service
+@scrm/integration-service:test: > vitest run
+@scrm/integration-service:test: 
+@scrm/message-service:test: 
+@scrm/message-service:test: > @scrm/message-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/message-service
+@scrm/message-service:test: > vitest run
+@scrm/message-service:test: 
+@scrm/content-generation-service:test: 
+@scrm/content-generation-service:test: > @scrm/content-generation-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/content-generation-service
+@scrm/content-generation-service:test: > vitest run
+@scrm/content-generation-service:test: 
+@scrm/operation-service:test: 
+@scrm/operation-service:test: > @scrm/operation-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/operation-service
+@scrm/operation-service:test: > vitest run
+@scrm/operation-service:test: 
+@scrm/gateway-service:test:  ✓ src/utils/route-match.spec.ts (4 tests) 3ms
+@scrm/acquisition-service:test: 
+@scrm/acquisition-service:test: > @scrm/acquisition-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/acquisition-service
+@scrm/acquisition-service:test: > vitest run
+@scrm/acquisition-service:test: 
+@scrm/auth-service:test:  ✓ src/util/password-strength.util.spec.ts (2 tests) 7ms
+@scrm/analytics-service:test: 
+@scrm/analytics-service:test: > @scrm/analytics-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/analytics-service
+@scrm/analytics-service:test: > vitest run
+@scrm/analytics-service:test: 
+@scrm/gateway-service:test:  ✓ src/middleware/proxy.middleware.spec.ts (3 tests) 7ms
+@scrm/gateway-service:test:  ✓ src/middleware/auth.middleware.spec.ts (25 tests) 21ms
+@scrm/auth-service:test:  ✓ src/controller/auth.controller.login.spec.ts (14 tests) 203ms
+@scrm/gateway-service:test: 
+@scrm/gateway-service:test:  Test Files  3 passed (3)
+@scrm/gateway-service:test:       Tests  32 passed (32)
+@scrm/gateway-service:test:    Start at  21:47:38
+@scrm/gateway-service:test:    Duration  2.53s (transform 109ms, setup 0ms, collect 1.31s, tests 30ms, environment 0ms, prepare 812ms)
+@scrm/gateway-service:test: 
+@scrm/auth-service:test:  ✓ src/controller/user-write-boundary.spec.ts (70 tests) 215ms
+@scrm/auth-service:test:  ✓ src/service/user-write-boundary.spec.ts (17 tests) 42ms
+@scrm/auth-service:test:  ✓ src/service/auth.service.login.spec.ts (34 tests) 117ms
+@scrm/auth-service:test:  ✓ src/controller/staff.controller.spec.ts (20 tests) 137ms
+@scrm/auth-service:test: 
+@scrm/auth-service:test:  Test Files  6 passed (6)
+@scrm/auth-service:test:       Tests  157 passed (157)
+@scrm/auth-service:test:    Start at  21:47:38
+@scrm/auth-service:test:    Duration  3.22s (transform 956ms, setup 0ms, collect 7.15s, tests 721ms, environment 2ms, prepare 2.22s)
+@scrm/auth-service:test: 
+@scrm/message-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/integration-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/customer-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/integration-service:test: 
+@scrm/customer-service:test: 
+@scrm/customer-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/customer-service
+@scrm/customer-service:test: 
+@scrm/integration-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/integration-service
+@scrm/integration-service:test: 
+@scrm/message-service:test: 
+@scrm/message-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/message-service
+@scrm/message-service:test: 
+@scrm/content-generation-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/content-generation-service:test: 
+@scrm/content-generation-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/content-generation-service
+@scrm/content-generation-service:test: 
+@scrm/analytics-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/analytics-service:test: 
+@scrm/analytics-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/analytics-service
+@scrm/analytics-service:test: 
+@scrm/acquisition-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/operation-service:test: [33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+@scrm/acquisition-service:test: 
+@scrm/acquisition-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/acquisition-service
+@scrm/acquisition-service:test: 
+@scrm/operation-service:test: 
+@scrm/operation-service:test:  RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/operation-service
+@scrm/operation-service:test: 
+@scrm/integration-service:test:  ✓ src/util/wework-msg-crypt.util.spec.ts (9 tests) 16ms
+@scrm/analytics-service:test:  ✓ src/util/funnel-gap.util.spec.ts (2 tests) 4ms
+@scrm/analytics-service:test:  ✓ src/util/observed-daily.util.spec.ts (15 tests) 25ms
+@scrm/analytics-service:test:  ✓ src/util/daily-stat-summary.util.spec.ts (3 tests) 19ms
+@scrm/message-service:test:  ✓ src/util/message-idempotency.util.spec.ts (23 tests) 14ms
+@scrm/acquisition-service:test:  ✓ src/util/variant-to-content.util.spec.ts (1 test) 3ms
+@scrm/analytics-service:test:  ✓ src/util/funnel-gap-window.util.spec.ts (11 tests) 322ms
+@scrm/analytics-service:test:    ✓ resolveFunnelGapWindow > rejects the nonexistent calendar date 2026-02-29 rather than rolling over 312ms
+@scrm/acquisition-service:test:  ✓ src/util/channel-scan-touch-fields.util.spec.ts (2 tests) 3ms
+@scrm/acquisition-service:test:  ✓ src/publisher/xhs.publisher.spec.ts (3 tests) 5ms
+@scrm/acquisition-service:test:  ✓ src/publisher/platform-publishers.spec.ts (3 tests) 4ms
+@scrm/customer-service:test:  ✓ src/service/customer-update-contract.spec.ts (3 tests) 86ms
+@scrm/content-generation-service:test:  ✓ src/prompt/channel-prompt.registry.spec.ts (4 tests) 7ms
+@scrm/content-generation-service:test:  ✓ src/service/generation-orchestrator.service.spec.ts (3 tests) 17ms
+@scrm/message-service:test:  ✓ src/controller/consent-api.controller.spec.ts (21 tests) 20ms
+@scrm/analytics-service:test:  ✓ src/controller/observed-daily.controller.spec.ts (14 tests) 195ms
+@scrm/content-generation-service:test:  ✓ src/util/load-monorepo-env.spec.ts (2 tests) 7ms
+@scrm/content-generation-service:test:  ✓ src/service/llm/llm.adapter.spec.ts (2 tests) 9ms
+@scrm/content-generation-service:test:  ✓ src/service/content-compose.service.spec.ts (2 tests) 9ms
+@scrm/customer-service:test:  ✓ src/controller/customer-identifiers.spec.ts (63 tests) 474ms
+@scrm/customer-service:test:    ✓ customer identifiers remain canonical before framework coercion > update rejects 1.5 without touching a customer 308ms
+@scrm/message-service:test:  ✓ src/service/consent-read.service.spec.ts (14 tests) 20ms
+@scrm/operation-service:test:  ✓ src/controller/sop.controller.spec.ts (8 tests) 9ms
+@scrm/customer-service:test:  ✓ src/entity/postgres-metadata.spec.ts (1 test) 345ms
+@scrm/customer-service:test:    ✓ customer PostgreSQL runtime metadata > can build all service entity metadata without connecting to a database 344ms
+@scrm/customer-service:test:  ✓ src/controller/follow-up.controller.spec.ts (54 tests) 266ms
+@scrm/analytics-service:test:  ✓ src/service/observed-daily.service.spec.ts (2 tests) 7ms
+@scrm/customer-service:test:  ✓ src/service/customer-create-atomic.spec.ts (8 tests) 193ms
+@scrm/customer-service:test:  ✓ src/service/customer-tags-integrity.spec.ts (15 tests) 20ms
+@scrm/integration-service:test:  ✓ src/controller/integration-api.controller.spec.ts (4 tests) 9ms
+@scrm/operation-service:test:  ✓ src/controller/mass-task.controller.spec.ts (13 tests) 13ms
+@scrm/operation-service:test:  ✓ src/controller/sop-path-ids.spec.ts (64 tests) 341ms
+@scrm/content-generation-service:test:  ✓ src/prompt/core-compose-prompt.registry.spec.ts (2 tests) 4ms
+@scrm/integration-service:test: 
+@scrm/integration-service:test:  Test Files  2 passed (2)
+@scrm/integration-service:test:       Tests  13 passed (13)
+@scrm/integration-service:test:    Start at  21:47:42
+@scrm/integration-service:test:    Duration  9.35s (transform 747ms, setup 0ms, collect 6.63s, tests 25ms, environment 1ms, prepare 2.71s)
+@scrm/integration-service:test: 
+@scrm/content-generation-service:test:  ✓ src/controller/studio-path-integrity.spec.ts (100 tests) 585ms
+@scrm/content-generation-service:test:    ✓ Studio canonical path identity > variant-get invalid  1 rejects400 before service/outbound 392ms
+@scrm/message-service:test:  ✓ src/service/message-send.service.spec.ts (4 tests) 11ms
+@scrm/analytics-service:test:  ✓ src/service/funnel-gap-query.service.spec.ts (2 tests) 10ms
+@scrm/customer-service:test:  ✓ src/service/customer-assignment.service.spec.ts (23 tests) 824ms
+@scrm/customer-service:test:    ✓ customer employee assignment boundary > rejects malformed employee ID 1.5 on update before any lookup or save 530ms
+@scrm/operation-service:test:  ✓ src/dto/sop-template-contract.spec.ts (3 tests) 8ms
+@scrm/operation-service:test:  ✓ src/dto/sop-action-validation.spec.ts (85 tests) 300ms
+@scrm/customer-service:test:  ✓ src/service/tag-integrity.spec.ts (55 tests) 408ms
+@scrm/customer-service:test:    ✓ tag immutable runtime contracts > update DTO rejects internal children 342ms
+@scrm/message-service:test:  ✓ src/service/notification.service.spec.ts (20 tests) 463ms
+@scrm/message-service:test:    ✓ NotificationService employee tenant boundary > rejects invalid recipient IDs [ 1.5 ] before database work 445ms
+@scrm/message-service:test:  ✓ src/controller/message-api.channel-capability.spec.ts (6 tests) 12ms
+@scrm/message-service:test:  ✓ src/service/outbound-policy-state.service.spec.ts (4 tests) 210ms
+@scrm/operation-service:test:  ✓ src/service/sop-template.service.spec.ts (9 tests) 17ms
+@scrm/content-generation-service:test:  ✓ src/service/content-source.service.spec.ts (3 tests) 7ms
+@scrm/customer-service:test: 
+@scrm/customer-service:test:  Test Files  8 passed (8)
+@scrm/customer-service:test:       Tests  222 passed (222)
+@scrm/customer-service:test:    Start at  21:47:42
+@scrm/customer-service:test:    Duration  10.28s (transform 3.48s, setup 0ms, collect 40.26s, tests 2.61s, environment 12ms, prepare 9.84s)
+@scrm/customer-service:test: 
+@scrm/acquisition-service:test:  ✓ src/service/content-publish.service.spec.ts (4 tests) 16ms
+@scrm/analytics-service:test:  ✓ src/service/daily-stat.service.spec.ts (3 tests) 16ms
+@scrm/content-generation-service:test:  ✓ src/prompt/post-process/channel-post-process.util.spec.ts (3 tests) 31ms
+@scrm/content-generation-service:test:  ✓ src/service/llm/create-llm-adapter.spec.ts (2 tests) 3ms
+@scrm/message-service:test:  ✓ src/service/message-channel-capability.spec.ts (19 tests) 770ms
+@scrm/message-service:test:    ✓ explicit message channel capabilities > channel 1 cannot create a success for an unconnected provider 529ms
+@scrm/message-service:test:  ✓ src/service/consent-record.write.spec.ts (4 tests) 157ms
+@scrm/content-generation-service:test:  ✓ src/prompt/post-process/ai-check.util.spec.ts (3 tests) 6ms
+@scrm/analytics-service:test: 
+@scrm/analytics-service:test:  Test Files  8 passed (8)
+@scrm/analytics-service:test:       Tests  52 passed (52)
+@scrm/analytics-service:test:    Start at  21:47:42
+@scrm/analytics-service:test:    Duration  10.52s (transform 2.18s, setup 0ms, collect 19.14s, tests 599ms, environment 2ms, prepare 7.32s)
+@scrm/analytics-service:test: 
+@scrm/content-generation-service:test:  ✓ src/service/studio-bigint-boundary.spec.ts (14 tests) 15ms
+@scrm/message-service:test:  ✓ src/service/message-template-reference.spec.ts (43 tests) 661ms
+@scrm/operation-service:test:  ✓ src/service/sop-create-atomic.spec.ts (10 tests) 149ms
+@scrm/acquisition-service:test:  ✓ src/service/channel-scan-reliability.spec.ts (34 tests) 556ms
+@scrm/acquisition-service:test:    ✓ transactional channel scan ingestion > runs maintenance only after the successful business transaction completes 378ms
+@scrm/content-generation-service:test:  ✓ src/service/llm-wiki-kb.service.spec.ts (2 tests) 18ms
+@scrm/acquisition-service:test: 
+@scrm/acquisition-service:test:  Test Files  6 passed (6)
+@scrm/acquisition-service:test:       Tests  47 passed (47)
+@scrm/acquisition-service:test:    Start at  21:47:42
+@scrm/acquisition-service:test:    Duration  10.44s (transform 2.70s, setup 0ms, collect 16.18s, tests 587ms, environment 1ms, prepare 6.93s)
+@scrm/acquisition-service:test: 
+@scrm/operation-service:test:  ✓ src/service/sop-action-boundary.spec.ts (50 tests) 436ms
+@scrm/operation-service:test:  ✓ src/service/sop-execution.service.spec.ts (28 tests) 505ms
+@scrm/operation-service:test:  ✓ src/util/cod-mock-state.util.spec.ts (2 tests) 3ms
+@scrm/content-generation-service:test:  ✓ src/service/generation.service.spec.ts (2 tests) 7ms
+@scrm/operation-service:test:  ✓ src/util/mass-task-v1-send.util.spec.ts (4 tests) 3ms
+@scrm/content-generation-service:test:  ✓ src/util/citations.util.spec.ts (2 tests) 3ms
+@scrm/operation-service:test: 
+@scrm/operation-service:test:  Test Files  11 passed (11)
+@scrm/operation-service:test:       Tests  276 passed (276)
+@scrm/operation-service:test:    Start at  21:47:43
+@scrm/operation-service:test:    Duration  10.79s (transform 3.30s, setup 0ms, collect 31.40s, tests 1.78s, environment 2ms, prepare 12.62s)
+@scrm/operation-service:test: 
+@scrm/content-generation-service:test:  ✓ src/util/push-draft.util.spec.ts (1 test) 4ms
+@scrm/message-service:test:  ✓ src/util/marketing-consent-gate.util.spec.ts (4 tests) 6ms
+@scrm/message-service:test:  ✓ src/util/message-template-extra.util.spec.ts (8 tests) 6ms
+@scrm/content-generation-service:test:  ✓ src/service/llm/mock-llm.adapter.spec.ts (1 test) 5ms
+@scrm/content-generation-service:test: 
+@scrm/content-generation-service:test:  Test Files  17 passed (17)
+@scrm/content-generation-service:test:       Tests  148 passed (148)
+@scrm/content-generation-service:test:    Start at  21:47:42
+@scrm/content-generation-service:test:    Duration  12.29s (transform 4.20s, setup 0ms, collect 28.38s, tests 737ms, environment 7ms, prepare 16.46s)
+@scrm/content-generation-service:test: 
+@scrm/message-service:test:  ✓ src/catalog/region-packs.spec.ts (5 tests) 6ms
+@scrm/message-service:test:  ✓ src/service/notification-unread-expiry.spec.ts (5 tests) 8ms
+@scrm/message-service:test:  ✓ src/controller/consent-read.controller.spec.ts (25 tests) 67ms
+@scrm/message-service:test:  ✓ src/controller/message-path-integrity.spec.ts (53 tests) 157ms
+@scrm/message-service:test:  ✓ src/controller/message-retry.controller.spec.ts (13 tests) 24ms
+@scrm/message-service:test:  ✓ src/service/message-retry-isolation.spec.ts (17 tests) 87ms
+@scrm/message-service:test:  ✓ src/util/outbound-send-policy.util.spec.ts (3 tests) 33ms
+@scrm/message-service:test:  ✓ src/service/consent-record.service.spec.ts (2 tests) 8ms
+@scrm/message-service:test:  ✓ src/middleware/template-reference-input.middleware.spec.ts (11 tests) 10ms
+@scrm/message-service:test:  ✓ src/dto/notification-identifiers-strict.spec.ts (58 tests) 21ms
+@scrm/message-service:test: 
+@scrm/message-service:test:  Test Files  22 passed (22)
+@scrm/message-service:test:       Tests  362 passed (362)
+@scrm/message-service:test:    Start at  21:47:42
+@scrm/message-service:test:    Duration  13.45s (transform 4.90s, setup 0ms, collect 50.87s, tests 2.77s, environment 5ms, prepare 19.83s)
+@scrm/message-service:test: 
+
+ Tasks:    17 successful, 17 total
+Cached:    0 cached, 17 total
+  Time:    24.529s 
+

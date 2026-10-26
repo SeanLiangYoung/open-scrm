@@ -49,6 +49,11 @@ export default defineConfig({
       },
     },
     {
+      name: 'consent-lifecycle',
+      testMatch: /consent-lifecycle\.spec\.ts/,
+      use: { baseURL: gatewayUrl },
+    },
+    {
       name: 'sprint8-outbound',
       testMatch: /sprint8-outbound\.spec\.ts/,
       use: {

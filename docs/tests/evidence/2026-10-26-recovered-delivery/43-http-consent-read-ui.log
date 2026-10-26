@@ -1,0 +1,9 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-consent-read-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-consent-read-ui-57p4z6
+Build/start auth-service on free loopback port 62633
+Build/start customer-service on free loopback port 62634
+Build/start message-service on free loopback port 62635
+Build/start gateway-service on free loopback port 62636
+{"stage":"isolated-services-ready","pgPort":62594,"redisPort":62612,"ports":{"auth":62633,"customer":62634,"message":62635,"gateway":62636,"vite":62637,"unavailable":62638}}
+PASS actual consent read UI5, exact25 evidence and zero messages, deliberate read503 injection
+Verified: owned service processes exited and disposable containers are absent.

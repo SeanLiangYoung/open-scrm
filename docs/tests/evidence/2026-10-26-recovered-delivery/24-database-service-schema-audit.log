@@ -1,0 +1,233 @@
+bash scripts/test/overnight-service-schema-audit.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T//open-scrm-service-schema-audit.XxXQCz
+{
+  "scope": "5 implemented customer-operations services; metadata/catalog/read probes only, no app HTTP or external access",
+  "node": "v24.21.0",
+  "auditCompleted": true,
+  "services": [
+    {
+      "name": "acquisition-service",
+      "declaredEntities": 5,
+      "metadataReady": true,
+      "tables": [
+        {
+          "name": "channel_code",
+          "columns": 14,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "channel_scan_event",
+          "columns": 5,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "channel_scan_touch",
+          "columns": 8,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "content",
+          "columns": 16,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "platform_account",
+          "columns": 11,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        }
+      ]
+    },
+    {
+      "name": "integration-service",
+      "declaredEntities": 2,
+      "metadataReady": true,
+      "tables": [
+        {
+          "name": "sync_log",
+          "columns": 11,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "wework_config",
+          "columns": 11,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 1
+        }
+      ]
+    },
+    {
+      "name": "analytics-service",
+      "declaredEntities": 3,
+      "metadataReady": true,
+      "tables": [
+        {
+          "name": "channel_stat",
+          "columns": 12,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "daily_stat",
+          "columns": 18,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "staff_stat",
+          "columns": 15,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        }
+      ]
+    },
+    {
+      "name": "asset-service",
+      "declaredEntities": 3,
+      "metadataReady": true,
+      "tables": [
+        {
+          "name": "asset_category",
+          "columns": 8,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "asset_usage",
+          "columns": 7,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "asset",
+          "columns": 17,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        }
+      ]
+    },
+    {
+      "name": "content-generation-service",
+      "declaredEntities": 4,
+      "metadataReady": true,
+      "tables": [
+        {
+          "name": "content_source",
+          "columns": 17,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "content_variant",
+          "columns": 12,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "generation_job",
+          "columns": 12,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        },
+        {
+          "name": "variant_publish_link",
+          "columns": 6,
+          "exists": true,
+          "selectReady": true,
+          "ormReadReady": true,
+          "probedRows": 0
+        }
+      ]
+    }
+  ],
+  "blockers": [],
+  "observations": [
+    {
+      "service": "acquisition-service",
+      "table": "channel_code",
+      "column": "staff_ids",
+      "kind": "compatible_json_storage_drift",
+      "entityType": "json",
+      "databaseType": "jsonb",
+      "jsonbHydrationReady": true
+    },
+    {
+      "service": "acquisition-service",
+      "table": "channel_code",
+      "column": "auto_tag_ids",
+      "kind": "compatible_json_storage_drift",
+      "entityType": "json",
+      "databaseType": "jsonb",
+      "jsonbHydrationReady": true
+    },
+    {
+      "service": "acquisition-service",
+      "table": "content",
+      "column": "media_urls",
+      "kind": "compatible_json_storage_drift",
+      "entityType": "json",
+      "databaseType": "jsonb",
+      "jsonbHydrationReady": true
+    },
+    {
+      "service": "acquisition-service",
+      "table": "content",
+      "column": "topics",
+      "kind": "compatible_json_storage_drift",
+      "entityType": "json",
+      "databaseType": "jsonb",
+      "jsonbHydrationReady": true
+    },
+    {
+      "service": "asset-service",
+      "table": "asset",
+      "column": "tags",
+      "kind": "compatible_json_storage_drift",
+      "entityType": "json",
+      "databaseType": "jsonb",
+      "jsonbHydrationReady": true
+    }
+  ],
+  "postgres": "PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit",
+  "entityCount": 17,
+  "readReadyTables": 17
+}

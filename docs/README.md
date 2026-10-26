@@ -55,12 +55,31 @@ docs/
 
 ### 代码与工程
 
+- [夜间量化执行计划（2026-10-25 至 26 日）](./plans/2026-10-25-overnight-execution.md) — 并发任务、九个里程碑、验收条件与早晨交付
+- [本企业员工目录与运营人员选择](./plans/2026-10-26-tenant-staff-operations.md) — 夜间持续批次：可信员工查询、通知接收人归属、客户/SOP人员选择与双企业HTTP验证
+- [企业同名登录与刷新边界](./plans/2026-10-26-tenant-login-disambiguation.md) — 企业选择、同名消歧及真实HTTP/UI证据
+- [服务运行就绪与统一验收](./plans/2026-10-26-runtime-readiness-and-verification.md) — 五服务实际启动、统计网关及22阶段统一入口
+- [会话切换后的迟到响应](./plans/2026-10-26-session-response-races.md) — 已复现旧请求401清除新会话，修复与回归进行中
+- [失败消息重试企业隔离](./plans/2026-10-26-message-retry-isolation.md) — 已发现重试缺少企业过滤，红绿回归进行中
+- [持续验收证据索引](./tests/2026-10-26-overnight-verification.md) — 历史快照、最新复验、限制和待办
+- [明确消息渠道能力](./plans/2026-10-26-explicit-message-capabilities.md) — 未接通渠道拒绝、历史幂等与额度副作用、SOP显式模拟
+- [SOP路径编号](./plans/2026-10-26-sop-path-identifiers.md) — 非法编号拒绝及原模板保留
+- [三个运营业务闭环](./plans/2026-10-26-next-business-slices.md) — 通知真实同事、消息日志人工Mock重试、客户授权证据操作，分工与量化验收
+- [业务可靠性修复计划与验证记录](./plans/2026-10-25-business-reliability.md) — 跟进记录企业隔离、统计快照语义、SOP 控制、企微协议兼容与尚未验证的边界
 - [Monorepo 说明](./code/README.md)（对应仓库 `code/`）
 - [脚本目录](./scripts/README.md)（对应 `code/scripts/`）
 - **[代码现状与文档索引](../code/docs/代码现状与文档索引.md)** — `code/` 运行时事实、端口、测试命令与文档阅读顺序
 - **[可执行迭代计划（含 E2E）](../code/docs/迭代计划-E2E.md)** — Sprint 约定与端到端验证（**S7/S8** 见文档 [§2.5](../code/docs/迭代计划-E2E.md#next-sprints-s7-s8)）
 - **[Harness 测试节奏](../code/docs/harness/README.md)** — `test:unit`、`test:e2e`、`test:e2e:sprint2`
 - **出海私域（方法论 × 本地化 × AI）**：[设计草案](../code/docs/plans/2026-04-28-outbound-private-domain-localization-design.md) · [用户场景与功能映射](../code/docs/plans/2026-04-28-outbound-private-domain-user-scenarios-and-features.md) · [实现计划](../code/docs/plans/2026-04-28-outbound-private-domain-implementation-plan.md) · [区域矩阵](../code/docs/facts/outbound-private-domain-region-matrix.md)
+
+### 本轮续办验收
+
+- [管理员写入与角色事务](./tests/2026-10-26-admin-write-validation.md) — 密码规则、路径校验和完整关系保存
+
+- [三组修复与50阶段交付记录](./tests/2026-10-26-resumed-delivery.md) — 本轮进度、完整验收清单与剩余问题
+- [扫码计数与持久幂等](./tests/2026-10-26-channel-scan-reliability.md) — 事务、并发、失败重试和切换限制
+- [内容工作台编号与批推](./tests/2026-10-26-content-studio-identifiers.md) — 规范路径、实际bigint水合及外部桩边界
 
 ### 模块文档
 

@@ -67,12 +67,13 @@ test.describe('Sprint 2 — 集成服务经网关探测', () => {
 
     const body = `<xml>
 <Encrypt><![CDATA[${encrypt}]]></Encrypt>
-<MsgSignature><![CDATA[${msgSignature}]]></MsgSignature>
-<TimeStamp>${timestamp}</TimeStamp>
-<Nonce><![CDATA[${nonce}]]></Nonce>
 </xml>`;
 
-    const res = await request.post(`${GATEWAY}/api/v1/integration/wework/callback`, {
+    const url = new URL(`${GATEWAY}/api/v1/integration/wework/callback`);
+    url.searchParams.set('msg_signature', msgSignature);
+    url.searchParams.set('timestamp', timestamp);
+    url.searchParams.set('nonce', nonce);
+    const res = await request.post(url.toString(), {
       headers: { 'Content-Type': 'text/xml; charset=utf-8' },
       data: body,
     });

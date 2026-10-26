@@ -1,0 +1,23 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-analytics-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-analytics-http-IQE9q5
+Build/start auth-service on free loopback port 58686
+Build/start analytics-service on free loopback port 58687
+Build/start gateway-service on free loopback port 58688
+{"stage":"isolated-services-ready","pgPort":58630,"redisPort":58659,"ports":{"auth":58686,"analytics":58687,"gateway":58688}}
+PASS: analytics runtime Playwright 11 passed (actual authenticated gateway HTTP)
+corp_id | stat_date  | new_customer_count | total_customer_count | active_customer_count | lost_customer_count | message_send_count | message_success_count | message_fail_count | sop_execute_count | sop_success_count 
+---------+------------+--------------------+----------------------+-----------------------+---------------------+--------------------+-----------------------+--------------------+-------------------+-------------------
+    1101 | 2026-10-20 |                  1 |                    2 |                     1 |                   1 |                  1 |                     1 |                  0 |                 2 |                 1
+    1101 | 2026-10-21 |                  2 |                    3 |                     2 |                   1 |                  7 |                     6 |                  1 |                 2 |                 1
+    1102 | 2026-10-21 |                  1 |                    1 |                     1 |                   0 |                  1 |                     1 |                  0 |                 0 |                 0
+(3 rows)
+
+ corp_id |    day     | send_status | count 
+---------+------------+-------------+-------
+    1101 | 2026-10-20 |           1 |     1
+    1101 | 2026-10-21 |           1 |     6
+    1101 | 2026-10-21 |           2 |     1
+    1101 | 2026-10-22 |           1 |     1
+    1102 | 2026-10-21 |           1 |     1
+(5 rows)
+Verified: owned service processes exited and disposable containers are absent.
