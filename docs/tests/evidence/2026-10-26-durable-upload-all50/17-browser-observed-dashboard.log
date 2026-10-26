@@ -1,0 +1,21 @@
+/tmp/open-scrm-durable-upload-all50/bin/pnpm exec playwright test --config observed-dashboard.config.ts
+[2m[WebServer] [22m(node:45963) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 9 tests using 1 worker
+
+(node:46332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:46332) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/observed-dashboard.spec.ts:18:5 › mount performs only reads and requests bounded complete dates (1.5s)
+  ✓  2 tests/observed-dashboard.spec.ts:19:5 › missing observation differs from an observed zero in accessible rows (871ms)
+  ✓  3 tests/observed-dashboard.spec.ts:20:5 › legacy observed row without time remains observed (546ms)
+  ✓  4 tests/observed-dashboard.spec.ts:21:5 › actual observation time and inventory caveats visible (551ms)
+  ✓  5 tests/observed-dashboard.spec.ts:22:5 › message log and SOP cohort labels do not promise delivery (629ms)
+  ✓  6 tests/observed-dashboard.spec.ts:23:5 › controlled range selects14 calendar days (915ms)
+  ✓  7 tests/observed-dashboard.spec.ts:24:5 › all missing days show no saved observations, not a zero trend (436ms)
+  ✓  8 tests/observed-dashboard.spec.ts:25:5 › failed read is an error not an empty success (428ms)
+  ✓  9 tests/observed-dashboard.spec.ts:26:5 › older range response cannot overwrite the newer selected window (885ms)
+
+  9 passed (8.6s)

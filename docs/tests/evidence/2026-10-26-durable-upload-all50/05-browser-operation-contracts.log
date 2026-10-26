@@ -1,0 +1,37 @@
+/tmp/open-scrm-durable-upload-all50/bin/pnpm exec playwright test --config operation-contracts.config.ts
+[2m[WebServer] [22m(node:474) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 25 tests using 1 worker
+
+(node:1520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:1520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/operation-contracts.spec.ts:17:5 › customer tags submit numeric tagIds array (1.6s)
+  ✓   2 tests/operation-contracts.spec.ts:28:5 › SOP disable submits status zero (734ms)
+  ✓   3 tests/operation-contracts.spec.ts:34:5 › SOP tag step saves selected numeric IDs (1.5s)
+  ✓   4 tests/operation-contracts.spec.ts:48:5 › SOP reminder saves explicit current employee recipient (961ms)
+  ✓   5 tests/operation-contracts.spec.ts:63:5 › editing an existing content action updates content and retains extra metadata (474ms)
+  ✓   6 tests/operation-contracts.spec.ts:75:5 › tag step without a selected tag is blocked before API submission (878ms)
+  ✓   7 tests/operation-contracts.spec.ts:88:5 › follow-up save submits UTC datetime and refreshes the timeline (1.3s)
+  ✓   8 tests/operation-contracts.spec.ts:114:5 › failed follow-up save retains content and exposes the API error (924ms)
+  ✓   9 tests/operation-contracts.spec.ts:127:5 › dashboard names normal customer snapshots and shows their observation timestamp (663ms)
+  ✓  10 tests/operation-contracts.spec.ts:150:7 › renaming a SOP retains legacy tag alias action semantics (457ms)
+  ✓  11 tests/operation-contracts.spec.ts:150:7 › renaming a SOP retains legacy JSON reminder singleton action semantics (434ms)
+  ✓  12 tests/operation-contracts.spec.ts:150:7 › renaming a SOP retains legacy JSON message action semantics (398ms)
+  ✓  13 tests/operation-contracts.spec.ts:150:7 › renaming a SOP retains legacy plain message action semantics (440ms)
+  ✓  14 tests/operation-editor-boundaries.spec.ts:63:5 › material step captures a supported URL and preserves metadata on edit (538ms)
+  ✓  15 tests/operation-editor-boundaries.spec.ts:77:5 › new material step cannot submit without a URL or content (959ms)
+  ✓  16 tests/operation-editor-boundaries.spec.ts:91:5 › customer assignment is available through the tenant employee selector (853ms)
+  ✓  17 tests/operation-editor-boundaries.spec.ts:98:5 › existing assignment target and metadata survive canonicalization during a name-only edit (455ms)
+  ✓  18 tests/operation-editor-boundaries.spec.ts:111:5 › removing every existing step cannot silently save template metadata (431ms)
+  ✓  19 tests/operation-editor-boundaries.spec.ts:125:5 › dashboard uses paginated totals and an explicitly filtered running count (431ms)
+  ✓  20 tests/operation-editor-boundaries.spec.ts:148:5 › dashboard reports partial failures while keeping successfully loaded cards (505ms)
+  ✓  21 tests/operation-editor-boundaries.spec.ts:163:5 › explicitly unavailable daily snapshot is not displayed as observed zero metrics (497ms)
+  ✓  22 tests/operation-editor-boundaries.spec.ts:183:5 › a legacy snapshot lacking availability and observation time retains valid counts (430ms)
+  ✓  23 tests/operation-editor-boundaries.spec.ts:207:5 › group SOP disables selecting a customer-only tag action (496ms)
+  ✓  24 tests/operation-editor-boundaries.spec.ts:220:5 › switching an existing tagged customer SOP to group blocks every write and preserves the step (642ms)
+  ✓  25 tests/operation-editor-boundaries.spec.ts:239:5 › group message template creation uses numeric group template type and retains message step (454ms)
+
+  25 passed (20.6s)

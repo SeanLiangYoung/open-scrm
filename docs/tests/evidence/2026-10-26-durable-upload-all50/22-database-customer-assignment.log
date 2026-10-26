@@ -1,0 +1,24 @@
+bash scripts/test/overnight-customer-assignment-postgres.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+{
+  "scope": "actual PostgreSQL16+CustomerService assignment and DTO schemas (no HTTP)",
+  "passed": 14,
+  "customerRows": 2,
+  "checks": [
+    "create assigned to same-enterprise enabled employee",
+    "update assigned to another same-enterprise enabled employee",
+    "create rejects disabled employee without inserting a customer",
+    "update rejects disabled employee and preserves original assignment",
+    "create rejects foreign employee without inserting a customer",
+    "update rejects foreign employee and preserves original assignment",
+    "create rejects missing employee without inserting a customer",
+    "update rejects missing employee and preserves original assignment",
+    "omitted owner creates unassigned customer",
+    "omitted owner preserves assignment during unrelated update even if employee later disabled",
+    "explicit null clears nullable mobile/remark in PostgreSQL and preserves owner",
+    "repaired create/edit payloads satisfy authoritative DTO schemas",
+    "explicit null owner unassigns in PostgreSQL while preserving tenant boundary",
+    "exact fixture customer count remains two after rejections"
+  ]
+}

@@ -1,0 +1,25 @@
+/tmp/open-scrm-durable-upload-all50/bin/pnpm exec playwright test --config staff-selection-contracts.config.ts
+[2m[WebServer] [22m(node:12154) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 13 tests using 1 worker
+
+(node:12285) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:12285) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/staff-selection-contracts.spec.ts:57:5 › customer create selects a colleague and sends safe numeric assignment without global user requests (1.4s)
+  ✓   2 tests/staff-selection-contracts.spec.ts:84:5 › customer edit retains existing assignment not present in search results without resubmitting it (920ms)
+  ✓   3 tests/staff-selection-contracts.spec.ts:106:5 › SOP reminders preserve existing recipients and metadata while adding colleague and self without duplicates (918ms)
+  ✓   4 tests/staff-selection-contracts.spec.ts:127:5 › customer assignment SOP step is enabled and submits selected numeric employee (1.4s)
+  ✓   5 tests/staff-selection-contracts.spec.ts:144:5 › failed staff search gives feedback and preserves existing selected employee (1.1s)
+  ✓   6 tests/staff-selection-contracts.spec.ts:161:5 › unsafe staff IDs are disabled and unsafe existing SOP recipient blocks writes without rounding (503ms)
+  ✓   7 tests/staff-selection-contracts.spec.ts:204:5 › out-of-order staff searches keep the newest result (1.6s)
+  ✓   8 tests/staff-selection-contracts.spec.ts:237:5 › customer edit can replace an existing employee with a safe numeric colleague ID (1.5s)
+  ✓   9 tests/staff-selection-contracts.spec.ts:255:5 › whitespace message steps are rejected before template or step writes (490ms)
+  ✓  10 tests/staff-selection-contracts.spec.ts:268:5 › whitespace-only template names are rejected before writes (390ms)
+  ✓  11 tests/staff-selection-contracts.spec.ts:279:5 › a named new draft without steps remains allowed (369ms)
+  ✓  12 tests/staff-selection-contracts.spec.ts:290:5 › clearing an existing SOP description sends explicit null (414ms)
+  ✓  13 tests/staff-selection-contracts.spec.ts:325:5 › clearing an existing customer assignment sends explicit null (1.2s)
+
+  13 passed (14.3s)

@@ -1,0 +1,58 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node e2e/check-login-store-races.cjs
+{
+  "scope": "real Pinia/Vue and current in-memory TS stores; no browser introspection or network",
+  "passed": 10,
+  "failed": 0,
+  "checks": [
+    {
+      "app": "admin",
+      "name": "newest successful login wins against an older delayed success",
+      "passed": true
+    },
+    {
+      "app": "admin",
+      "name": "logout invalidates an in-flight login and cannot be undone by late success",
+      "passed": true
+    },
+    {
+      "app": "admin",
+      "name": "a newer failed attempt prevents an older response from restoring another enterprise",
+      "passed": true
+    },
+    {
+      "app": "admin",
+      "name": "stale failures are marked ignored after a newer successful login",
+      "passed": true
+    },
+    {
+      "app": "admin",
+      "name": "legacy two-argument latest login persists a normal success and returns void",
+      "passed": true
+    },
+    {
+      "app": "operation",
+      "name": "newest successful login wins against an older delayed success",
+      "passed": true
+    },
+    {
+      "app": "operation",
+      "name": "logout invalidates an in-flight login and cannot be undone by late success",
+      "passed": true
+    },
+    {
+      "app": "operation",
+      "name": "a newer failed attempt prevents an older response from restoring another enterprise",
+      "passed": true
+    },
+    {
+      "app": "operation",
+      "name": "stale failures are marked ignored after a newer successful login",
+      "passed": true
+    },
+    {
+      "app": "operation",
+      "name": "legacy two-argument latest login persists a normal success and returns void",
+      "passed": true
+    }
+  ]
+}

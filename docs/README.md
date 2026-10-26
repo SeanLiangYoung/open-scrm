@@ -55,6 +55,10 @@ docs/
 
 ### 代码与工程
 
+- [持续推进的当前清单](./plans/2026-10-26-remaining-work.md) — 上传、SOP、统一验收及真实外部依赖的剩余边界
+- [上传存储补偿与二进制网关](./tests/2026-10-26-upload-storage-recovery.md) — 实际SDK、本地存储替身与PG故障证据
+- [持久SOP调度](./tests/2026-10-26-durable-sop-scheduling.md) — 重启恢复、多进程租约与未知结果停止
+
 - [素材写入边界修复](./tests/2026-10-26-asset-write-integrity.md) — 编号、企业引用、层级与原子计数
 - [素材网关接入及下游错误传播](./tests/2026-10-26-asset-gateway-routing.md) — 受保护路径映射、真实HTTP与兼容回归
 

@@ -1,0 +1,10 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-sop-action-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-sop-action-http-pzv1bb
+Build/start auth-service on free loopback port 56533
+Build/start customer-service on free loopback port 56536
+Build/start message-service on free loopback port 56537
+Build/start operation-service on free loopback port 56538
+Build/start gateway-service on free loopback port 56539
+{"stage":"isolated-services-ready","pgPort":56509,"redisPort":56512,"ports":{"auth":56533,"customer":56536,"message":56537,"operation":56538,"gateway":56539,"unavailable":56540}}
+PASS SOP action realHTTP13 and exact SQL: six failed steps no progress, five valid actions, two Mock-only logs.
+Verified: owned service processes exited and disposable containers are absent.

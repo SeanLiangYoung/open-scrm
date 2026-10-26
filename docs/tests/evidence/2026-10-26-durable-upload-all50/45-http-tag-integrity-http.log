@@ -1,0 +1,30 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-tag-integrity-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tag-integrity-http-AnZ4rv
+Build/start auth-service on free loopback port 55975
+Build/start customer-service on free loopback port 55976
+Build/start gateway-service on free loopback port 55977
+{"stage":"isolated-services-ready","pgPort":55954,"redisPort":55960,"ports":{"auth":55975,"customer":55976,"gateway":55977,"vite":55978,"unavailable":55979}}
+PASS: five real tag UI/API scenarios and PG16 immutable/metadata/relationship assertions
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+   id   | corp_id |          tag_name          | tag_type | parent_id | sort | is_auto 
+--------+---------+----------------------------+----------+-----------+------+---------
+      9 |       2 | tag-http-ui-created        |        1 |         0 |    0 |       0
+ 100011 |       1 | tag-http-foreign-protected |        1 |         0 |    0 |       0
+ 100021 |       2 | tag-http-ui-edited         |        3 |    100022 |    8 |       1
+ 100022 |       2 | tag-http-parent            |        1 |         0 |    0 |       0
+(4 rows)
+
+ customer_id | tag_id 
+-------------+--------
+      100201 | 100021
+(1 row)
+
+ message_count 
+---------------
+             0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.
