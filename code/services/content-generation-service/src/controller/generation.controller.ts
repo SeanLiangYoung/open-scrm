@@ -1,4 +1,5 @@
 import { Controller, Post, Get, Patch, Body, Param, Inject } from '@midwayjs/core';
+import { parseStudioPathId } from '../util/studio-identity.util';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
@@ -21,7 +22,7 @@ export class GenerationController {
     const { corpId } = getTenantContext(this.ctx);
     const result = await this.generationService.startGeneration(
       corpId,
-      Number(id),
+      parseStudioPathId(id),
       dto
     );
     return { success: true, data: result };
@@ -30,14 +31,14 @@ export class GenerationController {
   @Get('/jobs/:id')
   async getJob(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const result = await this.generationService.getJob(corpId, Number(id));
+    const result = await this.generationService.getJob(corpId, parseStudioPathId(id));
     return { success: true, data: result };
   }
 
   @Get('/variants/:id')
   async getVariant(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const variant = await this.generationService.getVariant(corpId, Number(id));
+    const variant = await this.generationService.getVariant(corpId, parseStudioPathId(id));
     return { success: true, data: variant };
   }
 
@@ -47,7 +48,7 @@ export class GenerationController {
     const { corpId } = getTenantContext(this.ctx);
     const variant = await this.generationService.updateVariant(
       corpId,
-      Number(id),
+      parseStudioPathId(id),
       dto
     );
     return { success: true, data: variant };
@@ -70,7 +71,7 @@ export class GenerationController {
 
     const result = await this.generationService.pushVariantDraft(
       corpId,
-      Number(id),
+      parseStudioPathId(id),
       dto,
       headers
     );
@@ -94,7 +95,7 @@ export class GenerationController {
 
     const results = await this.generationService.batchPushDrafts(
       corpId,
-      Number(id),
+      parseStudioPathId(id),
       dto,
       headers
     );

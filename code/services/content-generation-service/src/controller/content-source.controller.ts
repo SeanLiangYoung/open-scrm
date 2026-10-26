@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Patch, Del, Body, Param, Query, Inject } from '@midwayjs/core';
+import { parseStudioPathId } from '../util/studio-identity.util';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
@@ -45,7 +46,7 @@ export class ContentSourceController {
   @Get('/:id')
   async get(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const source = await this.contentSourceService.getSource(corpId, Number(id));
+    const source = await this.contentSourceService.getSource(corpId, parseStudioPathId(id));
     return { success: true, data: source };
   }
 
@@ -55,7 +56,7 @@ export class ContentSourceController {
     const { corpId } = getTenantContext(this.ctx);
     const source = await this.contentSourceService.updateSource(
       corpId,
-      Number(id),
+      parseStudioPathId(id),
       dto
     );
     return { success: true, data: source };
@@ -65,10 +66,11 @@ export class ContentSourceController {
   @Validate()
   async compose(@Param('id') id: string, @Body() dto: ComposeContentSourceDto) {
     const { corpId } = getTenantContext(this.ctx);
+    const sourceId = parseStudioPathId(id);
     try {
       const result = await this.contentComposeService.compose(
         corpId,
-        Number(id),
+        sourceId,
         dto
       );
       return { success: true, data: result };
@@ -90,7 +92,7 @@ export class ContentSourceController {
   @Del('/:id')
   async remove(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    await this.contentSourceService.deleteSource(corpId, Number(id));
+    await this.contentSourceService.deleteSource(corpId, parseStudioPathId(id));
     return { success: true, message: 'Content source deleted' };
   }
 }

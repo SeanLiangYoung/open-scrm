@@ -1,3 +1,4 @@
+import { requireStudioId } from '../util/studio-identity.util';
 import { Provide } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
@@ -59,6 +60,7 @@ export class ContentSourceService {
   }
 
   async getSource(corpId: number, id: number): Promise<ContentSourceEntity> {
+    requireStudioId(id);
     const source = await this.sourceRepository.findOne({ where: { corpId, id } });
     if (!source) {
       throw new Error('Content source not found');

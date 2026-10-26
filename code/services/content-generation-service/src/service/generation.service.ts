@@ -1,3 +1,4 @@
+import { requireStudioId, sameStudioId } from '../util/studio-identity.util';
 import { Provide, Inject, Config } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { InjectQueue } from '@midwayjs/bull';
@@ -100,6 +101,7 @@ export class GenerationService {
   }
 
   async getJob(corpId: number, jobId: number) {
+    requireStudioId(jobId);
     const job = await this.jobRepository.findOne({ where: { corpId, id: jobId } });
     if (!job) {
       throw new Error('Generation job not found');
@@ -114,6 +116,7 @@ export class GenerationService {
   }
 
   async getVariant(corpId: number, variantId: number) {
+    requireStudioId(variantId);
     const variant = await this.variantRepository.findOne({
       where: { corpId, id: variantId },
     });
@@ -188,7 +191,7 @@ export class GenerationService {
     for (const item of dto.items) {
       try {
         const variant = await this.getVariant(corpId, item.variantId);
-        if (variant.sourceId !== sourceId) {
+        if (!sameStudioId(variant.sourceId, sourceId)) {
           throw new Error('Variant does not belong to this content source');
         }
         const pushed = await this.pushVariantDraft(corpId, item.variantId, item, headers);

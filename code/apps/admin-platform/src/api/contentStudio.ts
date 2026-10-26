@@ -85,13 +85,16 @@ export const contentStudioApi = {
     }
   ) {
     return api.post(`/api/v1/content-studio/sources/${sourceId}/compose`, payload ?? {}, {
-      timeout: LLM_REQUEST_TIMEOUT_MS,
+      timeout: LLM_REQUEST_TIMEOUT_MS
     });
   },
 
-  generate(sourceId: number, payload: { channels: string[]; kbEnabled?: boolean; kbQuery?: string }) {
+  generate(
+    sourceId: number,
+    payload: { channels: string[]; kbEnabled?: boolean; kbQuery?: string }
+  ) {
     return api.post(`/api/v1/content-studio/sources/${sourceId}/generate`, payload, {
-      timeout: LLM_REQUEST_TIMEOUT_MS,
+      timeout: LLM_REQUEST_TIMEOUT_MS
     });
   },
 
@@ -99,7 +102,10 @@ export const contentStudioApi = {
     return api.get(`/api/v1/content-studio/jobs/${jobId}`);
   },
 
-  pushDraft(variantId: number, payload: { platform: string; accountId: number; contentType: number }) {
+  pushDraft(
+    variantId: number,
+    payload: { platform: string; accountId: number; contentType: number }
+  ) {
     return api.post(`/api/v1/content-studio/variants/${variantId}/push-draft`, payload);
   },
 
@@ -139,5 +145,5 @@ export const contentStudioApi = {
 
   connectPlatformOAuth(accountId: number, payload: { accessToken: string; refreshToken?: string }) {
     return api.post(`/api/platform-account/${accountId}/oauth`, payload);
-  },
+  }
 };
