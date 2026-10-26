@@ -80,3 +80,17 @@ describe('refresh authentication boundary', () => {
     }
   );
 });
+
+describe('authenticated downstream error propagation', () => {
+  it.each([404, 500])('preserves downstream %s instead of reporting invalid JWT', async status => {
+    const t = setup('/api/v1/assets-unknown/71', 'Bearer valid-access');
+    t.verify.mockResolvedValueOnce({ userId: 7, corpId: 2, type: 'access' });
+    const error = Object.assign(new Error('downstream failure'), { status });
+    const next = vi.fn(async () => {
+      throw error;
+    });
+    await expect(t.middleware.resolve()(t.ctx, next)).rejects.toBe(error);
+    expect(t.ctx.status).not.toBe(401);
+    expect(t.ctx.state.user).toMatchObject({ userId: 7, corpId: 2 });
+  });
+});

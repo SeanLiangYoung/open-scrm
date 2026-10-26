@@ -87,8 +87,6 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
           };
           return;
         }
-
-        await next();
       } catch (error) {
         ctx.status = 401;
         ctx.body = {
@@ -96,7 +94,10 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
           message: 'Token无效或已过期',
           timestamp: new Date().toISOString()
         };
+        return;
       }
+      // Authentication has succeeded; let business errors retain their status.
+      await next();
     };
   }
 

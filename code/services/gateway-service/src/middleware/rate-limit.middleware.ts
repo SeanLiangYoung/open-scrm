@@ -44,13 +44,12 @@ export class RateLimitMiddleware implements IMiddleware<Context, NextFunction> {
         ctx.set('X-RateLimit-Limit', max.toString());
         ctx.set('X-RateLimit-Remaining', Math.max(0, max - current).toString());
         ctx.set('X-RateLimit-Reset', (Date.now() + duration).toString());
-
-        await next();
       } catch (error) {
         // Redis错误时不阻塞请求
         console.error('Rate limit error:', error);
-        await next();
       }
+      // Redis fail-open must never replay a failed business handler.
+      await next();
     };
   }
 
