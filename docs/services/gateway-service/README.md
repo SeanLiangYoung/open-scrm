@@ -24,7 +24,7 @@
 
 当前路由事实源为 `code/services/gateway-service/src/config/config.default.ts`。认证、用户、员工目录路由到auth；客户/标签/跟进路由到customer；SOP/群发路由到operation；消息、通知、分析、集成、素材、获客和创作中心按各服务URL配置转发。财务路由配置不等于财务业务已验证。
 
-代理保留Authorization、Content-Type和Idempotency-Key；企微 `text/xml` / `application/xml` 按原文解析后转发。业务状态和响应正文保留；目标连接拒绝返回503，其余代理错误502。普通代理超时30秒，内容工坊重请求为120秒。没有新增自动发送重试的保证。
+代理保留Authorization、Content-Type和Idempotency-Key；企微 `text/xml` / `application/xml` 按原文解析后转发。业务状态和响应正文保留；目标连接拒绝返回503，其余代理错误502。普通代理超时30秒，内容工坊重请求与两条multipart素材上传入口为120秒。没有新增自动发送重试的保证。
 
 限流按IP和路径在Redis计数，超限429并返回剩余额度头；Redis异常时当前实现放行。它不是熔断、跨实例负载均衡、全路径权限或生产防滥用审计的证明。
 
@@ -47,3 +47,5 @@
 素材v1入口显式映射`/api/v1/assets/*`→`/api/asset/*`；`/api/v1/assets/categories/*`优先映射分类服务`/api/asset-category/*`。原始服务路径也可经网关鉴权访问，均不加入公开白名单。编号后缀、query、JSON正文和验证后的企业身份原样转发，query中的id不覆盖路径id。路由须匹配完整前缀段，避免近似资源名误命中。其它路由不重写。
 
 认证仅捕获签名/身份验证错误，下游404/500不再被误改401；限流只在Redis错误时放行，不重新调用已经失败的业务处理。真正超限仍429。新增实际auth→asset→PG及网关JSON验证12组、独立网关54单元与资源清理证据见[素材网关报告](../../tests/2026-10-26-asset-gateway-routing.md)。不据这些JSON请求声称multipart/真实OSS上传已经验证。
+
+素材multipart代理已补齐原始请求落盘与文件流转发，见[专项报告](../../tests/2026-10-26-multipart-proxy.md)与[真实上传验收](../../tests/2026-10-26-upload-storage-recovery.md)。101MiB封装上限在转发前校验，客户端断流不触发后端请求，维护清理失败保留下游状态；这些结论不等于真实云存储成功。
