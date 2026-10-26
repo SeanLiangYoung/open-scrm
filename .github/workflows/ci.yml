@@ -42,10 +42,10 @@ jobs:
   isolated-business-flows:
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    env:
-      TMPDIR: ${{ runner.temp }}
     steps:
       - uses: actions/checkout@v4
+      - name: Use runner temporary directory for disposable evidence
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
       - uses: pnpm/action-setup@v4
         with:
           version: 8.9.0
@@ -77,6 +77,10 @@ jobs:
           node scripts/test/overnight-asset-write-postgres.cjs
       - name: Authenticated HTTP and actual UI flows
         run: node scripts/test/verify-reliability.cjs --group http --report-dir "$RUNNER_TEMP/scrm-http"
+      - name: Asset authenticated gateway contracts and cleanup
+        run: |
+          node scripts/test/check-asset-gateway-cleanup.cjs
+          node scripts/test/overnight-asset-gateway-http.cjs
       - name: Preserve integration evidence
         if: always()
         uses: actions/upload-artifact@v4
