@@ -1,10 +1,11 @@
 import { Rule, RuleType } from '@midwayjs/validate';
+import { sopInt32Id, validateSavedSopStep } from '../util/sop-action-validation';
 
 /**
  * 创建SOP步骤DTO
  */
 export class CreateSopStepDto {
-  @Rule(RuleType.number().required())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return sopInt32Id(value); } catch { return helpers.error('any.invalid'); } }).required())
   templateId: number;
 
   @Rule(RuleType.number().required())
@@ -22,7 +23,7 @@ export class CreateSopStepDto {
   @Rule(RuleType.string().valid('minute', 'hour', 'day').optional())
   delayUnit?: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().strict().integer().min(-32768).max(32767).allow(null).optional())
   actionType?: number;
 
   @Rule(RuleType.any().required())
@@ -48,7 +49,7 @@ export class UpdateSopStepDto {
   @Rule(RuleType.string().valid('minute', 'hour', 'day').optional())
   delayUnit?: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().strict().integer().min(-32768).max(32767).allow(null).optional())
   actionType?: number;
 
   @Rule(RuleType.any().optional())
@@ -62,10 +63,10 @@ export class UpdateSopStepDto {
  * 批量创建步骤DTO
  */
 export class BatchCreateStepsDto {
-  @Rule(RuleType.number().required())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return sopInt32Id(value); } catch { return helpers.error('any.invalid'); } }).required())
   templateId: number;
 
-  @Rule(RuleType.array().items(RuleType.object()).min(1).required())
+  @Rule(RuleType.array().items(RuleType.object().unknown(true).custom((value, helpers) => { try { validateSavedSopStep(value); return value; } catch { return helpers.error('any.invalid'); } })).min(1).required())
   steps: Array<{
     stepOrder: number;
     stepName: string;

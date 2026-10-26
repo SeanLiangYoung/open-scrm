@@ -1,4 +1,4 @@
-import { Provide, Inject, Config } from '@midwayjs/core';
+import { Provide, Inject, Config, httpError } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Context } from '@midwayjs/koa';
@@ -6,12 +6,16 @@ import { HttpService } from '@midwayjs/axios';
 import { SopExecutionEntity } from '../entity/sop-execution.entity';
 import { SopTemplateService } from './sop-template.service';
 import { TriggerSopExecutionDto, QuerySopExecutionDto } from '../dto/sop-execution.dto';
+import { sopDelayMs, sopIdList, sopInt32Id, sopPositiveId, validateSopAction } from '../util/sop-action-validation';
 
 /**
  * SOP执行服务
  */
 @Provide()
 export class SopExecutionService {
+  /** Process-local guard; providers may be instantiated for separate requests. */
+  private static readonly runners = new Map<number, Promise<void>>();
+
   @Inject()
   ctx!: Context;
 
@@ -35,7 +39,7 @@ export class SopExecutionService {
    * 触发SOP执行
    */
   async triggerExecution(corpId: number, dto: TriggerSopExecutionDto) {
-    const template = await this.sopTemplateService.getTemplate(dto.templateId, corpId);
+    const template = await this.sopTemplateService.getTemplate(sopInt32Id(dto.templateId), corpId);
     
     if (!template) {
       throw new Error('SOP模板不存在');
@@ -45,7 +49,10 @@ export class SopExecutionService {
       throw new Error('SOP模板已禁用');
     }
 
-    const targetIds = Array.isArray(dto.targetIds) ? dto.targetIds : [dto.targetIds];
+    if (![1, 2].includes(dto.targetType) || template.templateType !== dto.targetType) {
+      throw new httpError.BadRequestError('SOP模板类型与执行目标类型不匹配');
+    }
+    const targetIds = sopIdList(Array.isArray(dto.targetIds) ? dto.targetIds : [dto.targetIds]);
     const executions = [];
 
     for (const targetId of targetIds) {
@@ -65,7 +72,7 @@ export class SopExecutionService {
       executions.push(execution);
 
       // 异步执行SOP（实际应该放入队列）
-      this.executeSteps(execution.id, template.steps).catch(err => {
+      this.startSteps(execution.id, template.steps || []).catch(err => {
         console.error(`SOP执行失败:`, err);
       });
     }
@@ -75,6 +82,18 @@ export class SopExecutionService {
       count: executions.length,
       executions,
     };
+  }
+
+  private startSteps(executionId: number, steps: any[]): Promise<void> {
+    const existing = SopExecutionService.runners.get(executionId);
+    if (existing) return existing;
+    const runner = this.executeSteps(executionId, steps).finally(() => {
+      if (SopExecutionService.runners.get(executionId) === runner) {
+        SopExecutionService.runners.delete(executionId);
+      }
+    });
+    SopExecutionService.runners.set(executionId, runner);
+    return runner;
   }
 
   /**
@@ -89,20 +108,30 @@ export class SopExecutionService {
       return;
     }
 
-    const executionLog = [];
+    const executionLog = Array.isArray(execution.executionLog) ? [...execution.executionLog] : [];
 
-    for (let i = 0; i < steps.length; i++) {
+    for (let i = execution.currentStep || 0; i < steps.length; i++) {
       const step = steps[i];
       
       try {
+        const beforeWait = await this.executionRepository.findOne({
+          where: { id: executionId, corpId: execution.corpId },
+        });
+        if (!beforeWait || beforeWait.status !== 0) return;
+
+        validateSopAction(step);
         // 计算延迟时间
         if (step.delayTime > 0) {
           const delayMs = this.calculateDelay(step.delayTime, step.delayUnit);
           await this.delay(delayMs);
         }
 
-        // 执行步骤
-        await this.executeStep(execution, step);
+        // Re-check after the delay: control requests may have paused/cancelled us.
+        const current = await this.executionRepository.findOne({
+          where: { id: executionId, corpId: execution.corpId },
+        });
+        if (!current || current.status !== 0) return;
+        await this.executeStep(current, step);
 
         // 更新进度
         execution.currentStep = i + 1;
@@ -113,7 +142,12 @@ export class SopExecutionService {
           time: new Date(),
         });
 
-        await this.executionRepository.save(execution);
+        // An in-flight request cannot be recalled. Record its completed progress
+        // without overwriting a concurrent pause/cancel with stale status=0.
+        await this.executionRepository.update(
+          { id: executionId, corpId: execution.corpId },
+          { currentStep: i + 1, executionLog }
+        );
       } catch (error: any) {
         executionLog.push({
           step: i + 1,
@@ -123,25 +157,30 @@ export class SopExecutionService {
           time: new Date(),
         });
 
-        execution.status = 3; // 失败
-        execution.errorMessage = error?.message;
-        execution.executionLog = executionLog;
-        await this.executionRepository.save(execution);
+        await this.executionRepository.update(
+          { id: executionId, corpId: execution.corpId },
+          { errorMessage: error?.message, executionLog }
+        );
+        await this.executionRepository.update(
+          { id: executionId, corpId: execution.corpId, status: 0 }, { status: 3 }
+        );
         return;
       }
     }
 
     // 全部完成
-    execution.status = 1;
-    execution.completeTime = new Date();
-    execution.executionLog = executionLog;
-    await this.executionRepository.save(execution);
+    await this.executionRepository.update(
+      { id: executionId, corpId: execution.corpId, status: 0 },
+      { status: 1, completeTime: new Date(), executionLog }
+    );
   }
 
   /**
    * 执行单个步骤
    */
   private async executeStep(execution: SopExecutionEntity, step: any) {
+    validateSopAction(step);
+    this.validateExecutionTarget(execution);
     switch (step.stepType) {
       case 1: // 发消息
         await this.sendMessage(execution, step);
@@ -171,24 +210,29 @@ export class SopExecutionService {
     };
   }
 
-  /** 解析步骤配置（支持 JSON 对象或 JSON 字符串） */
+  private validateExecutionTarget(execution: SopExecutionEntity): void {
+    if (execution.targetType === 1 && execution.groupId == null) {
+      sopPositiveId(execution.customerId);
+    } else if (execution.targetType === 2 && execution.customerId == null) {
+      sopPositiveId(execution.groupId);
+    } else {
+      throw new Error('SOP目标类型与客户/群编号不一致');
+    }
+  }
+
   private parseStepAction(step: any): Record<string, any> {
-    const raw = step?.actionContent;
-    if (raw == null) {
-      return {};
+    return validateSopAction(step);
+  }
+
+  private requireSuccessfulMessage(response: { data?: unknown }): void {
+    const body = response.data as {
+      success?: boolean;
+      data?: { success?: number; failed?: number };
+    } | undefined;
+    // HTTP 200 is an envelope: the sender reports per-recipient failures inside it.
+    if (body?.success !== true || body.data?.success !== 1 || body.data?.failed !== 0) {
+      throw new Error('消息服务未确认成功发送');
     }
-    if (typeof raw === 'string') {
-      try {
-        const parsed = JSON.parse(raw);
-        return typeof parsed === 'object' && parsed !== null ? parsed : { content: raw };
-      } catch {
-        return { content: raw };
-      }
-    }
-    if (typeof raw === 'object') {
-      return raw;
-    }
-    return { content: String(raw) };
   }
 
   /**
@@ -204,24 +248,27 @@ export class SopExecutionService {
     if (!content) {
       throw new Error('SOP 步骤缺少消息内容（actionContent.content）');
     }
-    await this.httpService.post(
+    const response = await this.httpService.post(
       `${this.servicesConfig.message}/api/message/send`,
       {
         messageType: act.messageType ?? 1,
-        targetType: execution.targetType,
+        ...(act.templateId !== undefined ? { templateId: act.templateId } : {}),
+        // SOP uses 2 for groups; the message service uses 3 (2 means employee).
+        targetType: execution.targetType === 2 ? 3 : execution.targetType,
         targetIds: targetId,
         content,
         extra: act.extra,
       },
       { headers: this.execHeaders(execution) }
     );
+    this.requireSuccessfulMessage(response);
   }
 
   /**
    * 打标签
    */
   private async addTag(execution: SopExecutionEntity, step: any) {
-    if (!execution.customerId) {
+    if (execution.targetType !== 1 || !execution.customerId || execution.groupId != null) {
       throw new Error('SOP 步骤「打标签」仅支持客户目标');
     }
     const act = this.parseStepAction(step);
@@ -229,11 +276,12 @@ export class SopExecutionService {
     if (!Array.isArray(tagIds) || tagIds.length === 0) {
       throw new Error('SOP 步骤缺少 tagIds（数组）');
     }
-    await this.httpService.post(
+    const response = await this.httpService.post(
       `${this.servicesConfig.customer}/api/v1/customers/${execution.customerId}/tags`,
       { tagIds },
       { headers: this.execHeaders(execution) }
     );
+    if (response.data?.code !== 200 || response.data?.success === false) throw new Error('客户服务未确认打标签成功');
   }
 
   /**
@@ -250,36 +298,43 @@ export class SopExecutionService {
     if (!targetId) {
       throw new Error('推送素材需要客户或群目标');
     }
-    await this.httpService.post(
+    const response = await this.httpService.post(
       `${this.servicesConfig.message}/api/message/send`,
       {
         messageType: act.messageType ?? 1,
-        targetType: execution.targetType,
+        ...(act.templateId !== undefined ? { templateId: act.templateId } : {}),
+        targetType: execution.targetType === 2 ? 3 : execution.targetType,
         targetIds: targetId,
         content: text,
         extra: act.extra,
       },
       { headers: this.execHeaders(execution) }
     );
+    this.requireSuccessfulMessage(response);
   }
 
   /**
    * 分配客户
    */
   private async assignCustomer(execution: SopExecutionEntity, step: any) {
-    if (!execution.customerId) {
+    if (execution.targetType !== 1 || !execution.customerId || execution.groupId != null) {
       throw new Error('SOP 步骤「分配客户」需要客户目标');
     }
     const act = this.parseStepAction(step);
     const followUserId = act.followUserId ?? act.staffId;
-    if (followUserId == null || !Number.isFinite(Number(followUserId))) {
+    if (followUserId == null) {
       throw new Error('SOP 步骤缺少 followUserId 或 staffId');
     }
-    await this.httpService.put(
+    const response = await this.httpService.put(
       `${this.servicesConfig.customer}/api/v1/customers/${execution.customerId}`,
-      { followUserId: Number(followUserId) },
+      { followUserId: sopPositiveId(followUserId) },
       { headers: this.execHeaders(execution) }
     );
+    if (response.data?.code !== 200 || response.data?.success === false ||
+      sopPositiveId(response.data?.data?.id) !== sopPositiveId(execution.customerId) ||
+      sopPositiveId(response.data?.data?.followUserId) !== sopPositiveId(followUserId)) {
+      throw new Error('客户服务未确认目标客户分配成功');
+    }
   }
 
   /**
@@ -291,7 +346,7 @@ export class SopExecutionService {
     if (!Array.isArray(userIds) || userIds.length === 0) {
       throw new Error('提醒员工需要 actionContent.userIds 或 userId');
     }
-    await this.httpService.post(
+    const response = await this.httpService.post(
       `${this.servicesConfig.message}/api/notification/`,
       {
         userIds,
@@ -302,6 +357,9 @@ export class SopExecutionService {
       },
       { headers: this.execHeaders(execution) }
     );
+    if (response.data?.success !== true || response.data?.data?.success !== true || response.data?.data?.count !== userIds.length) {
+      throw new Error('通知服务未确认全部接收人成功');
+    }
   }
 
   /**
@@ -378,14 +436,47 @@ export class SopExecutionService {
    */
   async controlExecution(corpId: number, executionIds: number | number[], action: string) {
     const ids = Array.isArray(executionIds) ? executionIds : [executionIds];
+
+    if (action === 'resume') {
+      const paused = await this.executionRepository.find({
+        where: { id: In(ids), corpId, status: 2 },
+      });
+      let count = 0;
+      for (const execution of paused) {
+        const template = await this.sopTemplateService.getTemplate(execution.templateId, corpId);
+        if (!template || template.status !== 1) {
+          throw new Error('恢复执行需要存在且已启用的SOP模板');
+        }
+        if (template.templateType !== execution.targetType) throw new httpError.BadRequestError('恢复执行的模板与目标类型不匹配');
+        const result = await this.executionRepository.update(
+          { id: execution.id, corpId, status: 2 }, { status: 0 }
+        );
+        if (!result.affected) continue;
+        count += result.affected;
+        const active = SopExecutionService.runners.get(execution.id);
+        // If pause/resume raced a waiting or in-flight worker, let it leave
+        // before starting again. startSteps also guards concurrent requests.
+        const resume = async () => {
+          if (active) {
+            try {
+              await active;
+            } catch (error) {
+              // A failed prior worker must not strand an accepted resume in
+              // status=0. Restart from the progress persisted in the database.
+              console.error('SOP原执行链结束失败，尝试恢复:', error);
+            }
+          }
+          await this.startSteps(execution.id, template.steps || []);
+        };
+        resume().catch(err => console.error('SOP恢复执行失败:', err));
+      }
+      return { success: true, count };
+    }
     
     let newStatus: number;
     switch (action) {
       case 'pause':
         newStatus = 2;
-        break;
-      case 'resume':
-        newStatus = 0;
         break;
       case 'cancel':
         newStatus = 3;
@@ -409,23 +500,25 @@ export class SopExecutionService {
    * 计算延迟时间（毫秒）
    */
   private calculateDelay(time: number, unit: string): number {
-    switch (unit) {
-      case 'minute':
-        return time * 60 * 1000;
-      case 'hour':
-        return time * 60 * 60 * 1000;
-      case 'day':
-        return time * 24 * 60 * 60 * 1000;
-      default:
-        return time * 60 * 1000;
-    }
+    return sopDelayMs(time, unit);
   }
 
   /**
    * 延时函数
    */
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  private async delay(ms: number): Promise<void> {
+    if (!Number.isFinite(ms) || ms < 0) {
+      throw new Error('SOP步骤延时必须为有限的非负数');
+    }
+    // Node clamps timers above this limit to 1ms. Keep long SOP waits in
+    // supported chunks so a month-long delay cannot send immediately.
+    const maxTimerMs = 2_147_483_647;
+    let remaining = ms;
+    while (remaining > 0) {
+      const chunk = Math.min(remaining, maxTimerMs);
+      await new Promise<void>(resolve => setTimeout(resolve, chunk));
+      remaining -= chunk;
+    }
   }
 }
 

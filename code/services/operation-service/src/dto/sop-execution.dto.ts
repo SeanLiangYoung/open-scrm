@@ -1,19 +1,17 @@
 import { Rule, RuleType } from '@midwayjs/validate';
+import { sopIdList, sopInt32Id, sopPositiveId } from '../util/sop-action-validation';
 
 /**
  * 触发SOP执行DTO
  */
 export class TriggerSopExecutionDto {
-  @Rule(RuleType.number().required())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return sopInt32Id(value); } catch { return helpers.error('any.invalid'); } }).required())
   templateId: number;
 
   @Rule(RuleType.number().valid(1, 2).required())
   targetType: number;
 
-  @Rule(RuleType.alternatives().try(
-    RuleType.number(),
-    RuleType.array().items(RuleType.number())
-  ).required())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return Array.isArray(value) ? sopIdList(value) : sopPositiveId(value); } catch { return helpers.error('any.invalid'); } }).required())
   targetIds: number | number[];
 }
 
@@ -21,7 +19,7 @@ export class TriggerSopExecutionDto {
  * 查询SOP执行记录DTO
  */
 export class QuerySopExecutionDto {
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return sopInt32Id(value); } catch { return helpers.error('any.invalid'); } }).optional())
   templateId?: number;
 
   @Rule(RuleType.number().optional())
@@ -53,10 +51,7 @@ export class QuerySopExecutionDto {
  * 控制执行DTO
  */
 export class ControlExecutionDto {
-  @Rule(RuleType.alternatives().try(
-    RuleType.number(),
-    RuleType.array().items(RuleType.number())
-  ).required())
+  @Rule(RuleType.any().custom((value, helpers) => { try { return Array.isArray(value) ? sopIdList(value) : sopPositiveId(value); } catch { return helpers.error('any.invalid'); } }).required())
   executionIds: number | number[];
 
   @Rule(RuleType.string().valid('pause', 'resume', 'cancel').required())
