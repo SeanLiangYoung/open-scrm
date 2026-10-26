@@ -1,12 +1,13 @@
 import * as crypto from 'crypto';
 
-const BLOCK = 16;
+// WeCom's protocol padding block is 32, independent of AES's 16-byte block.
+const BLOCK = 32;
 
 /**
  * 将 EncodingAESKey（43 字符）解码为 32 字节 AES Key（企微文档约定末尾补 `=` 再 Base64）
  */
 export function decodeWeworkAesKey(encodingAesKey: string): Buffer {
-  const buf = Buffer.from(encodingAesKey + '=', 'base64');
+  const buf = Buffer.from(`${encodingAesKey}=`, 'base64');
   if (buf.length !== 32) {
     throw new Error('Invalid EncodingAESKey: expected 32 bytes after base64 decode');
   }
@@ -14,7 +15,7 @@ export function decodeWeworkAesKey(encodingAesKey: string): Buffer {
 }
 
 /**
- * PKCS#7 填充（块大小 16）
+ * PKCS#7 填充（企微协议块大小 32）
  */
 export function pkcs7Pad(data: Buffer): Buffer {
   const padLen = BLOCK - (data.length % BLOCK);
@@ -27,7 +28,8 @@ export function pkcs7Unpad(data: Buffer): Buffer {
     throw new Error('Invalid PKCS7: empty buffer');
   }
   const pad = data[data.length - 1];
-  if (pad < 1 || pad > BLOCK) {
+  if (pad < 1 || pad > BLOCK || pad > data.length ||
+      !data.subarray(data.length - pad).every(byte => byte === pad)) {
     throw new Error('Invalid PKCS7 padding');
   }
   return data.subarray(0, data.length - pad);
