@@ -55,6 +55,9 @@ docs/
 
 ### 代码与工程
 
+- [素材写入边界修复](./tests/2026-10-26-asset-write-integrity.md) — 编号、企业引用、层级与原子计数
+- [素材网关接入及下游错误传播](./tests/2026-10-26-asset-gateway-routing.md) — 受保护路径映射、真实HTTP与兼容回归
+
 - [夜间量化执行计划（2026-10-25 至 26 日）](./plans/2026-10-25-overnight-execution.md) — 并发任务、九个里程碑、验收条件与早晨交付
 - [本企业员工目录与运营人员选择](./plans/2026-10-26-tenant-staff-operations.md) — 夜间持续批次：可信员工查询、通知接收人归属、客户/SOP人员选择与双企业HTTP验证
 - [企业同名登录与刷新边界](./plans/2026-10-26-tenant-login-disambiguation.md) — 企业选择、同名消歧及真实HTTP/UI证据

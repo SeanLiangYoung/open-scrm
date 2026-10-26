@@ -281,4 +281,4 @@ pnpm build
 
 使用记录先锁定本企业素材，使用记录和原子计数在同一事务提交；记录/计数任一失败整体回滚，不接受不存在或外企素材。历史使用日志保留语义不变，本批未增加素材删除后的日志级联。
 
-验证见[素材修复报告](../../tests/2026-10-26-asset-write-integrity.md)。当前服务路径仍为`/api/asset`与`/api/asset-category`；网关路径接入是下一独立修复。真实OSS上传、存储成功后数据库失败的对象补偿以及真实凭据配置仍未验收。
+验证见[素材修复报告](../../tests/2026-10-26-asset-write-integrity.md)。当前服务路径仍为`/api/asset`与`/api/asset-category`；网关接入已在后续独立修复完成：素材`/api/v1/assets/*`与优先分类`/api/v1/assets/categories/*`映射上述服务路径，旧服务路径也可经网关鉴权。详情见[网关验证](../../tests/2026-10-26-asset-gateway-routing.md)。真实OSS上传、存储成功后数据库失败的对象补偿以及真实凭据配置仍未验收。

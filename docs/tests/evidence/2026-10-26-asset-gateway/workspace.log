@@ -1,0 +1,48 @@
+
+> scrm-system@1.0.0 test /Users/seanliang/projects/open-scrm/code
+> bash ./scripts/test/full-test.sh
+
+==========================================
+  SCRM System - Full Test Suite
+==========================================
+
+Detailed logs: /tmp/open-scrm-gateway-final-workspace-details
+🧪 Phase 0: Unit Tests (Vitest)
+------------------------------------------
+🔍 Running: Workspace unit tests (configured test:unit scope)
+  ✅ PASS: Workspace unit tests (configured test:unit scope)
+
+📦 Phase 1: Shared Packages Build
+------------------------------------------
+🔍 Running: shared-types build
+  ✅ PASS: shared-types build
+🔍 Running: shared-constants build
+  ✅ PASS: shared-constants build
+🔍 Running: shared-utils build
+  ✅ PASS: shared-utils build
+🔍 Running: server-common build
+  ✅ PASS: server-common build
+
+🔧 Phase 2: Type Check
+------------------------------------------
+🔍 Running: Type check all packages
+  ✅ PASS: Type check all packages
+
+📝 Phase 3: Lint
+------------------------------------------
+🔍 Running: ESLint all packages
+  ✅ PASS: ESLint all packages
+
+🏗️ Phase 4: Service Build
+------------------------------------------
+🔍 Running: Build all services
+  ✅ PASS: Build all services
+
+==========================================
+  Test Results
+==========================================
+  ✅ Passed: 8
+  ❌ Failed: 0
+  Total:    8
+  Logs:     /tmp/open-scrm-gateway-final-workspace-details
+==========================================

@@ -1,0 +1,9 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-customer-consent-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-customer-consent-ui-d0lKqg
+Build/start auth-service on free loopback port 52081
+Build/start customer-service on free loopback port 52082
+Build/start message-service on free loopback port 52083
+Build/start gateway-service on free loopback port 52084
+{"stage":"isolated-services-ready","pgPort":52065,"redisPort":52066,"ports":{"auth":52081,"customer":52082,"message":52083,"gateway":52084,"vite":52085,"unavailable":52086}}
+PASS real consent UI four cases, exact two evidence rows and one Mock log
+Verified: owned service processes exited and disposable containers are absent.

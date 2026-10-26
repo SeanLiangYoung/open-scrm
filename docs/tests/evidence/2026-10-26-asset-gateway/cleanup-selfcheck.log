@@ -1,0 +1,1 @@
+{"passed":true,"artifactDir":"/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-gateway-http-gInGKE","injectedExit":1,"createdContainers":["b5693b14b7bb16274a2106b810d92bca3a9e929c3d3961ef822d53f90215ce71"],"cleanup":{"passed":true,"errors":[],"childPids":[],"containerIds":["b5693b14b7bb16274a2106b810d92bca3a9e929c3d3961ef822d53f90215ce71"]},"guardExit":1}

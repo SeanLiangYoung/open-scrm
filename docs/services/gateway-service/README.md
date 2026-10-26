@@ -40,3 +40,10 @@
 ## 开发与配置
 
 在 `code/services/gateway-service` 使用 `pnpm dev`、`pnpm type-check`、`pnpm test`、`pnpm build`。依赖Redis；auth与gateway必须共享 `JWT_SECRET`。`APP_KEYS`用于cookie签名，服务目标使用相应 `*_SERVICE_URL`，完整变量与端口以源码和[仓库事实索引](../../../code/docs/代码现状与文档索引.md)为准。真实HTTP脚本会clean共享dist，需协调串行运行。
+
+
+## 素材路由与下游异常（2026-10-26续办）
+
+素材v1入口显式映射`/api/v1/assets/*`→`/api/asset/*`；`/api/v1/assets/categories/*`优先映射分类服务`/api/asset-category/*`。原始服务路径也可经网关鉴权访问，均不加入公开白名单。编号后缀、query、JSON正文和验证后的企业身份原样转发，query中的id不覆盖路径id。路由须匹配完整前缀段，避免近似资源名误命中。其它路由不重写。
+
+认证仅捕获签名/身份验证错误，下游404/500不再被误改401；限流只在Redis错误时放行，不重新调用已经失败的业务处理。真正超限仍429。新增实际auth→asset→PG及网关JSON验证12组、独立网关54单元与资源清理证据见[素材网关报告](../../tests/2026-10-26-asset-gateway-routing.md)。不据这些JSON请求声称multipart/真实OSS上传已经验证。

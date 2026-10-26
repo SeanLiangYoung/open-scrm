@@ -1,0 +1,8 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-message-retry-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-message-retry-http-sig864
+Build/start auth-service on free loopback port 49782
+Build/start message-service on free loopback port 49783
+Build/start gateway-service on free loopback port 49784
+{"stage":"isolated-services-ready","pgPort":49762,"redisPort":49769,"ports":{"auth":49782,"message":49783,"gateway":49784}}
+{"checks":["two real tenant logins","anonymous401","foreign-only hidden despite forged headers","mixed dedup only own failed","raw PG foreign and successful rows unchanged","five invalid DTO shapes400","tenantB own scalar retry succeeds","no repeat of successful messages"],"evidence":"id  | corp_id | message_type | send_status | retry_count | sent \n------+---------+--------------+-------------+-------------+------\n 9101 |       1 |            5 |           1 |           1 | t\n 9102 |       2 |            5 |           1 |           1 | t\n 9103 |       1 |            5 |           1 |           0 | f\n(3 rows)"}
+Verified: owned service processes exited and disposable containers are absent.

@@ -2,7 +2,11 @@ import { Config, Inject, Middleware } from '@midwayjs/core';
 import { Context, NextFunction } from '@midwayjs/koa';
 import { IMiddleware } from '@midwayjs/core';
 import { HttpService } from '@midwayjs/axios';
-import { findMatchingGatewayRoute, type GatewayRouteConfig } from '../utils/route-match';
+import {
+  findMatchingGatewayRoute,
+  gatewayUpstreamPath,
+  type GatewayRouteConfig
+} from '../utils/route-match';
 
 @Middleware()
 export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
@@ -21,7 +25,7 @@ export class ProxyMiddleware implements IMiddleware<Context, NextFunction> {
       }
 
       try {
-        const targetUrl = `${matchedRoute.target}${ctx.path}`;
+        const targetUrl = `${matchedRoute.target}${gatewayUpstreamPath(matchedRoute, ctx.path)}`;
         const headers: Record<string, string> = {};
 
         if (ctx.get('authorization')) {

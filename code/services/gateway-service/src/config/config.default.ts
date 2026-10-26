@@ -109,7 +109,21 @@ export default {
         target: process.env.OPERATION_SERVICE_URL || 'http://localhost:7004'
       },
       {
+        path: '/api/v1/assets/categories/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005',
+        upstreamPrefix: '/api/asset-category'
+      },
+      {
         path: '/api/v1/assets/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005',
+        upstreamPrefix: '/api/asset'
+      },
+      {
+        path: '/api/asset-category/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005'
+      },
+      {
+        path: '/api/asset/*',
         target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005'
       },
       {

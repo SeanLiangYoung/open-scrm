@@ -1,0 +1,44 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-gateway-http-NtyxgN
+Build/start auth-service on free loopback port 60835
+Build/start asset-service on free loopback port 60836
+Build/start gateway-service on free loopback port 60837
+{"stage":"isolated-services-ready","pgPort":60811,"redisPort":60816,"ports":{"auth":60835,"asset":60836,"gateway":60837}}
+PASS asset and category entry points require access JWT
+PASS v1 and legacy detail routes use path IDs, not forged query IDs
+PASS safe MAX BIGINT detail remains exact through gateway
+PASS category routes take precedence and preserve tenant filtering
+PASS gateway replaces forged tenant headers
+PASS malformed paths400 preserve local row, category overflow400
+PASS foreign categories400 and malformed JSON references422 without writes
+PASS legitimate category filtering update and creation work
+PASS foreign parent and cyclic hierarchy rejected via actual DTO/controller
+PASS foreign usage404 leaves zero usage, concurrent ten usage requests count exactly ten
+PASS actual counter failure500 rolls back usage insertion
+auth-service log tail:
+✅ Auth Service is ready on port 60835
+2026-10-26 22:47:47.290 INFO 17355 [midway:bootstrap] current app started
+
+asset-service log tail:
+Asset Service is ready
+2026-10-26 22:47:49.990 INFO 17381 [midway:bootstrap] current app started
+
+gateway-service log tail:
+✅ Gateway Service is ready on port 60837
+2026-10-26 22:47:52.781 INFO 17407 [midway:bootstrap] current app started
+
+Verified: owned service processes exited and disposable containers are absent.
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+401 !== 404
+
+    at /Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:240:186
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async check (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:226:34)
+    at async main (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:240:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 401,
+  expected: 404,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
