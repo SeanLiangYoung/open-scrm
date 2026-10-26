@@ -2,6 +2,8 @@ import { Controller, Get, Post, Put, Del, Inject, Query, Body, Param } from '@mi
 import { Validate } from '@midwayjs/validate';
 import { TagService } from '../service/tag.service';
 import { CreateTagDto } from '../dto/create-tag.dto';
+import { UpdateTagDto } from '../dto/update-tag.dto';
+import { tagId } from '../util/tag-integrity.util';
 
 @Controller('/api/v1/tags')
 export class TagController {
@@ -12,7 +14,7 @@ export class TagController {
    * 创建标签
    */
   @Post('/')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async create(@Body() dto: CreateTagDto) {
     const tag = await this.tagService.create(dto);
     return {
@@ -26,9 +28,9 @@ export class TagController {
    * 更新标签
    */
   @Put('/:id')
-  @Validate()
-  async update(@Param('id') id: number, @Body() dto: Partial<CreateTagDto>) {
-    const tag = await this.tagService.update(id, dto);
+  @Validate({ errorStatus: 400 })
+  async update(@Param('id') id: string, @Body() dto: UpdateTagDto) {
+    const tag = await this.tagService.update(tagId(id), dto);
     return {
       code: 200,
       message: '更新成功',
@@ -40,8 +42,8 @@ export class TagController {
    * 删除标签
    */
   @Del('/:id')
-  async delete(@Param('id') id: number) {
-    await this.tagService.delete(id);
+  async delete(@Param('id') id: string) {
+    await this.tagService.delete(tagId(id));
     return {
       code: 200,
       message: '删除成功',
@@ -52,8 +54,8 @@ export class TagController {
    * 获取标签详情
    */
   @Get('/:id')
-  async getById(@Param('id') id: number) {
-    const tag = await this.tagService.findById(id);
+  async getById(@Param('id') id: string) {
+    const tag = await this.tagService.findById(tagId(id));
     return {
       code: 200,
       data: tag,

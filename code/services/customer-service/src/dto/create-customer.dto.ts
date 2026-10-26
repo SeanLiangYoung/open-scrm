@@ -28,7 +28,7 @@ export class CreateCustomerDto {
   @Rule(RuleType.string().max(50).optional())
   city?: string;
 
-  @Rule(RuleType.number().integer().positive().optional())
+  @Rule(RuleType.number().integer().positive().max(Number.MAX_SAFE_INTEGER).strict().optional())
   followUserId?: number;
 
   @Rule(RuleType.date().optional())
@@ -40,7 +40,7 @@ export class CreateCustomerDto {
   @Rule(RuleType.string().optional())
   remark?: string;
 
-  @Rule(RuleType.array().items(RuleType.number().integer()).optional())
+  @Rule(RuleType.array().max(100).items(RuleType.number().integer().min(1).max(2147483647).strict()).optional())
   tagIds?: number[];
 }
 

@@ -4,40 +4,70 @@
       <template #header>
         <div class="card-header">
           <div class="header-left">
-            <el-input v-model="keyword" placeholder="搜索客户名称/手机号" clearable style="width:240px" @clear="fetchCustomers" @keyup.enter="fetchCustomers">
-              <template #prefix><el-icon><Search /></el-icon></template>
+            <el-input
+              v-model="keyword"
+              placeholder="搜索客户名称/手机号"
+              clearable
+              style="width: 240px"
+              @clear="fetchCustomers"
+              @keyup.enter="fetchCustomers"
+            >
+              <template #prefix
+                ><el-icon><Search /></el-icon
+              ></template>
             </el-input>
-            <el-select v-model="statusFilter" placeholder="状态" clearable style="width:120px;margin-left:12px" @change="fetchCustomers">
-              <el-option label="正常" :value="1" /><el-option label="待跟进" :value="2" /><el-option label="流失" :value="0" />
+            <el-select
+              v-model="statusFilter"
+              placeholder="状态"
+              clearable
+              style="width: 120px; margin-left: 12px"
+              @change="fetchCustomers"
+            >
+              <el-option label="正常" :value="1" /><el-option label="流失" :value="2" /><el-option
+                label="已删除"
+                :value="0"
+              />
             </el-select>
           </div>
-          <div style="display:flex;gap:8px">
-            <el-button @click="exportCsv"><el-icon><Download /></el-icon> 导出CSV</el-button>
-            <el-button @click="importDialogVisible = true"><el-icon><Upload /></el-icon> 导入</el-button>
-            <el-button type="primary" @click="showCreate"><el-icon><Plus /></el-icon> 新建客户</el-button>
+          <div style="display: flex; gap: 8px">
+            <el-button @click="exportCsv"
+              ><el-icon><Download /></el-icon> 导出CSV</el-button
+            >
+            <el-button @click="importDialogVisible = true"
+              ><el-icon><Upload /></el-icon> 导入</el-button
+            >
+            <el-button type="primary" @click="showCreate"
+              ><el-icon><Plus /></el-icon> 新建客户</el-button
+            >
           </div>
         </div>
       </template>
 
-      <el-table :data="customers" v-loading="loading" stripe @row-click="goDetail">
+      <el-table v-loading="loading" :data="customers" stripe @row-click="goDetail">
         <el-table-column prop="id" label="ID" width="70" />
         <el-table-column prop="name" label="客户名称" width="120" />
         <el-table-column prop="gender" label="性别" width="80">
-          <template #default="{ row }">{{ ['未知','男','女'][row.gender] }}</template>
+          <template #default="{ row }">{{ ['未知', '男', '女'][row.gender] }}</template>
         </el-table-column>
         <el-table-column prop="mobile" label="手机号" width="140" />
         <el-table-column prop="channel" label="来源" width="120">
           <template #default="{ row }">
-            <el-tag size="small" :type="sourceTagType(row.channel || row.source)">{{ sourceLabel(row.channel || row.source) }}</el-tag>
+            <el-tag size="small" :type="sourceTagType(row.channel || row.source)">{{
+              sourceLabel(row.channel || row.source)
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="statusType(row.status)" size="small">{{ statusLabel(row.status) }}</el-tag>
+            <el-tag :type="statusType(row.status)" size="small">{{
+              statusLabel(row.status)
+            }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="create_time" label="创建时间" width="180">
-          <template #default="{ row }">{{ formatDate(row.create_time || row.createTime) }}</template>
+          <template #default="{ row }">{{
+            formatDate(row.create_time || row.createTime)
+          }}</template>
         </el-table-column>
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
@@ -48,27 +78,45 @@
       </el-table>
 
       <div class="pagination">
-        <el-pagination v-model:current-page="page" :page-size="pageSize" :total="total" layout="total, prev, pager, next" @current-change="fetchCustomers" />
+        <el-pagination
+          v-model:current-page="page"
+          :page-size="pageSize"
+          :total="total"
+          layout="total, prev, pager, next"
+          @current-change="fetchCustomers"
+        />
       </div>
     </el-card>
 
     <el-dialog v-model="dialogVisible" :title="editingId ? '编辑客户' : '新建客户'" width="500px">
       <el-form :model="form" label-width="80px">
-        <el-form-item label="姓名"><el-input v-model="form.name" /></el-form-item>
+        <el-form-item label="姓名" required><el-input v-model="form.name" /></el-form-item>
         <el-form-item label="性别">
           <el-radio-group v-model="form.gender">
-            <el-radio :value="1">男</el-radio><el-radio :value="2">女</el-radio><el-radio :value="0">未知</el-radio>
+            <el-radio :value="1">男</el-radio><el-radio :value="2">女</el-radio
+            ><el-radio :value="0">未知</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="手机号"><el-input v-model="form.mobile" /></el-form-item>
-        <el-form-item label="邮箱"><el-input v-model="form.email" /></el-form-item>
-        <el-form-item label="来源">
-          <el-select v-model="form.source" style="width:100%">
-            <el-option label="抖音" value="douyin" /><el-option label="小红书" value="xiaohongshu" />
+        <el-form-item v-if="!editingId" label="来源">
+          <el-select v-model="form.channel" style="width: 100%">
+            <el-option label="抖音" value="douyin" /><el-option
+              label="小红书"
+              value="xiaohongshu"
+            />
             <el-option label="微信" value="wechat" /><el-option label="线下" value="offline" />
           </el-select>
         </el-form-item>
-        <el-form-item label="备注"><el-input v-model="form.remark" type="textarea" :rows="2" /></el-form-item>
+        <el-form-item v-else label="来源"
+          ><span>{{ sourceLabel(form.channel) }}（仅创建时设置）</span></el-form-item
+        >
+        <el-form-item label="跟进员工">
+          <TenantStaffSelect v-model="form.followUserIds" placeholder="搜索本企业员工（可选）" />
+          <span v-if="editingId" style="color: #909399; font-size: 12px">清空可取消当前分配</span>
+        </el-form-item>
+        <el-form-item label="备注"
+          ><el-input v-model="form.remark" type="textarea" :rows="2"
+        /></el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -77,12 +125,17 @@
     </el-dialog>
 
     <el-dialog v-model="importDialogVisible" title="导入客户" width="520px">
-      <el-alert type="info" :closable="false" style="margin-bottom:16px">
+      <el-alert type="info" :closable="false" style="margin-bottom: 16px">
         <template #title>
           请粘贴 CSV 格式数据，第一行为标题行。支持字段：姓名,性别,手机号,渠道
         </template>
       </el-alert>
-      <el-input v-model="importText" type="textarea" :rows="8" placeholder="姓名,性别,手机号,渠道&#10;测试客户A,男,13900001111,抖音&#10;测试客户B,女,13900002222,微信" />
+      <el-input
+        v-model="importText"
+        type="textarea"
+        :rows="8"
+        placeholder="姓名,性别,手机号,渠道&#10;测试客户A,男,13900001111,抖音&#10;测试客户B,女,13900002222,微信"
+      />
       <template #footer>
         <el-button @click="importDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleImport">导入</el-button>
@@ -92,6 +145,14 @@
 </template>
 
 <script setup lang="ts">
+import type { TagProps } from 'element-plus';
+import type { Customer } from '@/types/view-models';
+import TenantStaffSelect from '@/components/TenantStaffSelect.vue';
+import { safeStaffNumber } from '@/composables/useTenantStaff';
+interface AssignableCustomer extends Customer {
+  followUserId?: number | string | null;
+}
+import { errorMessage } from '@/utils/error-message';
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -101,7 +162,7 @@ import api from '@/utils/api';
 const router = useRouter();
 const loading = ref(false);
 const submitting = ref(false);
-const customers = ref<any[]>([]);
+const customers = ref<AssignableCustomer[]>([]);
 const page = ref(1);
 const pageSize = ref(20);
 const total = ref(0);
@@ -109,62 +170,146 @@ const keyword = ref('');
 const statusFilter = ref<number | undefined>();
 const dialogVisible = ref(false);
 const editingId = ref<number | null>(null);
-const form = reactive({ name: '', gender: 0, mobile: '', email: '', source: 'wechat', remark: '' });
+const form = reactive({
+  name: '',
+  gender: 0,
+  mobile: '',
+  channel: 'wechat',
+  remark: '',
+  followUserIds: [] as string[]
+});
+const editingOriginal = reactive({ mobile: '', remark: '', followUserId: '' });
 
-const sourceMap: Record<string, string> = { douyin: '抖音', xiaohongshu: '小红书', wechat: '微信', offline: '线下' };
+const sourceMap: Record<string, string> = {
+  douyin: '抖音',
+  xiaohongshu: '小红书',
+  wechat: '微信',
+  offline: '线下'
+};
 const sourceLabel = (s: string) => sourceMap[s] || s;
-const sourceTagType = (s: string): any => ({ douyin: '', xiaohongshu: 'warning', wechat: 'success', offline: 'info' }[s] || 'info');
-const statusLabel = (s: number) => ['流失', '正常', '待跟进'][s] || '未知';
-const statusType = (s: number): any => ['danger', 'success', 'warning'][s] || 'info';
-const formatDate = (d: string) => d ? new Date(d).toLocaleString('zh-CN') : '-';
+const sourceTagType = (s: string) =>
+  (
+    ({ douyin: '', xiaohongshu: 'warning', wechat: 'success', offline: 'info' }) as Record<
+      string,
+      TagProps['type'] | ''
+    >
+  )[s] || 'info';
+const statusLabel = (s: number) => ['已删除', '正常', '流失'][s] || '未知';
+const statusType = (s: number) => (['danger', 'success', 'warning'] as const)[s] || 'info';
+const formatDate = (d: string) => (d ? new Date(d).toLocaleString('zh-CN') : '-');
 
 async function fetchCustomers() {
   loading.value = true;
   try {
-    const params: any = { page: page.value, pageSize: pageSize.value };
+    const params: { page: number; pageSize: number; keyword?: string; status?: number } = {
+      page: page.value,
+      pageSize: pageSize.value
+    };
     if (keyword.value) params.keyword = keyword.value;
     if (statusFilter.value !== undefined) params.status = statusFilter.value;
     const res = await api.get('/api/v1/customers', { params });
     const data = res.data;
     customers.value = data?.list || data?.items || (Array.isArray(data) ? data : []);
     total.value = data?.total || customers.value.length;
-  } catch { ElMessage.error('获取客户列表失败'); } finally { loading.value = false; }
+  } catch {
+    ElMessage.error('获取客户列表失败');
+  } finally {
+    loading.value = false;
+  }
 }
 
-function goDetail(row: any) { router.push(`/customers/${row.id}`); }
+function goDetail(row: Customer) {
+  router.push(`/customers/${row.id}`);
+}
 
 function showCreate() {
   editingId.value = null;
-  Object.assign(form, { name: '', gender: 0, mobile: '', email: '', source: 'wechat', remark: '' });
+  Object.assign(form, {
+    name: '',
+    gender: 0,
+    mobile: '',
+    channel: 'wechat',
+    remark: '',
+    followUserIds: []
+  });
   dialogVisible.value = true;
 }
 
-function editCustomer(row: any) {
+function editCustomer(row: AssignableCustomer) {
   editingId.value = row.id;
-  Object.assign(form, { name: row.name, gender: row.gender, mobile: row.mobile || '', email: row.email || '', source: row.source || 'wechat', remark: row.remark || '' });
+  Object.assign(editingOriginal, {
+    mobile: row.mobile || '',
+    remark: row.remark || '',
+    followUserId: row.followUserId == null ? '' : String(row.followUserId)
+  });
+  Object.assign(form, {
+    name: row.name,
+    gender: row.gender,
+    mobile: row.mobile || '',
+    channel: row.channel || row.source || 'wechat',
+    remark: row.remark || '',
+    followUserIds: row.followUserId == null ? [] : [String(row.followUserId)]
+  });
   dialogVisible.value = true;
 }
 
 async function handleSubmit() {
+  if (!form.name.trim()) {
+    ElMessage.warning('请输入客户姓名');
+    return;
+  }
+  const selectedOwner = form.followUserIds[0];
+  const ownerChanged =
+    selectedOwner && (!editingId.value || selectedOwner !== editingOriginal.followUserId);
+  const followUserId = ownerChanged ? safeStaffNumber(selectedOwner) : undefined;
+  if (ownerChanged && followUserId === null) {
+    ElMessage.warning('员工编号超出支持范围，请重新选择员工');
+    return;
+  }
   submitting.value = true;
   try {
-    const data: any = { ...form, corpId: 1 };
-    if (!editingId.value) {
-      data.externalUserid = `ext_${Date.now()}`;
-      data.channel = form.source;
-      data.followUserId = 1;
-    }
-    if (editingId.value) await api.put(`/api/v1/customers/${editingId.value}`, data);
-    else await api.post('/api/v1/customers', data);
+    const data = {
+      ...(editingId.value && editingOriginal.followUserId && !selectedOwner
+        ? { followUserId: null }
+        : followUserId !== undefined
+          ? { followUserId }
+          : {}),
+      ...(form.name.trim() ? { name: form.name.trim() } : {}),
+      gender: form.gender,
+      ...(form.mobile.trim() ? { mobile: form.mobile.trim() } : {}),
+      ...(form.remark.trim() ? { remark: form.remark.trim() } : {})
+    };
+    if (editingId.value)
+      await api.put(`/api/v1/customers/${editingId.value}`, {
+        ...data,
+        ...(editingOriginal.mobile && !form.mobile.trim() ? { mobile: null } : {}),
+        ...(editingOriginal.remark && !form.remark.trim() ? { remark: null } : {})
+      });
+    else
+      await api.post('/api/v1/customers', {
+        ...data,
+        externalUserid: `ext_${Date.now()}`,
+        channel: form.channel
+      });
     ElMessage.success(editingId.value ? '更新成功' : '创建成功');
     dialogVisible.value = false;
     fetchCustomers();
-  } catch (e: any) { ElMessage.error(e.response?.data?.message || '操作失败'); } finally { submitting.value = false; }
+  } catch (e: unknown) {
+    ElMessage.error(errorMessage(e, '操作失败'));
+  } finally {
+    submitting.value = false;
+  }
 }
 
-async function deleteCustomer(row: any) {
+async function deleteCustomer(row: Customer) {
   await ElMessageBox.confirm(`确定删除客户 ${row.name}？`, '提示', { type: 'warning' });
-  try { await api.delete(`/api/v1/customers/${row.id}`); ElMessage.success('删除成功'); fetchCustomers(); } catch { ElMessage.error('删除失败'); }
+  try {
+    await api.delete(`/api/v1/customers/${row.id}`);
+    ElMessage.success('删除成功');
+    fetchCustomers();
+  } catch {
+    ElMessage.error('删除失败');
+  }
 }
 
 const importDialogVisible = ref(false);
@@ -176,21 +321,36 @@ async function exportCsv() {
     const blob = new Blob([res.data], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = `customers_${new Date().toISOString().slice(0,10)}.csv`;
-    a.click(); URL.revokeObjectURL(url);
+    a.href = url;
+    a.download = `customers_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
     ElMessage.success('导出成功');
-  } catch { ElMessage.error('导出失败'); }
+  } catch {
+    ElMessage.error('导出失败');
+  }
 }
 
 async function handleImport() {
-  if (!importText.value.trim()) { ElMessage.warning('请粘贴CSV数据'); return; }
-  const lines = importText.value.trim().split('\n').filter(l => l.trim());
-  if (lines.length < 2) { ElMessage.warning('至少需要标题行和一行数据'); return; }
+  if (!importText.value.trim()) {
+    ElMessage.warning('请粘贴CSV数据');
+    return;
+  }
+  const lines = importText.value
+    .trim()
+    .split('\n')
+    .filter(l => l.trim());
+  if (lines.length < 2) {
+    ElMessage.warning('至少需要标题行和一行数据');
+    return;
+  }
   const headers = lines[0].split(',').map(h => h.trim());
   const rows = lines.slice(1).map(line => {
     const vals = line.split(',').map(v => v.trim());
-    const obj: any = {};
-    headers.forEach((h, i) => { obj[h] = vals[i] || ''; });
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => {
+      obj[h] = vals[i] || '';
+    });
     return obj;
   });
   try {
@@ -199,14 +359,27 @@ async function handleImport() {
     importDialogVisible.value = false;
     importText.value = '';
     fetchCustomers();
-  } catch (e: any) { ElMessage.error(e.response?.data?.message || '导入失败'); }
+  } catch (e: unknown) {
+    ElMessage.error(errorMessage(e, '导入失败'));
+  }
 }
 
 onMounted(fetchCustomers);
 </script>
 
 <style scoped>
-.card-header { display: flex; justify-content: space-between; align-items: center; }
-.header-left { display: flex; align-items: center; }
-.pagination { margin-top: 16px; display: flex; justify-content: flex-end; }
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header-left {
+  display: flex;
+  align-items: center;
+}
+.pagination {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
 </style>

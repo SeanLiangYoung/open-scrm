@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Put, Del, Inject, Query, Body, Param } from '@midwayjs/core';
+import { httpError, Controller, Get, Post, Put, Del, Inject, Query, Body, Param } from '@midwayjs/core';
 import { Validate } from '@midwayjs/validate';
 import { CustomerService } from '../service/customer.service';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { QueryCustomerDto } from '../dto/query-customer.dto';
+import { positiveId, tagId, tagIds as validateTagIds } from '../util/tag-integrity.util';
 
 @Controller('/api/v1/customers')
 export class CustomerController {
@@ -29,8 +30,8 @@ export class CustomerController {
    */
   @Put('/:id')
   @Validate()
-  async update(@Param('id') id: number, @Body() dto: UpdateCustomerDto) {
-    const customer = await this.customerService.update(id, dto);
+  async update(@Param('id') id: string, @Body() dto: UpdateCustomerDto) {
+    const customer = await this.customerService.update(positiveId(id), dto);
     return {
       code: 200,
       message: '更新成功',
@@ -42,8 +43,8 @@ export class CustomerController {
    * 删除客户
    */
   @Del('/:id')
-  async delete(@Param('id') id: number) {
-    await this.customerService.delete(id);
+  async delete(@Param('id') id: string) {
+    await this.customerService.delete(positiveId(id));
     return {
       code: 200,
       message: '删除成功',
@@ -69,8 +70,8 @@ export class CustomerController {
    * 获取客户详情
    */
   @Get('/:id')
-  async getById(@Param('id') id: number) {
-    const customer = await this.customerService.findById(id);
+  async getById(@Param('id') id: string) {
+    const customer = await this.customerService.findById(positiveId(id));
     return {
       code: 200,
       data: customer,
@@ -94,8 +95,10 @@ export class CustomerController {
    * 为客户添加标签
    */
   @Post('/:id/tags')
-  async addTags(@Param('id') id: number, @Body('tagIds') tagIds: number[]) {
-    await this.customerService.addTags(id, tagIds);
+  async addTags(@Param('id') id: string, @Body() body: unknown) {
+    if (!body || typeof body !== 'object' || Array.isArray(body) || Object.keys(body).some(key => key !== 'tagIds')) throw new httpError.BadRequestError('标签参数无效');
+    const tagIds = validateTagIds((body as { tagIds?: unknown }).tagIds);
+    await this.customerService.addTags(positiveId(id), tagIds);
     return {
       code: 200,
       message: '添加标签成功',
@@ -106,8 +109,8 @@ export class CustomerController {
    * 移除客户标签
    */
   @Del('/:id/tags/:tagId')
-  async removeTag(@Param('id') id: number, @Param('tagId') tagId: number) {
-    await this.customerService.removeTags(id, [tagId]);
+  async removeTag(@Param('id') id: string, @Param('tagId') rawTagId: string) {
+    await this.customerService.removeTags(positiveId(id), [tagId(rawTagId)]);
     return {
       code: 200,
       message: '移除标签成功',

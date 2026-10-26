@@ -81,6 +81,19 @@ CREATE INDEX IF NOT EXISTS idx_customer_corp ON customer (corp_id);
 CREATE INDEX IF NOT EXISTS idx_customer_follow ON customer (follow_user_id);
 CREATE INDEX IF NOT EXISTS idx_customer_status ON customer (status);
 
+CREATE TABLE IF NOT EXISTS customer_follow_up (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  customer_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  follow_type SMALLINT NOT NULL DEFAULT 1,
+  content TEXT NOT NULL,
+  next_follow_time TIMESTAMP NULL,
+  create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_customer_follow_up_corp_customer_time
+  ON customer_follow_up (corp_id, customer_id, create_time DESC);
+
 CREATE TABLE IF NOT EXISTS customer_tag (
   id SERIAL PRIMARY KEY,
   corp_id BIGINT NOT NULL,

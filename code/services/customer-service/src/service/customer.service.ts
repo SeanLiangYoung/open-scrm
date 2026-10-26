@@ -1,4 +1,4 @@
-import { Provide, Inject } from '@midwayjs/core';
+import { Provide, Inject, httpError } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, Like, In } from 'typeorm';
 import { CustomerEntity } from '../entity/customer.entity';
@@ -8,6 +8,7 @@ import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { QueryCustomerDto } from '../dto/query-customer.dto';
 import { Context } from '@midwayjs/koa';
 import { getTenantContext } from '@scrm/server-common';
+import { positiveId, tagIds as validateTagIds, tagTenant } from '../util/tag-integrity.util';
 
 @Provide()
 export class CustomerService {
@@ -25,6 +26,10 @@ export class CustomerService {
    */
   async create(dto: CreateCustomerDto): Promise<CustomerEntity> {
     const { corpId } = getTenantContext(this.ctx);
+    if (dto.tagIds !== undefined && !Array.isArray(dto.tagIds)) {
+      throw new httpError.BadRequestError('tagIds必须为数值标签数组');
+    }
+    const tagIds = dto.tagIds?.length ? validateTagIds(dto.tagIds) : [];
 
     // 检查是否已存在
     const existing = await this.customerRepository.findOne({
@@ -38,19 +43,28 @@ export class CustomerService {
       throw new Error('客户已存在');
     }
 
+    await this.requireAssignableEmployee(dto.followUserId, corpId);
+
+    if (tagIds.length > 0) {
+      return this.customerRepository.manager.transaction(async manager => {
+        const tags = await manager.getRepository(TagEntity).find({
+          where: { id: In(tagIds), corpId }, lock: { mode: 'pessimistic_read' },
+        });
+        if (tags.length !== tagIds.length) {
+          throw new httpError.BadRequestError('全部标签必须存在且属于本企业');
+        }
+        const repository = manager.getRepository(CustomerEntity);
+        const customer = repository.create({ ...dto, corpId, tags });
+        return repository.save(customer);
+      });
+    }
+
     const customer = this.customerRepository.create({
       ...dto,
       corpId,
     });
 
-    const saved = await this.customerRepository.save(customer);
-
-    // 如果有标签ID，添加标签关系
-    if (dto.tagIds && dto.tagIds.length > 0) {
-      await this.addTags(saved.id, dto.tagIds);
-    }
-
-    return saved;
+    return this.customerRepository.save(customer);
   }
 
   /**
@@ -67,8 +81,26 @@ export class CustomerService {
       throw new Error('客户不存在');
     }
 
+    if (dto.followUserId !== null) {
+      await this.requireAssignableEmployee(dto.followUserId, corpId);
+    }
     Object.assign(customer, dto);
     return await this.customerRepository.save(customer);
+  }
+
+  private async requireAssignableEmployee(followUserId: number | undefined, corpId: number): Promise<void> {
+    if (followUserId === undefined) return;
+    if (!Number.isSafeInteger(followUserId) || followUserId < 1) {
+      throw new httpError.BadRequestError('跟进员工必须为本企业已启用员工');
+    }
+    // Shared PostgreSQL user table is authoritative; do not import auth-service entities.
+    const employees = await this.customerRepository.query(
+      'SELECT id FROM "user" WHERE id = $1 AND corp_id = $2 AND status = 1 LIMIT 1',
+      [followUserId, corpId]
+    );
+    if (!Array.isArray(employees) || employees.length === 0) {
+      throw new httpError.BadRequestError('跟进员工必须为本企业已启用员工');
+    }
   }
 
   /**
@@ -189,40 +221,30 @@ export class CustomerService {
   /**
    * 为客户添加标签
    */
-  async addTags(customerId: number, tagIds: number[]): Promise<void> {
-    const { corpId } = getTenantContext(this.ctx);
-
-    const customer = await this.customerRepository.findOne({
-      where: { id: customerId, corpId },
-      relations: ['tags'],
+  async addTags(customerId: number, requested: number[]): Promise<void> {
+    const { corpId } = tagTenant(this.ctx);
+    const id = positiveId(customerId), ids = validateTagIds(requested);
+    await this.customerRepository.manager.transaction(async manager => {
+      const repository = manager.getRepository(CustomerEntity);
+      const own = await repository.findOne({ where: { id, corpId }, lock: { mode: 'pessimistic_write' } });
+      if (!own) throw new httpError.NotFoundError('客户不存在');
+      const tags = await manager.getRepository(TagEntity).find({ where: { id: In(ids), corpId }, lock: { mode: 'pessimistic_read' } });
+      if (tags.length !== ids.length) throw new httpError.BadRequestError('全部标签必须存在且属于本企业');
+      const customer = await repository.findOne({ where: { id, corpId }, relations: ['tags'] });
+      if (!customer) throw new httpError.NotFoundError('客户不存在');
+      const existing = new Set((customer.tags || []).map(tag => tag.id));
+      customer.tags = [...(customer.tags || []), ...tags.filter(tag => !existing.has(tag.id))];
+      await repository.save(customer);
     });
-
-    if (!customer) {
-      throw new Error('客户不存在');
-    }
-
-    const tags = await this.tagRepository.findBy({
-      id: In(tagIds),
-      corpId,
-    });
-
-    if (!customer.tags) {
-      customer.tags = [];
-    }
-
-    // 合并标签，去重
-    const existingTagIds = customer.tags.map(t => t.id);
-    const newTags = tags.filter(t => !existingTagIds.includes(t.id));
-    customer.tags.push(...newTags);
-
-    await this.customerRepository.save(customer);
   }
 
   /**
    * 移除客户标签
    */
-  async removeTags(customerId: number, tagIds: number[]): Promise<void> {
-    const { corpId } = getTenantContext(this.ctx);
+  async removeTags(customerId: number, requested: number[]): Promise<void> {
+    const { corpId } = tagTenant(this.ctx);
+    customerId = positiveId(customerId);
+    const tagIds = validateTagIds(requested);
 
     const customer = await this.customerRepository.findOne({
       where: { id: customerId, corpId },
