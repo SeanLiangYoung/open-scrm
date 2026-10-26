@@ -12,21 +12,14 @@ import { ProxyMiddleware } from './middleware/proxy.middleware';
 
 @Configuration({
   imports: [koa, validate, info, jwt, redis, axios],
-  importConfigs: [join(__dirname, './config')],
+  importConfigs: [join(__dirname, './config')]
 })
 export class MainConfiguration {
   @App('koa')
   app: koa.Application;
 
   async onReady() {
-    this.app.useMiddleware([
-      RateLimitMiddleware,
-      AuthMiddleware,
-      ProxyMiddleware,
-    ]);
-    console.log(
-      '✅ Gateway Service is ready on port',
-      this.app.getConfig('koa.port')
-    );
+    this.app.useMiddleware([RateLimitMiddleware, AuthMiddleware, ProxyMiddleware]);
+    console.log('✅ Gateway Service is ready on port', this.app.getConfig('koa.port'));
   }
 }

@@ -1,5 +1,5 @@
-# S7-1：CI 门禁 — 单元测试 + TypeScript 类型检查（在 monorepo code/ 下）
-# 全量 E2E 依赖本地/Compose 起全栈，仍由开发者或夜间任务执行；见 code/docs/迭代计划-E2E.md §2.5.1
+# CI复用统一验收入口，数据库与HTTP只使用临时隔离资源。
+# 本地等价命令通过不代表此工作流已在远程执行。
 name: CI
 
 on:
@@ -11,6 +11,7 @@ on:
 defaults:
   run:
     working-directory: code
+    shell: bash
 
 jobs:
   unit-and-typecheck:
@@ -18,22 +19,112 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-
       - uses: pnpm/action-setup@v4
         with:
-          version: 8
-
+          version: 8.9.0
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
           cache-dependency-path: code/pnpm-lock.yaml
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Clean-build guard on a fresh checkout
+        run: node scripts/test/runtime-boot-safety.selfcheck.cjs
+      - name: Workspace gates and login-state regression
+        run: node scripts/test/verify-reliability.cjs --group static --report-dir "$RUNNER_TEMP/scrm-static"
+      - name: Preserve static evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace-quality-evidence
+          path: ${{ runner.temp }}/scrm-static/
+          retention-days: 7
 
-      - name: Unit tests (Vitest)
-        run: pnpm test:unit
+  isolated-business-flows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use runner temporary directory for disposable evidence
+        run: echo "TMPDIR=$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: code/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build shared packages
+        run: pnpm exec turbo run build --filter='./packages/**'
+      - name: Prepare disposable database images
+        run: |
+          docker pull postgres:16-alpine
+          docker pull redis:7-alpine
+      - name: Install Chromium for actual UI flows
+        run: pnpm --filter @scrm/e2e exec playwright install --with-deps chromium
+      - name: Disposable UI harness guards and failure cleanup
+        run: node scripts/test/check-business-ui-harness-safety.cjs
+      - name: Database contracts in disposable PostgreSQL 16
+        run: node scripts/test/verify-reliability.cjs --group database --report-dir "$RUNNER_TEMP/scrm-database"
+      - name: Resumed scan, Studio bigint and administrator PostgreSQL contracts
+        run: |
+          node scripts/test/overnight-channel-scan-postgres.selfcheck.cjs
+          node scripts/test/overnight-channel-scan-postgres.cjs
+          node scripts/test/overnight-studio-identifiers-postgres.cjs
+          node scripts/test/overnight-admin-user-postgres.cjs
+          node scripts/test/overnight-asset-write-postgres.cjs
+          node scripts/test/check-durable-sop-cleanup.cjs
+          bash scripts/test/durable-sop-postgres.sh
+      - name: Authenticated HTTP and actual UI flows
+        run: node scripts/test/verify-reliability.cjs --group http --report-dir "$RUNNER_TEMP/scrm-http"
+      - name: Asset authenticated gateway contracts and cleanup
+        run: |
+          node scripts/test/check-asset-gateway-cleanup.cjs
+          node scripts/test/overnight-asset-gateway-http.cjs
+          node scripts/test/check-upload-storage-cleanup.cjs
+          node scripts/test/overnight-upload-storage-http.cjs
+      - name: Preserve integration evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: isolated-business-flow-evidence
+          path: |
+            ${{ runner.temp }}/scrm-database/
+            ${{ runner.temp }}/scrm-http/
+            ${{ runner.temp }}/open-scrm-*/
+            ${{ runner.temp }}/scrm-ui-harness-safety-*/
+          retention-days: 7
 
-      - name: Type check
-        run: pnpm type-check
+  operation-browser-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 8.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: code/pnpm-lock.yaml
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Install Chromium
+        run: pnpm --filter @scrm/e2e exec playwright install --with-deps chromium
+      - name: Browser contract suites with mocked APIs
+        run: node scripts/test/verify-reliability.cjs --group browser --report-dir "$RUNNER_TEMP/scrm-browser"
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operation-browser-contract-evidence
+          path: |
+            ${{ runner.temp }}/scrm-browser/
+            code/e2e/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -6,7 +6,7 @@ function parseYmd(s: string, label: string): Date {
     throw new Error(`${label} 须为 YYYY-MM-DD`);
   }
   const d = new Date(`${s}T00:00:00.000Z`);
-  if (Number.isNaN(d.getTime())) {
+  if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== s) {
     throw new Error(`${label} 日期无效`);
   }
   return d;
@@ -30,11 +30,11 @@ export function resolveFunnelGapWindow(
 ): { start: Date; endExclusive: Date } {
   const todayStart = utcDayStart(now);
 
-  if ((input.startDate && !input.endDate) || (!input.startDate && input.endDate)) {
+  if ((input.startDate !== undefined) !== (input.endDate !== undefined)) {
     throw new Error('startDate 与 endDate 须成对出现，或同时省略');
   }
 
-  if (input.startDate && input.endDate) {
+  if (input.startDate !== undefined && input.endDate !== undefined) {
     const start = parseYmd(input.startDate, 'startDate');
     const endDay = parseYmd(input.endDate, 'endDate');
     const endExclusive = addUtcDays(endDay, 1);

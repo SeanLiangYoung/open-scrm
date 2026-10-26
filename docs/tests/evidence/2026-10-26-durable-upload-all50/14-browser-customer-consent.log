@@ -1,0 +1,22 @@
+/tmp/open-scrm-durable-upload-all50/bin/pnpm exec playwright test --config customer-consent.config.ts
+[2m[WebServer] [22m(node:37973) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 10 tests using 1 worker
+
+(node:38355) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:38355) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/customer-consent.spec.ts:63:5 › exact grant evidence without invented tenant identity (1.0s)
+  ✓   2 tests/customer-consent.spec.ts:81:5 › exact revoke body and positive count (417ms)
+  ✓   3 tests/customer-consent.spec.ts:89:5 › empty policy blocks writes (765ms)
+  ✓   4 tests/customer-consent.spec.ts:97:5 › channel and locale require explicit evidence (586ms)
+  ✓   5 tests/customer-consent.spec.ts:104:5 › invalid locale preserves draft with no writes (710ms)
+  ✓   6 tests/customer-consent.spec.ts:113:5 › unsafe customer ID blocks both writes without rounding (801ms)
+  ✓   7 tests/customer-consent.spec.ts:123:5 › grant failure preserves evidence and reports no success (753ms)
+  ✓   8 tests/customer-consent.spec.ts:132:5 › zero count is actual zero (379ms)
+  ✓   9 tests/customer-consent.spec.ts:138:5 › reload reads a real snapshot without cached operation results or global identity queries (1.0s)
+  ✓  10 tests/customer-consent.spec.ts:152:5 › revoke failure retains prior result and draft (1.3s)
+
+  10 passed (9.1s)

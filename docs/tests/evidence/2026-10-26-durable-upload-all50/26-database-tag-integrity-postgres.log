@@ -1,0 +1,344 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-tag-integrity-postgres.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tag-integrity-pg-7rbpnZ
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tag-integrity-pg-7rbpnZ",
+  "scope": "actual PostgreSQL16 and current TypeORM/controller/services; no Bootstrap/build/HTTP",
+  "checks": [
+    {
+      "name": "update cannot overwrite foreign primary key",
+      "passed": true
+    },
+    {
+      "name": "normal UI corpId1 cannot move corp2 tag",
+      "passed": true
+    },
+    {
+      "name": "batch injected ID cannot steal foreign row",
+      "passed": true
+    },
+    {
+      "name": "foreign parent is rejected without creating invisible own child",
+      "passed": true
+    },
+    {
+      "name": "invalid parent aborts entire batch",
+      "passed": true
+    },
+    {
+      "name": "mixed own and foreign customer tags reject with no partial relation",
+      "passed": true
+    },
+    {
+      "name": "own customer tag control remains valid and idempotent",
+      "passed": true
+    },
+    {
+      "name": "database save failure rolls back the complete batch",
+      "passed": true
+    }
+  ],
+  "snapshots": [
+    {
+      "name": "update cannot overwrite foreign primary key:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "update cannot overwrite foreign primary key:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "normal UI corpId1 cannot move corp2 tag:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "normal UI corpId1 cannot move corp2 tag:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "batch injected ID cannot steal foreign row:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "batch injected ID cannot steal foreign row:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "foreign parent is rejected without creating invisible own child:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "foreign parent is rejected without creating invisible own child:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "invalid parent aborts entire batch:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "invalid parent aborts entire batch:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "mixed own and foreign customer tags reject with no partial relation:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "mixed own and foreign customer tags reject with no partial relation:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "own customer tag control remains valid and idempotent:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "own customer tag control remains valid and idempotent:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": [
+        {
+          "customer_id": "100201",
+          "tag_id": 100021
+        }
+      ]
+    },
+    {
+      "name": "database save failure rolls back the complete batch:before",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    },
+    {
+      "name": "database save failure rolls back the complete batch:after",
+      "tags": [
+        {
+          "id": 100011,
+          "corp_id": "1",
+          "tag_name": "integrity-foreign-protected",
+          "parent_id": 0
+        },
+        {
+          "id": 100021,
+          "corp_id": "2",
+          "tag_name": "integrity-own",
+          "parent_id": 0
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "port": 49265,
+  "pgVersion": 160013,
+  "testsPassed": true,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "containerId": "9128feb790d10c01a8760ff576304d550323035e07d2cbb722ab2974934fc70c"
+  },
+  "passed": true
+}

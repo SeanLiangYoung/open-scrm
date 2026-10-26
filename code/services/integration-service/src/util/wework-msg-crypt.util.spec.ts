@@ -6,6 +6,8 @@ import {
   encryptWeworkMessage,
   decryptWeworkMessage,
   decodeWeworkAesKey,
+  pkcs7Pad,
+  pkcs7Unpad,
 } from './wework-msg-crypt.util';
 
 describe('verifyWeworkCallbackSignature', () => {
@@ -59,5 +61,27 @@ describe('encryptWeworkMessage / decryptWeworkMessage', () => {
 describe('decodeWeworkAesKey', () => {
   it('throws on invalid key length', () => {
     expect(() => decodeWeworkAesKey('short')).toThrow(/Invalid EncodingAESKey/);
+  });
+});
+
+describe('WeCom protocol padding compatibility', () => {
+  it('decodes an independent 32-byte-padding fixture with a 20-byte suffix', () => {
+    // Tencent reference format: fixed random prefix 0123456789abcdef,
+    // uint32 length, <xml/>, corp ID, then twenty bytes of value 20.
+    const ciphertext = 'Q3stYC6hdFzMh9T8HCvyDBi+USosE2Gv611az/Jxrha7Sqa470+R5XvbkAEPqL9WhPmzJzfMLenZEUWM5fUQWQ==';
+    expect(decryptWeworkMessage(ciphertext, 'abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG', 'wx1234567890abcdef'))
+      .toBe('<xml/>');
+  });
+
+  it('pads an already 32-byte payload with a full protocol block', () => {
+    const padded = pkcs7Pad(Buffer.alloc(32, 1));
+    expect(padded.length).toBe(64);
+    expect(padded.subarray(32)).toEqual(Buffer.alloc(32, 32));
+  });
+
+  it('rejects inconsistent padding bytes instead of just trusting the last byte', () => {
+    const padded = Buffer.alloc(32, 4);
+    padded[30] = 5;
+    expect(() => pkcs7Unpad(padded)).toThrow(/padding/);
   });
 });

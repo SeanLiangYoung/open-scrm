@@ -175,3 +175,16 @@ pnpm build
 - 平台账号管理
 - 渠道活码功能
 
+
+
+## 扫码写入可靠性（2026-10-26）
+
+`/api/v1/acquisition/channel-codes/:id`、`/:id/scan-touches/latest` 与 `/:id/ingest-scan` 的编号须为规范十进制正整数，最大2147483647（对应 PostgreSQL INTEGER）；前导零、小数、指数、尾随字符或越界返回400，不截断。
+
+扫码在 PostgreSQL 同一事务中，以 `{corpId,id}` 锁定活码行，再更新计数、保存可选24小时幂等凭据及归因记录。存在的幂等凭据也在该事务内加写锁并持有至提交，避免TypeORM续期保存期间被过期清理删除；维护清理使用SKIP LOCKED跳过该记录。同活码并发不同事件不丢计数，同企业/活码/`externalEventId` 的重复事件返回 `replayed=true`；不同企业或活码不共用凭据。无 `externalEventId` 的每次成功请求均计数，不能保证客户端网络丢响应后的无凭据重试去重。归因写入失败现在整体回滚并允许重试，不再吞异常后报告部分成功。事件凭据不写入归因占位表，也不改变最近归因查询结果。
+
+既有数据库须先执行 [`2026-10-26-channel-scan-event.pg.sql`](../../../code/scripts/migrations/2026-10-26-channel-scan-event.pg.sql)，可重复执行；新库的 canonical 初始化也包含该表/索引。新 `ChannelScanEventEntity` 由现有 entity glob 自动发现，`synchronize:false` 仍要求初始化/迁移先完成。已有 Redis 去重键不再作为依据；升级切换窗口内，旧实现已接受的事件可能重计一次，需停写切换或在业务端避免重放该窗口，不能声称跨旧/新凭据存储仍有无缝幂等。
+
+24小时以获得活码锁后的数据库时间计算，不延长重复事件的有效期。业务事务提交成功后，以独立 autocommit 最多删除1000条全局过期凭据，使用到期索引与 `SKIP LOCKED`，清理期间不持有活码锁。维护失败记录告警，不能把已提交的计数变成失败响应；此时应重试维护并监控表大小。停止扫码的闲时不会自动清表，可按迁移末尾的有界 DELETE 定时/人工重复至0行，避免过期凭据长期堆积；当前未增加后台调度器。逻辑到期不依赖清理成功。
+
+验证命令与真实结果见 [扫码可靠性验收](../../tests/2026-10-26-channel-scan-reliability.md)：服务单测47项、类型检查、独立PG16十三组通过；该证据没有真实渠道发送、Bootstrap或HTTP验收。

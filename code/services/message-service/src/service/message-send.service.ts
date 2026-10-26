@@ -1,8 +1,9 @@
-import { Provide, Inject, Config } from '@midwayjs/core';
+import { httpError, Provide, Inject, Config } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, In, QueryFailedError } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
+import { requireMessageNumber, requireTemplateNumber } from '../util/message-identity.util';
 import { MessageLogEntity } from '../entity/message-log.entity';
 import { MessageTemplateService } from './message-template.service';
 import { SendMessageDto, BatchSendMessageDto, SendByTemplateDto } from '../dto/send-message.dto';
@@ -37,6 +38,8 @@ export class MessageSendService {
    * 发送单条消息（可选幂等键：仅支持单 target；同 corp + 键重放已有 message_log 结果）
    */
   async sendMessage(corpId: number, dto: SendMessageDto) {
+    await this.assertTemplateReference(corpId, dto.templateId);
+    this.assertChannelAvailable(dto.messageType);
     const idemKey = normalizeIdempotencyKey(dto.idempotencyKey);
     const targetIds = Array.isArray(dto.targetIds) ? dto.targetIds : [dto.targetIds];
 
@@ -48,6 +51,7 @@ export class MessageSendService {
       const existing = await this.messageLogRepository.findOne({
         where: { corpId, idempotencyKey: idemKey },
       });
+      if (existing) this.assertChannelAvailable(existing.messageType);
       const replay = resolveIdempotentReplay(
         corpId,
         idemKey,
@@ -87,6 +91,7 @@ export class MessageSendService {
           const raced = await this.messageLogRepository.findOne({
             where: { corpId, idempotencyKey: idemKey },
           });
+          if (raced) this.assertChannelAvailable(raced.messageType);
           const racedReplay = resolveIdempotentReplay(
             corpId,
             idemKey,
@@ -180,6 +185,8 @@ export class MessageSendService {
    * 批量发送消息
    */
   async batchSendMessage(corpId: number, dto: BatchSendMessageDto) {
+    await this.assertTemplateReference(corpId, dto.templateId);
+    this.assertChannelAvailable(dto.messageType);
     const batchSize = this.messageConfig.batchSize || 100;
     const results = [];
 
@@ -270,68 +277,52 @@ export class MessageSendService {
    * 执行实际的消息发送
    */
   private async doSendMessage(log: MessageLogEntity) {
-    switch (log.messageType) {
-      case 1: // 企业微信消息
-        await this.sendWeworkMessage(log);
-        break;
-      case 2: // 站内通知 (由NotificationService处理)
-        break;
-      case 5: // 出海 Outbound Mock（无外部调用，用于 E2E / 闸门联调）
-        break;
-      case 3: // 短信
-        await this.sendSmsMessage(log);
-        break;
-      case 4: // 邮件
-        await this.sendEmailMessage(log);
-        break;
-      default:
-        throw new Error('不支持的消息类型');
+    this.assertChannelAvailable(log.messageType);
+    // Explicit Mock5 intentionally has no external side effect.
+  }
+
+  assertChannelAvailable(messageType: number) {
+    if (messageType !== 5) {
+      throw new httpError.BadRequestError('消息渠道尚未接通；请使用明确的模拟渠道5，真实站内通知请使用通知接口');
     }
   }
 
-  /**
-   * 发送企业微信消息
-   */
-  private async sendWeworkMessage(log: MessageLogEntity) {
-    // TODO: 调用 integration-service 发送企业微信消息
-    // 这里暂时模拟发送
-    console.log('发送企业微信消息:', log);
-    
-    // 实际应该调用:
-    // const response = await this.httpService.post(
-    //   'http://integration-service:7007/api/wework/message/send',
-    //   {
-    //     targetType: log.targetType,
-    //     targetId: log.targetId,
-    //     content: log.content,
-    //     extra: log.extra,
-    //   }
-    // );
+  private async assertTemplateReference(corpId: number, templateId: unknown) {
+    if (templateId === undefined) return;
+    const id = requireTemplateNumber(templateId);
+    requireMessageNumber(corpId);
+    const template = await this.messageTemplateService.getTemplate(id, corpId);
+    if (!template) throw new httpError.NotFoundError('模板不存在');
+    // Optional references identify provenance only; explicit content/channel remain unchanged.
   }
 
-  /**
-   * 发送短信
-   */
-  private async sendSmsMessage(log: MessageLogEntity) {
-    // TODO: 集成短信服务商
-    console.log('发送短信:', log);
-  }
-
-  /**
-   * 发送邮件
-   */
-  private async sendEmailMessage(log: MessageLogEntity) {
-    // TODO: 集成邮件服务
-    console.log('发送邮件:', log);
+  async assertSendAvailable(corpId: number, dto: SendMessageDto) {
+    await this.assertTemplateReference(corpId, dto.templateId);
+    this.assertChannelAvailable(dto.messageType);
+    const idempotencyKey = normalizeIdempotencyKey(dto.idempotencyKey);
+    if (idempotencyKey !== null) {
+      const existing = await this.messageLogRepository.findOne({
+        where: { corpId, idempotencyKey },
+      });
+      if (existing) this.assertChannelAvailable(existing.messageType);
+    }
   }
 
   /**
    * 重试发送失败的消息
    */
-  async retryFailedMessages(logIds: number | number[]) {
-    const ids = Array.isArray(logIds) ? logIds : [logIds];
+  async retryFailedMessages(corpId: number, logIds: number | number[]) {
+    if (!Number.isSafeInteger(corpId) || corpId <= 0) {
+      throw new httpError.UnauthorizedError('缺少有效企业身份');
+    }
+    const inputIds = Array.isArray(logIds) ? logIds : [logIds];
+    if (inputIds.length < 1 || inputIds.length > 100 ||
+      !inputIds.every(id => Number.isSafeInteger(id) && id > 0)) {
+      throw new httpError.BadRequestError('logIds须为1至100个正安全整数');
+    }
+    const ids = [...new Set(inputIds)];
     const logs = await this.messageLogRepository.find({
-      where: { id: In(ids), sendStatus: 2 },
+      where: { corpId, id: In(ids), sendStatus: 2 },
     });
 
     const results = [];

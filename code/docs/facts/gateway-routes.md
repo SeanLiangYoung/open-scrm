@@ -1,12 +1,13 @@
 # 网关路由事实表（与代码同步）
 
 **事实源**：`code/services/gateway-service/src/config/config.default.ts` 中 `gateway.routes`。  
-代理规则：`targetUrl = route.target + 原始请求 path`（路径不重写）。
+代理规则：默认保留原始path；配置`upstreamPrefix`时仅替换该路由前缀段，后缀（包括原始编号）、query和body保持。匹配边界为整个路径段，近似前缀如`assets-evil`不命中。
 
 | 路径前缀 | 默认上游（环境变量可覆盖） | 默认端口（本机 `mw dev`） |
 |-----------|---------------------------|---------------------------|
 | `/api/v1/auth/*` | `AUTH_SERVICE_URL` | 7001 |
 | `/api/v1/users/*` | `AUTH_SERVICE_URL` | 7001 |
+| `/api/v1/staff`（本企业启用员工只读目录） | `AUTH_SERVICE_URL` | 7001 |
 | `/api/v1/customers/*` | `CUSTOMER_SERVICE_URL` | 7002 |
 | `/api/v1/tags/*` | `CUSTOMER_SERVICE_URL` | 7002 |
 | `/api/v1/follow-ups`、`/api/v1/follow-ups/*` | `CUSTOMER_SERVICE_URL` | 7002 |
@@ -17,7 +18,9 @@
 | `/api/v1/operation/*` | `OPERATION_SERVICE_URL` | 7004 |
 | `/api/sop/*` | `OPERATION_SERVICE_URL` | 7004 |
 | `/api/mass-task/*` | `OPERATION_SERVICE_URL` | 7004 |
-| `/api/v1/assets/*` | `ASSET_SERVICE_URL` | 7005 |
+| `/api/v1/assets/categories/*`（优先，映射到`/api/asset-category/*`） | `ASSET_SERVICE_URL` | 7005 |
+| `/api/v1/assets/*`（映射到`/api/asset/*`） | `ASSET_SERVICE_URL` | 7005 |
+| `/api/asset`、`/api/asset/*`、`/api/asset-category`、`/api/asset-category/*`（受保护兼容入口） | `ASSET_SERVICE_URL` | 7005 |
 | `/api/v1/analytics/*` | `ANALYTICS_SERVICE_URL` | 7006 |
 | `/api/v1/integration/*` | `INTEGRATION_SERVICE_URL` | 7007 |
 | `/api/v1/messages/*` | `MESSAGE_SERVICE_URL` | 7008 |

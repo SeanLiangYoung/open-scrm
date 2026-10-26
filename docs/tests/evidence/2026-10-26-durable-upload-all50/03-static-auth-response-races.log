@@ -1,0 +1,18 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node e2e/check-auth-response-races.cjs
+PASS admin: old tenant protected401 cannot clear a later successful login
+PASS admin: logout/relogin with identical access token still ignores previous-session401
+PASS admin: stale successful login response does not invalidate requests from the winning session
+PASS admin: current-session protected401 still clears token and redirects
+PASS admin: anonymous401 still redirects when current session remains anonymous
+PASS admin: anonymous old401 cannot clear a later login
+PASS admin: login401 is surfaced without redirect or deleting current token
+PASS admin: failed login does not suppress current-session protected401
+PASS operation: old tenant protected401 cannot clear a later successful login
+PASS operation: logout/relogin with identical access token still ignores previous-session401
+PASS operation: stale successful login response does not invalidate requests from the winning session
+PASS operation: current-session protected401 still clears token and redirects
+PASS operation: anonymous401 still redirects when current session remains anonymous
+PASS operation: anonymous old401 cannot clear a later login
+PASS operation: login401 is surfaced without redirect or deleting current token
+PASS operation: failed login does not suppress current-session protected401
+{"scope":"current TS + real Axios/Pinia/Vue; controlled adapters, no network","passed":16,"failed":0}

@@ -1,4 +1,5 @@
-import { Configuration, App } from '@midwayjs/core';
+import { Configuration, App, Inject } from '@midwayjs/core';
+import { SopScheduler } from './service/sop-scheduler.service';
 import * as koa from '@midwayjs/koa';
 import * as validate from '@midwayjs/validate';
 import * as info from '@midwayjs/info';
@@ -21,12 +22,19 @@ import { join } from 'path';
   importConfigs: [join(__dirname, './config')],
 })
 export class MainConfiguration {
+  @Inject()
+  sopScheduler!: SopScheduler;
   @App('koa')
   app!: koa.Application;
 
   async onReady() {
     // 服务启动完成
     console.log('Operation Service is ready');
+    this.sopScheduler.start();
+  }
+
+  async onStop() {
+    await this.sopScheduler.stop();
   }
 }
 

@@ -1,0 +1,271 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-tag-name-concurrency.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tag-name-concurrency-pg-G8mIdc
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tag-name-concurrency-pg-G8mIdc",
+  "scope": "actual PostgreSQL16 and current TypeORM/controller/services; no Bootstrap/build/HTTP",
+  "checks": [
+    {
+      "name": "create/create",
+      "passed": true
+    },
+    {
+      "name": "create/batch",
+      "passed": true
+    },
+    {
+      "name": "rename/create",
+      "passed": true
+    },
+    {
+      "name": "reverse-parent",
+      "passed": true
+    }
+  ],
+  "snapshots": [
+    {
+      "mode": "create/create",
+      "beforeTagCount": 0,
+      "outputs": [
+        {
+          "ok": true,
+          "value": {
+            "corpId": 2,
+            "tagName": "name-race-create-create",
+            "parentId": 0,
+            "tagColor": null,
+            "id": 9,
+            "tagType": 1,
+            "sort": 0,
+            "isAuto": 0,
+            "status": 1,
+            "createTime": "2026-10-26T05:41:45.920Z"
+          }
+        },
+        {
+          "ok": false,
+          "status": 400,
+          "message": "标签名已存在"
+        }
+      ],
+      "rows": [
+        {
+          "id": 9,
+          "corp_id": "2",
+          "tag_name": "name-race-create-create"
+        }
+      ],
+      "trace": [
+        {
+          "actor": 0,
+          "pid": 100,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 0,
+          "event": "saved but not committed"
+        },
+        {
+          "actor": 1,
+          "pid": 101,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 1,
+          "event": "pg_stat_activity confirmed advisory wait",
+          "wait_event_type": "Lock",
+          "wait_event": "advisory",
+          "query": "SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "mode": "create/batch",
+      "beforeTagCount": 0,
+      "outputs": [
+        {
+          "ok": true,
+          "value": {
+            "corpId": 2,
+            "tagName": "name-race-create-batch",
+            "parentId": 0,
+            "tagColor": null,
+            "id": 10,
+            "tagType": 1,
+            "sort": 0,
+            "isAuto": 0,
+            "status": 1,
+            "createTime": "2026-10-26T05:41:45.982Z"
+          }
+        },
+        {
+          "ok": false,
+          "status": 400,
+          "message": "标签名已存在"
+        }
+      ],
+      "rows": [
+        {
+          "id": 10,
+          "corp_id": "2",
+          "tag_name": "name-race-create-batch"
+        }
+      ],
+      "trace": [
+        {
+          "actor": 0,
+          "pid": 102,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 0,
+          "event": "saved but not committed"
+        },
+        {
+          "actor": 1,
+          "pid": 103,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 1,
+          "event": "pg_stat_activity confirmed advisory wait",
+          "wait_event_type": "Lock",
+          "wait_event": "advisory",
+          "query": "SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "mode": "rename/create",
+      "beforeTagCount": 1,
+      "outputs": [
+        {
+          "ok": true,
+          "value": {
+            "id": 200001,
+            "corpId": "2",
+            "tagName": "name-race-rename-create",
+            "tagType": 1,
+            "tagColor": null,
+            "parentId": 0,
+            "sort": 0,
+            "isAuto": 0,
+            "status": 1,
+            "createTime": "2026-10-26T05:41:46.004Z"
+          }
+        },
+        {
+          "ok": false,
+          "status": 400,
+          "message": "标签名已存在"
+        }
+      ],
+      "rows": [
+        {
+          "id": 200001,
+          "corp_id": "2",
+          "tag_name": "name-race-rename-create"
+        }
+      ],
+      "trace": [
+        {
+          "actor": 0,
+          "pid": 104,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 0,
+          "event": "saved but not committed"
+        },
+        {
+          "actor": 1,
+          "pid": 105,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 1,
+          "event": "pg_stat_activity confirmed advisory wait",
+          "wait_event_type": "Lock",
+          "wait_event": "advisory",
+          "query": "SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",
+          "state": "active"
+        }
+      ]
+    },
+    {
+      "mode": "reverse-parent",
+      "beforeTagCount": 2,
+      "outputs": [
+        {
+          "ok": true,
+          "value": {
+            "id": 200011,
+            "corpId": "2",
+            "tagName": "name-race-parent-A",
+            "tagType": 1,
+            "tagColor": null,
+            "parentId": 200012,
+            "sort": 0,
+            "isAuto": 0,
+            "status": 1,
+            "createTime": "2026-10-26T05:41:46.059Z"
+          }
+        },
+        {
+          "ok": false,
+          "status": 400,
+          "message": "父标签不能形成自引用或循环"
+        }
+      ],
+      "rows": [
+        {
+          "id": 200011,
+          "corp_id": "2",
+          "tag_name": "name-race-parent-A",
+          "parent_id": 200012
+        },
+        {
+          "id": 200012,
+          "corp_id": "2",
+          "tag_name": "name-race-parent-B",
+          "parent_id": 0
+        }
+      ],
+      "trace": [
+        {
+          "actor": 0,
+          "pid": 106,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 0,
+          "event": "saved but not committed"
+        },
+        {
+          "actor": 1,
+          "pid": 107,
+          "event": "transaction begun"
+        },
+        {
+          "actor": 1,
+          "event": "pg_stat_activity confirmed advisory wait",
+          "wait_event_type": "Lock",
+          "wait_event": "advisory",
+          "query": "SELECT pg_advisory_xact_lock(hashtextextended($1, 0))",
+          "state": "active"
+        }
+      ]
+    }
+  ],
+  "port": 56535,
+  "pgVersion": 160013,
+  "mode": "post-fix observed advisory wait",
+  "testsPassed": true,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "containerId": "ad0bcf0df9eb474fd8835fa691bea17ddf36b81dea8a7732e7eddfb34149cd84"
+  },
+  "passed": true
+}

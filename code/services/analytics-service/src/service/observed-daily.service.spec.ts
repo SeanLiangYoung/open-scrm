@@ -1,0 +1,4 @@
+import {expect,it,vi} from 'vitest';
+import {ObservedDailyService} from './observed-daily.service';
+it('one parameterized tenant read, no writes',async()=>{const query=vi.fn().mockResolvedValue([]);const s=new ObservedDailyService();Object.assign(s,{dataSource:{query}});const r=await s.read(25,{startDate:'2026-01-01',endDate:'2026-01-02'});expect(query).toHaveBeenCalledTimes(1);const [sql,params]=query.mock.calls[0];expect(sql).toMatch(/corp_id = \$1/);expect(params).toEqual([25,'2026-01-01','2026-01-02']);expect(sql).not.toMatch(/\b(INSERT|UPDATE|DELETE|aggregate)\b/i);expect(r.points).toHaveLength(2);});
+it('invalid date rejected before DB',async()=>{const query=vi.fn();const s=new ObservedDailyService();Object.assign(s,{dataSource:{query}});await expect(s.read(25,{startDate:'bad',endDate:'bad'})).rejects.toThrow();expect(query).not.toHaveBeenCalled();});

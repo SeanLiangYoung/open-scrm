@@ -1,0 +1,20 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config tag-integrity.config.ts
+[2m[WebServer] [22m(node:97036) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:97043) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97043) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/tag-integrity.spec.ts:51:5 › company2 creates with only supported editable fields and no fake identity (834ms)
+  ✓  2 tests/tag-integrity.spec.ts:62:5 › editing preserves type parent order automatic metadata by omitting unchanged fields (707ms)
+  ✓  3 tests/tag-integrity.spec.ts:71:5 › fake unsaved group input is absent and actual existing parent is read only (379ms)
+  ✓  4 tests/tag-integrity.spec.ts:79:5 › update backend rejection preserves draft without reporting success (756ms)
+  ✓  5 tests/tag-integrity.spec.ts:90:5 › unsafe PostgreSQL INTEGER row ID cannot open an edit or send a write (581ms)
+  ✓  6 tests/tag-integrity.spec.ts:103:5 › blank tag name blocks writes before API (1.2s)
+  ✓  7 tests/tag-integrity.spec.ts:114:5 › pending create prevents closing and reopening another draft (716ms)
+  ✓  8 tests/tag-integrity.spec.ts:137:5 › late initial tag list cannot erase the refreshed list after create (840ms)
+
+  8 passed (7.9s)

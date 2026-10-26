@@ -1,5 +1,9 @@
 # 测试脚本说明
 
+当前可重复入口为 `node scripts/test/verify-reliability.cjs --group all --report-dir /tmp/scrm-verification-new`（在code目录执行）。支持static/browser/database/http四组，按当前注册阶段串行，保存JSON清单和逐阶段日志，任何失败或依赖缺失跳过都返回非零。不会自动安装依赖。数据库/HTTP组仅创建专用临时资源；五服务boot显式使用无真实凭据的OSS夹具。参见[统一验收说明](../../tests/2026-10-26-unified-verification-runner.md)及[最新证据](../../tests/2026-10-26-overnight-verification.md)。
+
+`code/scripts/test/full-test.sh` 为每个门禁保留独立日志，并在失败时显示退出码及最后 30 行输出。默认日志位于临时目录 `scrm-full-test.*`；可通过 `TEST_REPORT_DIR=/absolute/path` 指定保存目录。脚本继续运行后续门禁以收集完整结果，有任何失败最终返回非零。
+
 本目录包含SCRM系统的所有测试脚本。
 
 ---
@@ -191,3 +195,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 **最后更新**: 2025-10-28
 
+
+## 素材写入隔离验证
+
+`node code/scripts/test/overnight-asset-write-postgres.cjs`（仓库根目录）使用当前TS、实际TypeORM与自有PG16，验证企业引用、层级、并发使用计数和故障回滚；不需要OSS，结束严格核验容器删除。素材单元已纳入workspace `test:unit`，专属PG已加入CI；远程执行结果另查。

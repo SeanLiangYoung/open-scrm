@@ -1,0 +1,29 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-tenant-login.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-tenant-login-LsyCxt
+Build/start auth-service on free loopback port 52316
+Build/start gateway-service on free loopback port 52317
+{"stage":"isolated-services-ready","pgPort":52165,"redisPort":52242,"ports":{"auth":52316,"gateway":52317,"vite":52318,"unavailable":52319}}
+PASS: tenant login real HTTP4 + Chromium1, PostgreSQL16 scoped/refresh checks, zero messages
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+  id   | corp_id |      username      | is_admin | status | logged_in 
+-------+---------+--------------------+----------+--------+-----------
+ 11001 |    1001 | duplicate_operator |        0 |      1 | t
+ 11002 |    1002 | duplicate_operator |        0 |      1 | t
+ 11003 |    1001 | disabled_operator  |        0 |      0 | f
+ 11004 |    1001 | unique_operator    |        0 |      1 | t
+(4 rows)
+
+ message_count 
+---------------
+             0
+(1 row)
+
+ notification_count 
+--------------------
+                  0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.

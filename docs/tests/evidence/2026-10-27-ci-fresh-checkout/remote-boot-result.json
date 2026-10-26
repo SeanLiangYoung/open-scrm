@@ -1,0 +1,122 @@
+{
+  "artifactDir": "/home/runner/work/_temp/open-scrm-runtime-boot-gvEN2D",
+  "profile": "inert-oss-fixture",
+  "services": [
+    {
+      "name": "acquisition-service",
+      "port": 42175,
+      "build": "pending",
+      "metadata": null,
+      "health": null,
+      "readyRoute": null,
+      "startup": "failed",
+      "error": "git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/acquisition-service/dist failed\n\n",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "integration-service",
+      "port": 36065,
+      "build": "pending",
+      "metadata": null,
+      "health": null,
+      "readyRoute": null,
+      "startup": "failed",
+      "error": "git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/integration-service/dist failed\n\n",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "analytics-service",
+      "port": 37893,
+      "build": "passed",
+      "metadata": {
+        "entities": 3,
+        "columns": 45,
+        "tables": [
+          "channel_stat",
+          "daily_stat",
+          "staff_stat"
+        ]
+      },
+      "health": {
+        "status": 200,
+        "body": {
+          "status": "ok",
+          "service": "analytics-service",
+          "timestamp": "2026-10-26T15:58:11.466Z",
+          "database": "connected"
+        }
+      },
+      "readyRoute": {
+        "status": 200,
+        "implemented": true
+      },
+      "startup": "passed",
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "asset-service",
+      "port": 32867,
+      "build": "pending",
+      "metadata": null,
+      "health": null,
+      "readyRoute": null,
+      "startup": "failed",
+      "error": "git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/asset-service/dist failed\n\n",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "content-generation-service",
+      "port": 42757,
+      "build": "pending",
+      "metadata": null,
+      "health": null,
+      "readyRoute": null,
+      "startup": "failed",
+      "error": "git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/content-generation-service/dist failed\n\n",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    }
+  ],
+  "resources": [
+    {
+      "path": "/guard-self-check"
+    }
+  ],
+  "metadataTotals": {
+    "entities": 3,
+    "columns": 45
+  },
+  "error": "Five-service boot verification incomplete; see individual service states",
+  "testsPassed": false,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "childPids": [
+      30080
+    ],
+    "containerIds": [
+      "247843829bab8faa387cfe3ec9b8a87b4a4f0214367ccba052c113a8327a5bbf",
+      "0af461e1ef100b42536b939b623b324bad382927a2503dffe5f332df192ddf99"
+    ]
+  },
+  "passed": false
+}

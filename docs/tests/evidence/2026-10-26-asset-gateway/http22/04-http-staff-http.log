@@ -1,0 +1,40 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-staff-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-staff-http-5sYwAO
+Build/start auth-service on free loopback port 49549
+Build/start message-service on free loopback port 49550
+Build/start gateway-service on free loopback port 49551
+{"stage":"isolated-services-ready","pgPort":49513,"redisPort":49524,"ports":{"auth":49549,"message":49550,"gateway":49551,"unavailable":49552}}
+PASS: staff gateway HTTP 4 passed, two ordinary company logins, exact public fields and recipient transaction checks
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+        id        | corp_id |    username    |    real_name    | status 
+------------------+---------+----------------+-----------------+--------
+             9205 |     901 | disableda      | 甲停用          |      0
+ 9007199254740993 |     901 | largemember    |                 |      1
+             9204 |     901 | percent%mark   | 甲百分          |      1
+             9211 |     901 | plainalpha     | MixedCASE Label |      1
+             9203 |     901 | shared         | 甲同名员工      |      1
+             9210 |     901 | slash\mark     | 甲反斜线        |      1
+             9201 |     901 | staffoperatora | 甲运营          |      1
+             9209 |     901 | under_mark     | 甲下划线        |      1
+             9208 |     902 | disabledb      | 乙停用          |      0
+             9207 |     902 | percent%mark   | 乙百分          |      1
+             9206 |     902 | shared         | 乙同名员工      |      1
+             9202 |     902 | staffoperatorb | 乙运营          |      1
+(12 rows)
+
+ corp_id | user_id |      title       
+---------+---------+------------------
+     901 |    9201 | staff-http-valid
+     901 |    9203 | staff-http-valid
+     902 |    9202 | staff-http-valid
+(3 rows)
+
+ message_count 
+---------------
+             0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.

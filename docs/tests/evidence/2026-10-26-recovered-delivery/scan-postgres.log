@@ -1,0 +1,572 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-channel-scan-pg-2MNwpF
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-channel-scan-pg-2MNwpF",
+  "scope": "actual current source and PostgreSQL16; no HTTP/Bootstrap/build/provider calls",
+  "checks": [
+    {
+      "name": "migration twice and entity reads",
+      "passed": true
+    },
+    {
+      "name": "30 distinct concurrent events retain every increment",
+      "passed": true
+    },
+    {
+      "name": "20 concurrent duplicate events produce one count and attribution",
+      "passed": true
+    },
+    {
+      "name": "actual counter CHECK failure rolls back receipt and permits retry",
+      "passed": true
+    },
+    {
+      "name": "actual receipt CHECK failure rolls back count and permits retry",
+      "passed": true
+    },
+    {
+      "name": "attribution CHECK failure rolls back all business writes",
+      "passed": true
+    },
+    {
+      "name": "foreign code rejected and identical event names tenant isolated",
+      "passed": true
+    },
+    {
+      "name": "expiry permits new count and garbage collection preserves active receipts",
+      "passed": true
+    },
+    {
+      "name": "bounded expiry cleanup and renewed BIGINT receipt preserve exact identity",
+      "passed": true
+    },
+    {
+      "name": "a waiter crossing receipt expiry uses clock after acquiring the row lock",
+      "passed": true
+    },
+    {
+      "name": "malformed controller paths reject before mutation; valid path remains usable",
+      "passed": true
+    },
+    {
+      "name": "expired receipt renewal survives concurrent global cleanup between TypeORM save SELECT and UPDATE",
+      "passed": true
+    },
+    {
+      "name": "second real connection waits for uncommitted channel lock",
+      "passed": true
+    }
+  ],
+  "snapshots": [
+    {
+      "name": "distinct30",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 30
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-0",
+          "expires_at": "2026-10-27T13:46:43.134Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-4",
+          "expires_at": "2026-10-27T13:46:43.183Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-2",
+          "expires_at": "2026-10-27T13:46:43.196Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-5",
+          "expires_at": "2026-10-27T13:46:43.208Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-1",
+          "expires_at": "2026-10-27T13:46:43.222Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-6",
+          "expires_at": "2026-10-27T13:46:43.234Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-7",
+          "expires_at": "2026-10-27T13:46:43.245Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-8",
+          "expires_at": "2026-10-27T13:46:43.255Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-3",
+          "expires_at": "2026-10-27T13:46:43.264Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-9",
+          "expires_at": "2026-10-27T13:46:43.277Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-10",
+          "expires_at": "2026-10-27T13:46:43.287Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-11",
+          "expires_at": "2026-10-27T13:46:43.296Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-12",
+          "expires_at": "2026-10-27T13:46:43.305Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-13",
+          "expires_at": "2026-10-27T13:46:43.315Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-14",
+          "expires_at": "2026-10-27T13:46:43.324Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-15",
+          "expires_at": "2026-10-27T13:46:43.331Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-16",
+          "expires_at": "2026-10-27T13:46:43.341Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-17",
+          "expires_at": "2026-10-27T13:46:43.349Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-18",
+          "expires_at": "2026-10-27T13:46:43.358Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-19",
+          "expires_at": "2026-10-27T13:46:43.366Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-20",
+          "expires_at": "2026-10-27T13:46:43.376Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-21",
+          "expires_at": "2026-10-27T13:46:43.384Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-22",
+          "expires_at": "2026-10-27T13:46:43.392Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-23",
+          "expires_at": "2026-10-27T13:46:43.401Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-24",
+          "expires_at": "2026-10-27T13:46:43.409Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-25",
+          "expires_at": "2026-10-27T13:46:43.417Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-26",
+          "expires_at": "2026-10-27T13:46:43.425Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-27",
+          "expires_at": "2026-10-27T13:46:43.432Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-28",
+          "expires_at": "2026-10-27T13:46:43.439Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "distinct-29",
+          "expires_at": "2026-10-27T13:46:43.447Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "duplicate20",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "same",
+          "expires_at": "2026-10-27T13:46:43.491Z"
+        }
+      ],
+      "touches": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "utm_campaign": "attribution"
+        }
+      ]
+    },
+    {
+      "name": "counter-failure-retry",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "counter-failure",
+          "expires_at": "2026-10-27T13:46:43.642Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "receipt-failure-retry",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "receipt-failure",
+          "expires_at": "2026-10-27T13:46:43.698Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "touch-failure-retry",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "touch-failure",
+          "expires_at": "2026-10-27T13:46:43.771Z"
+        }
+      ],
+      "touches": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "utm_campaign": "touch-failure"
+        }
+      ]
+    },
+    {
+      "name": "tenant-isolation",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 1
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "shared",
+          "expires_at": "2026-10-27T13:46:43.816Z"
+        },
+        {
+          "corp_id": "3",
+          "channel_code_id": 2,
+          "external_event_id": "shared",
+          "expires_at": "2026-10-27T13:46:43.817Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "expiry",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 2
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "expired",
+          "expires_at": "2026-10-27T13:46:43.874Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "bounded-cleanup-safe-bigint",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "large-id",
+          "expires_at": "2026-10-27T13:46:43.940Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "wait-across-expiry",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 2
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "cross-expiry",
+          "expires_at": "2026-10-27T13:46:44.337Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "paths",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [],
+      "touches": []
+    },
+    {
+      "name": "renewal-versus-cleanup",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 1
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "renew-race",
+          "expires_at": "2026-10-27T13:46:44.419Z"
+        }
+      ],
+      "touches": []
+    },
+    {
+      "name": "actual-lock-wait",
+      "codes": [
+        {
+          "id": 1,
+          "corp_id": "2",
+          "scan_count": 2
+        },
+        {
+          "id": 2,
+          "corp_id": "3",
+          "scan_count": 0
+        }
+      ],
+      "events": [
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "lock-a",
+          "expires_at": "2026-10-27T13:46:44.489Z"
+        },
+        {
+          "corp_id": "2",
+          "channel_code_id": 1,
+          "external_event_id": "lock-b",
+          "expires_at": "2026-10-27T13:46:44.526Z"
+        }
+      ],
+      "touches": []
+    }
+  ],
+  "renewalPausedQuery": "SELECT \"ChannelScanEventEntity\".\"id\" AS \"ChannelScanEventEntity_id\", \"ChannelScanEventEntity\".\"corp_id\" AS \"ChannelScanEventEntity_corp_id\", \"ChannelScanEventEntity\".\"channel_code_id\" AS \"ChannelScanEventEntity_channel_code_id\", \"ChannelScanEventEntity\".\"external_event_id\" AS \"ChannelScanEventEntity_external_event_id\", \"ChannelScanEventEntity\".\"expires_at\" AS \"ChannelScanEventEntity_expires_at\" FROM \"channel_scan_event\" \"ChannelScanEventEntity\" WHERE \"ChannelScanEventEntity\".\"id\" IN ($1)",
+  "renewalCleanupRace": {
+    "deleted": [
+      [],
+      0
+    ],
+    "first": {
+      "scanCount": 1,
+      "replayed": false
+    },
+    "receiptsAfterCommit": [
+      {
+        "external_event_id": "renew-race"
+      }
+    ],
+    "retry": {
+      "scanCount": 1,
+      "replayed": true
+    }
+  },
+  "lockWait": {
+    "wait_event_type": "Lock",
+    "wait_event": "transactionid",
+    "query": "SELECT \"ChannelCodeEntity\".\"id\" AS \"ChannelCodeEntity_id\", \"ChannelCodeEntity\".\"corp_id\" AS \"ChannelCodeEntity_corp_id\", \"ChannelCodeEntity\".\"code_name\" AS \"ChannelCodeEntity_code_name\", \"ChannelCodeEntity\".\"channel\" AS \"ChannelCodeEntity_channel\", \"ChannelCodeEntity\".\"qr_code_url\" AS \"ChannelCodeEntity_qr_code_url\", \"ChannelCodeEntity\".\"config_id\" AS \"ChannelCodeEntity_config_id\", \"ChannelCodeEntity\".\"staff_ids\" AS \"ChannelCodeEntity_staff_ids\", \"ChannelCodeEntity\".\"welcome_msg\" AS \"ChannelCodeEntity_welcome_msg\", \"ChannelCodeEntity\".\"auto_tag_ids\" AS \"ChannelCodeEntity_auto_tag_ids\", \"ChannelCodeEntity\".\"scan_count\" AS \"ChannelCodeEntity_scan_count\", \"ChannelCodeEntity\".\"add_count\" AS \"ChannelCodeEntity_add_count\", \"ChannelCodeEntity\".\"status\" AS \"ChannelCodeEntity_status\", \"ChannelCodeEntity\".\"create_time\" AS \"ChannelCodeEntity_create_time\", \"ChannelCodeEntity\".\"update_time\" AS \"ChannelCodeEntity_update_time\" FROM \"channel_code\" \"ChannelCodeEntity\" WHERE ((\"ChannelCodeEntity\".\"corp_id\" = $1) AND (\"Channel"
+  },
+  "cleanup": {
+    "passed": true,
+    "ownedContainerAbsent": true,
+    "noOwnedContainer": false,
+    "errors": []
+  },
+  "passed": true
+}

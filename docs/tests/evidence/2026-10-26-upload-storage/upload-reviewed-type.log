@@ -1,0 +1,4 @@
+
+> @scrm/asset-service@1.0.0 type-check /Users/seanliang/projects/open-scrm/code/services/asset-service
+> tsc --noEmit
+

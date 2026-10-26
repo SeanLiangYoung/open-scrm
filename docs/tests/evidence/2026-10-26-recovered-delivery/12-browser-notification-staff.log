@@ -1,0 +1,30 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config notification-staff.config.ts
+[2m[WebServer] [22m(node:95900) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 1 worker
+
+(node:95907) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95907) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/notification-staff.spec.ts:73:5 › empty selection never sends to a fabricated default employee (859ms)
+  ✓   2 tests/notification-staff.spec.ts:84:5 › directory colleague submits exact safe array and no fake identity (1.2s)
+  ✓   3 tests/notification-staff.spec.ts:103:5 › directory duplicates and explicit self selection deduplicate numeric recipients (1.7s)
+  ✓   4 tests/notification-staff.spec.ts:121:5 › unsafe directory IDs cannot be selected or produce writes (1.1s)
+  ✓   5 tests/notification-staff.spec.ts:136:5 › search failure preserves selected employee and editable draft (1.2s)
+  ✓   6 tests/notification-staff.spec.ts:149:5 › backend disabled-recipient rejection preserves selection and draft (1.3s)
+  ✓   7 tests/notification-staff.spec.ts:166:5 › successful send resets draft and leaves next dialog without selected recipients (1.6s)
+  ✓   8 tests/notification-staff.spec.ts:180:5 › whitespace-only title blocks writes even with a selected employee (1.2s)
+  ✓   9 tests/notification-staff.spec.ts:191:5 › marking read refreshes list and unread count using existing endpoints (660ms)
+  ✓  10 tests/notification-staff.spec.ts:203:5 › whitespace-only content blocks writes with recipients selected (1.1s)
+  ✓  11 tests/notification-staff.spec.ts:219:5 › failed unread refresh preserves last known count and displays an error (761ms)
+  ✓  12 tests/notification-staff.spec.ts:229:5 › unsafe notification row IDs cannot produce rounded mark-read writes (678ms)
+  ✓  13 tests/notification-staff.spec.ts:264:7 › pending send locks draft and blocks cancel/reopen until success response (1.5s)
+  ✓  14 tests/notification-staff.spec.ts:264:7 › pending send locks draft and blocks cancel/reopen until error response (1.3s)
+  ✓  15 tests/notification-staff.spec.ts:328:7 › older list success cannot overwrite a newer post-send refresh (1.6s)
+  ✓  16 tests/notification-staff.spec.ts:328:7 › older list failure cannot overwrite a newer post-send refresh (1.6s)
+  ✓  17 tests/notification-staff.spec.ts:376:7 › older unread-count success cannot undo a newer mark-read refresh (790ms)
+  ✓  18 tests/notification-staff.spec.ts:376:7 › older unread-count failure cannot undo a newer mark-read refresh (725ms)
+
+  18 passed (22.3s)

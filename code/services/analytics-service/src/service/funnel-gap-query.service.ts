@@ -64,6 +64,9 @@ export class FunnelGapQueryService {
         (
           SELECT COUNT(DISTINCT m.target_id)::int
           FROM message_log m
+          INNER JOIN customer attributed_customer
+            ON attributed_customer.id = m.target_id
+            AND attributed_customer.corp_id = $1
           WHERE m.corp_id = $1
             AND m.target_type = 1
             AND m.send_status = 1

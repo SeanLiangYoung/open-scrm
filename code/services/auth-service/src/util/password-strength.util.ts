@@ -11,7 +11,7 @@ export function checkPasswordStrength(password: string): {
   if (!strongPasswordRegex.test(password)) {
     return {
       isValid: false,
-      message: '密码至少8位，需包含大小写字母、数字和特殊字符',
+      message: '密码至少8位，需包含大小写字母、数字和特殊字符'
     };
   }
 

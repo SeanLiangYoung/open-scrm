@@ -43,7 +43,9 @@ curl -s http://127.0.0.1:7000/api/v1/integration/health
 经网关（与生产一致）：
 
 - **GET** `…/api/v1/integration/wework/callback?msg_signature=…&timestamp=…&nonce=…&echostr=…`：URL 验证；成功时响应体为**解密后的明文**（`text/plain`）。
-- **POST** `…/api/v1/integration/wework/callback`，`Content-Type: text/xml`：推送消息体；验签 + 解密成功后响应 **`success`**（明文，便于本地/E2E；生产可再改为加密回包）。
+- **POST** `…/api/v1/integration/wework/callback?msg_signature=…&timestamp=…&nonce=…`，`Content-Type: text/xml`：XML 包含 `Encrypt` 密文；验签 + 解密成功后响应 **`success`**。签名参数来自 URL，不从回复 XML 模板取值。
+
+2026-10-25：按企微团队公开参考实现修正 **32 字节协议填充**，增加独立固定密文向量（20 字节填充）及 POST query 参数测试。此项只验证协议兼容，尚无真实企微账号验证，也没有把明文事件分发到客户、渠道或 SOP；不能将回调 `success` 当成业务链路已跑通。
 
 数据库需存在一条启用的 `wework_config`，且 **`callback_token`、`encoding_aes_key` 与 `corp_id`** 与加解密向量一致。新数据卷执行 `init-db.pg.sql` 时会插入 **Sprint 2 开发用种子行**（corp_id=`wx1234567890abcdef`）。若你使用**旧数据卷**且表为空，可手动执行：
 

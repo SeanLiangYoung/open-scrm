@@ -1,0 +1,5 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-sop-create-postgres.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-sop-create-pg-V6lK1f
+{"stage":"controlled-step-failure","driverError":"23514","parentCount":0,"childCount":0}
+PASS atomic source+PG 6 checks plus original batch5
+Owned PostgreSQL removed and absence confirmed.

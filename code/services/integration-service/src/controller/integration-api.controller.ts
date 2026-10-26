@@ -157,13 +157,12 @@ export class IntegrationApiController {
     }
 
     const encrypt = extractXmlField(xml, 'Encrypt');
-    const timestamp = extractXmlField(xml, 'TimeStamp');
-    const nonce = extractXmlField(xml, 'Nonce');
-    const msgSig = extractXmlField(xml, 'MsgSignature');
+    const { timestamp, nonce, msg_signature: msgSig } = this.ctx.query;
 
-    if (!encrypt || !timestamp || !nonce || !msgSig) {
+    if (!encrypt || typeof timestamp !== 'string' || !timestamp ||
+        typeof nonce !== 'string' || !nonce || typeof msgSig !== 'string' || !msgSig) {
       this.ctx.status = 400;
-      return { success: false, message: 'XML 缺少 Encrypt / TimeStamp / Nonce / MsgSignature' };
+      return { success: false, message: '需要 XML Encrypt 及 query msg_signature / timestamp / nonce' };
     }
 
     const ok = this.weworkApiService.verifyCallbackMsgSignature(msgSig, timestamp, nonce, encrypt, config.callbackToken);

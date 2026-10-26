@@ -1,0 +1,39 @@
+bash scripts/test/overnight-customer-postgres.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+NOTICE:  relation "customer_follow_up" already exists, skipping
+NOTICE:  relation "idx_customer_follow_up_corp_customer_time" already exists, skipping
+NOTICE:  relation "customer_follow_up" already exists, skipping
+NOTICE:  relation "idx_customer_follow_up_corp_customer_time" already exists, skipping
+{
+  "scope": "PostgreSQL16 + TypeORM + controller (no HTTP/gateway)",
+  "passed": 24,
+  "followUpRows": 4,
+  "customerFixtureRows": 2,
+  "checks": [
+    "PostgreSQL major version 16",
+    "follow-up schema after init plus two migrations",
+    "forged body identities ignored; null time and default type persist",
+    "valid time and follow type persist through PostgreSQL",
+    "other tenant writes its own customer",
+    "list filters tenant even for inconsistent legacy customer key",
+    "pagination returns requested size and total",
+    "cross-tenant write returns 404",
+    "cross-tenant list returns 404",
+    "reverse cross-tenant list returns 404",
+    "missing customer returns 404",
+    "missing identity returns 401",
+    "verified context fallback lists owned records",
+    "null body returns 400",
+    "array body returns 400",
+    "empty content returns 400",
+    "object content returns 400",
+    "invalid type returns 400",
+    "invalid date returns 400",
+    "ambiguous ID returns 400",
+    "array ID returns 400",
+    "oversize page returns 400",
+    "unsafe offset returns 400",
+    "rejected requests leave exact follow-up row count unchanged"
+  ]
+}

@@ -1,0 +1,35 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run "src/service/asset-upload-recovery.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/service/asset-upload-recovery.spec.ts (10 tests | 1 failed) 43ms
+   × accepts the actual Midway file-mode data path and cleans it 9ms
+     → promise rejected "TypeError: The "path" argument must be of… { code: '…' }" instead of resolving
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > accepts the actual Midway file-mode data path and cleans it
+AssertionError: promise rejected "TypeError: The "path" argument must be of… { code: '…' }" instead of resolving
+ ❯ src/service/asset-upload-recovery.spec.ts:63:151
+
+
+Caused by: TypeError: The "path" argument must be of type string or an instance of Buffer or URL. Received undefined
+ ❯ AssetService.uploadAsset src/service/asset.service.ts:62:14
+ ❯ src/service/asset-upload-recovery.spec.ts:63:43
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: 'ERR_INVALID_ARG_TYPE' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  23:19:38
+   Duration  845ms (transform 77ms, setup 0ms, collect 411ms, tests 43ms, environment 0ms, prepare 81ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run "src/service/asset-upload-recovery.spec.ts"`
+Exit status 1

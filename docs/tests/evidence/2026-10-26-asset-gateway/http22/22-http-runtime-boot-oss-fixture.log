@@ -1,0 +1,72 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-runtime-boot.cjs --oss-fixture
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-runtime-boot-NtnggB
+Clean build/start acquisition-service 55638
+Clean build/start integration-service 55639
+Clean build/start analytics-service 55640
+Clean build/start asset-service 55641
+Clean build/start content-generation-service 55642
+{
+  "profile": "inert-oss-fixture",
+  "metadataTotals": {
+    "entities": 17,
+    "columns": 200
+  },
+  "services": [
+    {
+      "name": "acquisition-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "integration-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "analytics-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "asset-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "content-generation-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 404,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    }
+  ]
+}
+Verified owned processes stopped and disposable containers absent.

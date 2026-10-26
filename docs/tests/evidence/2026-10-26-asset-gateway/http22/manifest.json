@@ -1,0 +1,364 @@
+{
+  "startedAt": "2026-10-26T14:54:29.271Z",
+  "stages": [
+    {
+      "id": "customer-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-customer-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/01-http-customer-http.log",
+      "startedAt": "2026-10-26T14:54:29.272Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 15541
+    },
+    {
+      "id": "consent-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-consent-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/02-http-consent-http.log",
+      "startedAt": "2026-10-26T14:54:44.814Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 15047
+    },
+    {
+      "id": "operation-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-operation-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/03-http-operation-http.log",
+      "startedAt": "2026-10-26T14:54:59.862Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 18674
+    },
+    {
+      "id": "staff-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-staff-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/04-http-staff-http.log",
+      "startedAt": "2026-10-26T14:55:18.537Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 15487
+    },
+    {
+      "id": "message-retry-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-message-retry-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/05-http-message-retry-http.log",
+      "startedAt": "2026-10-26T14:55:34.025Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 11828
+    },
+    {
+      "id": "message-capability-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-message-capability-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/06-http-message-capability-http.log",
+      "startedAt": "2026-10-26T14:55:45.854Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 14712
+    },
+    {
+      "id": "analytics-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-analytics-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/07-http-analytics-http.log",
+      "startedAt": "2026-10-26T14:56:00.566Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 21591
+    },
+    {
+      "id": "customer-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-customer-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/08-http-customer-ui.log",
+      "startedAt": "2026-10-26T14:56:22.158Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 22701
+    },
+    {
+      "id": "tenant-login",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-tenant-login.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/09-http-tenant-login.log",
+      "startedAt": "2026-10-26T14:56:44.859Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 22721
+    },
+    {
+      "id": "notification-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-notification-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/10-http-notification-ui.log",
+      "startedAt": "2026-10-26T14:57:07.580Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 20384
+    },
+    {
+      "id": "message-logs-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-message-logs-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/11-http-message-logs-ui.log",
+      "startedAt": "2026-10-26T14:57:27.964Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 18344
+    },
+    {
+      "id": "customer-consent-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-customer-consent-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/12-http-customer-consent-ui.log",
+      "startedAt": "2026-10-26T14:57:46.309Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 22339
+    },
+    {
+      "id": "notification-history-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-notification-history-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/13-http-notification-history-ui.log",
+      "startedAt": "2026-10-26T14:58:08.648Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 20554
+    },
+    {
+      "id": "consent-read-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-consent-read-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/14-http-consent-read-http.log",
+      "startedAt": "2026-10-26T14:58:29.202Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 12417
+    },
+    {
+      "id": "consent-read-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-consent-read-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/15-http-consent-read-ui.log",
+      "startedAt": "2026-10-26T14:58:41.620Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 33929
+    },
+    {
+      "id": "observed-dashboard-ui",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-observed-dashboard-ui.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/16-http-observed-dashboard-ui.log",
+      "startedAt": "2026-10-26T14:59:15.549Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 19889
+    },
+    {
+      "id": "tag-integrity-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-tag-integrity-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/17-http-tag-integrity-http.log",
+      "startedAt": "2026-10-26T14:59:35.438Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 19837
+    },
+    {
+      "id": "message-template-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-message-template-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/18-http-message-template-http.log",
+      "startedAt": "2026-10-26T14:59:55.276Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 12844
+    },
+    {
+      "id": "sop-action-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-sop-action-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/19-http-sop-action-http.log",
+      "startedAt": "2026-10-26T15:00:08.121Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 25094
+    },
+    {
+      "id": "notification-identifiers-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-notification-identifiers-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/20-http-notification-identifiers-http.log",
+      "startedAt": "2026-10-26T15:00:33.215Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 13290
+    },
+    {
+      "id": "customer-input-http",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-customer-input-http.cjs"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/21-http-customer-input-http.log",
+      "startedAt": "2026-10-26T15:00:46.506Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 13752
+    },
+    {
+      "id": "runtime-boot-oss-fixture",
+      "group": "http",
+      "command": "/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node",
+      "args": [
+        "scripts/test/overnight-runtime-boot.cjs",
+        "--oss-fixture"
+      ],
+      "cwd": "/Users/seanliang/projects/open-scrm/code",
+      "log": "/tmp/open-scrm-after-asset-http22/22-http-runtime-boot-oss-fixture.log",
+      "startedAt": "2026-10-26T15:01:00.258Z",
+      "exitCode": 0,
+      "signal": null,
+      "status": "passed",
+      "durationMs": 30747
+    }
+  ],
+  "passed": [
+    "customer-http",
+    "consent-http",
+    "operation-http",
+    "staff-http",
+    "message-retry-http",
+    "message-capability-http",
+    "analytics-http",
+    "customer-ui",
+    "tenant-login",
+    "notification-ui",
+    "message-logs-ui",
+    "customer-consent-ui",
+    "notification-history-ui",
+    "consent-read-http",
+    "consent-read-ui",
+    "observed-dashboard-ui",
+    "tag-integrity-http",
+    "message-template-http",
+    "sop-action-http",
+    "notification-identifiers-http",
+    "customer-input-http",
+    "runtime-boot-oss-fixture"
+  ],
+  "failed": [],
+  "skipped": [],
+  "exitCode": 0,
+  "finishedAt": "2026-10-26T15:01:31.006Z"
+}

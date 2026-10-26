@@ -1,0 +1,33 @@
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-write-pg-98GQ9g",
+  "checks": [
+    "PG16 actual metadata and BIGINT safeMAX lookup",
+    "invalid asset/category paths reject before SQL updates",
+    "foreign and missing categories reject without changing local asset",
+    "valid category update preserves omitted name and foreign target rejects",
+    "foreign parent and hierarchy cycles reject atomically",
+    "root creation and local parent update work",
+    "referenced categories refuse deletion while empty category can be deleted",
+    "foreign/missing usage does not persist orphan rows",
+    "30 concurrent usage writes preserve exact count and receipts",
+    "usage insert failure rolls back with count unchanged",
+    "counter failure rolls back newly inserted usage",
+    "concurrent opposite parent changes cannot commit a cycle",
+    "category deletion blocks concurrent reassignment then rejects without orphan"
+  ],
+  "passed": true,
+  "pgPort": 58018,
+  "categoryDeleteRace": "observed FOR SHARE wait, 400 after deletion commits, original category32 preserved",
+  "externalAttempts": 0,
+  "checkCount": 13,
+  "finalUsage": {
+    "use_count": 30,
+    "receipts": 30
+  },
+  "testsPassed": true,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "containerId": "c99ef9a954a85e32af9d15ee0952bf85f5c8e99f2ca2fb43b448f30ae4ca04ed"
+  }
+}

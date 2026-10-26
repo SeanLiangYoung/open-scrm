@@ -9,7 +9,7 @@ export class HealthController {
       status: 'ok',
       timestamp: new Date().toISOString(),
       service: 'gateway-service',
-      version: '1.0.0',
+      version: '1.0.0'
     };
   }
 }
@@ -25,10 +25,7 @@ export class HealthCheckProxyController {
       return { status: 'error', message: 'Invalid port' };
     }
     try {
-      const res = await this.httpService.get(
-        `http://localhost:${port}/health`,
-        { timeout: 3000 }
-      );
+      const res = await this.httpService.get(`http://localhost:${port}/health`, { timeout: 3000 });
       return res.data;
     } catch {
       return { status: 'down', port: Number(port) };

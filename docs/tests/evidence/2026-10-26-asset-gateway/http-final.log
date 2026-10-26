@@ -1,0 +1,18 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-gateway-http-7FgY49
+Build/start auth-service on free loopback port 63691
+Build/start asset-service on free loopback port 63692
+Build/start gateway-service on free loopback port 63693
+{"stage":"isolated-services-ready","pgPort":63675,"redisPort":63678,"ports":{"auth":63691,"asset":63692,"gateway":63693}}
+PASS asset and category entry points require access JWT
+PASS v1 and legacy detail routes use path IDs, not forged query IDs
+PASS safe MAX BIGINT detail remains exact through gateway
+PASS category routes take precedence and preserve tenant filtering
+PASS gateway replaces forged tenant headers
+PASS malformed paths400 preserve local row, category overflow400
+PASS foreign categories400 and malformed JSON references422 without writes
+PASS legitimate category filtering update and creation work
+PASS foreign parent and cyclic hierarchy rejected via actual DTO/controller
+PASS foreign usage404 leaves zero usage, concurrent ten usage requests count exactly ten
+PASS actual counter failure500 rolls back usage insertion
+PASS referenced category deletion400 and unrelated prefix404
+Verified: owned service processes exited and disposable containers are absent.

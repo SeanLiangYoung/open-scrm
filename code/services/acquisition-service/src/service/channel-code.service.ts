@@ -3,7 +3,7 @@ import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
 import { Context } from '@midwayjs/koa';
 import { HttpService } from '@midwayjs/axios';
-import { RedisService } from '@midwayjs/redis';
+import { ChannelScanEventEntity } from '../entity/channel-scan-event.entity';
 import { ChannelCodeEntity } from '../entity/channel-code.entity';
 import { ChannelScanTouchEntity } from '../entity/channel-scan-touch.entity';
 import { CreateChannelCodeDto, QueryChannelCodeDto, IngestChannelScanDto } from '../dto/channel-code.dto';
@@ -26,9 +26,6 @@ export class ChannelCodeService {
 
   @Inject()
   httpService!: HttpService;
-
-  @Inject()
-  redisService!: RedisService;
 
   @Config('acquisition.services')
   servicesConfig: any;
@@ -55,52 +52,74 @@ export class ChannelCodeService {
     return this.codeRepository.findOne({ where: { id, corpId } });
   }
 
-  /**
-   * 扫码 +1；若提供 externalEventId 且 Redis 已存在键则返回 replayed=true 不再自增。
-   * 可选归因字段写入 `channel_scan_touch`（失败不影响 scan_count）。
-   */
+  /** Counter, durable 24-hour receipt and optional attribution commit together. */
   async recordScanEvent(
     corpId: number,
     id: number,
     dto: IngestChannelScanDto = {}
   ): Promise<{ scanCount: number; replayed: boolean }> {
-    const externalEventId = dto.externalEventId;
-    const code = await this.getById(corpId, id);
-    if (!code) {
-      throw new Error('活码不存在');
-    }
-    if (externalEventId) {
-      const dedupeKey = `acq:chscan:${corpId}:${id}:${externalEventId}`;
-      const existed = await this.redisService.get(dedupeKey);
-      if (existed) {
-        const latest = await this.getById(corpId, id);
-        return { scanCount: latest?.scanCount ?? code.scanCount, replayed: true };
-      }
-      await this.redisService.set(dedupeKey, '1', 'EX', 86400);
-    }
-    code.scanCount = (code.scanCount || 0) + 1;
-    await this.codeRepository.save(code);
+    const result = await this.codeRepository.manager.transaction(async manager => {
+      const codes = manager.getRepository(ChannelCodeEntity);
+      const code = await codes.findOne({
+        where: { corpId, id },
+        lock: { mode: 'pessimistic_write' },
+      });
+      if (!code) throw new Error('活码不存在');
 
-    if (hasAttributionFields(dto)) {
-      try {
+      // Use database time after acquiring the row lock, including requests that waited.
+      const [{ now }] = await manager.query('SELECT clock_timestamp() AS now');
+      const currentTime = new Date(now);
+      const events = manager.getRepository(ChannelScanEventEntity);
+      const event = dto.externalEventId ? await events.findOne({
+        where: { corpId, channelCodeId: id, externalEventId: dto.externalEventId },
+        // Keep an expired receipt alive through TypeORM save's SELECT/UPDATE.
+        // Concurrent expiry cleanup uses SKIP LOCKED and must skip this row.
+        lock: { mode: 'pessimistic_write' },
+      }) : null;
+      if (event && event.expiresAt.getTime() > currentTime.getTime()) {
+        return { scanCount: code.scanCount, replayed: true };
+      }
+
+      code.scanCount = (code.scanCount || 0) + 1;
+      await codes.save(code);
+      if (dto.externalEventId) {
+        await events.save(events.create({
+          ...(event ? { id: event.id } : {}),
+          corpId,
+          channelCodeId: id,
+          externalEventId: dto.externalEventId,
+          expiresAt: new Date(currentTime.getTime() + 86400000),
+        }));
+      }
+      if (hasAttributionFields(dto)) {
+        const touches = manager.getRepository(ChannelScanTouchEntity);
         const payload: Record<string, unknown> = {};
         if (dto.utm_source) payload.utm_source = dto.utm_source;
         if (dto.utm_medium) payload.utm_medium = dto.utm_medium;
-        const row = this.scanTouchRepository.create({
+        await touches.save(touches.create({
           corpId,
           channelCodeId: id,
           utmCampaign: dto.utm_campaign ?? null,
           creativeId: dto.creative_id ?? null,
           regionPackId: dto.region_pack_id ?? null,
           payload: Object.keys(payload).length ? payload : null,
-        });
-        await this.scanTouchRepository.save(row);
-      } catch (e) {
-        console.error('channel_scan_touch 写入失败（已计入 scan）:', e);
+        }));
       }
+      return { scanCount: code.scanCount, replayed: false };
+    });
+    // Reclaim only after commit, without holding channel locks: global cleanup must
+    // not lock another channel's receipt while that transaction needs ours.
+    try {
+      await this.codeRepository.manager.query(`DELETE FROM channel_scan_event WHERE id IN (
+        SELECT id FROM channel_scan_event WHERE expires_at <= clock_timestamp()
+        ORDER BY expires_at LIMIT 1000 FOR UPDATE SKIP LOCKED
+      )`);
+    } catch (error) {
+      // The business transaction already committed; a maintenance error must not
+      // turn that success into a retryable failure (especially event-less scans).
+      console.error('扫码去重凭据清理失败，需重试维护清理:', error);
     }
-
-    return { scanCount: code.scanCount, replayed: false };
+    return result;
   }
 
   async getLatestScanTouch(

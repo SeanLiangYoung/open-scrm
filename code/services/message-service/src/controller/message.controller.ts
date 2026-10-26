@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Del, Body, Param, Query, Inject } from '@midwayjs/core';
+import { httpError, Controller, Post, Get, Put, Del, Body, Param, Query, Inject } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { MessageTemplateService } from '../service/message-template.service';
@@ -16,6 +16,8 @@ import {
 } from '../dto/send-message.dto';
 import { QueryMessageLogDto, RetryMessageDto } from '../dto/message-log.dto';
 import { getTenantContext } from '@scrm/server-common';
+import { parseMessagePathId, parseTemplatePathId } from '../util/message-identity.util';
+import { TemplateReferenceInputMiddleware } from '../middleware/template-reference-input.middleware';
 
 /**
  * 消息控制器
@@ -58,7 +60,7 @@ export class MessageController {
   async updateTemplate(@Param('id') id: string, @Body() dto: UpdateMessageTemplateDto) {
     const { corpId } = getTenantContext(this.ctx);
 
-    const template = await this.messageTemplateService.updateTemplate(parseInt(id), corpId, dto);
+    const template = await this.messageTemplateService.updateTemplate(parseTemplatePathId(id), corpId, dto);
     return {
       success: true,
       data: template,
@@ -73,7 +75,7 @@ export class MessageController {
   async deleteTemplate(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    await this.messageTemplateService.deleteTemplate(parseInt(id), corpId);
+    await this.messageTemplateService.deleteTemplate(parseTemplatePathId(id), corpId);
     return {
       success: true,
       message: '模板删除成功',
@@ -87,7 +89,7 @@ export class MessageController {
   async getTemplate(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    const template = await this.messageTemplateService.getTemplate(parseInt(id), corpId);
+    const template = await this.messageTemplateService.getTemplate(parseTemplatePathId(id), corpId);
     return {
       success: true,
       data: template,
@@ -112,7 +114,7 @@ export class MessageController {
   /**
    * 发送消息
    */
-  @Post('/send')
+  @Post('/send', { middleware: [TemplateReferenceInputMiddleware] })
   @Validate()
   async sendMessage(@Body() dto: SendMessageDto) {
     const { corpId } = getTenantContext(this.ctx);
@@ -128,7 +130,7 @@ export class MessageController {
   /**
    * 批量发送消息
    */
-  @Post('/send/batch')
+  @Post('/send/batch', { middleware: [TemplateReferenceInputMiddleware] })
   @Validate()
   async batchSendMessage(@Body() dto: BatchSendMessageDto) {
     const { corpId } = getTenantContext(this.ctx);
@@ -161,9 +163,16 @@ export class MessageController {
    * 重试发送
    */
   @Post('/retry')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async retryMessage(@Body() dto: RetryMessageDto) {
-    const result = await this.messageSendService.retryFailedMessages(dto.logIds);
+    const header = this.ctx.get('x-corp-id');
+    const identity = header
+      ? { corpId: header, userId: this.ctx.get('x-user-id') }
+      : this.ctx.state?.user;
+    if (!identity || ![identity.corpId, identity.userId].every(value =>
+      ['number', 'string'].includes(typeof value) && /^[1-9]\d*$/.test(String(value)) && Number.isSafeInteger(Number(value))
+    )) throw new httpError.UnauthorizedError('缺少有效企业与操作者身份，请通过网关访问');
+    const result = await this.messageSendService.retryFailedMessages(Number(identity.corpId), dto.logIds);
     return {
       success: true,
       data: result,
@@ -193,7 +202,7 @@ export class MessageController {
   async getLog(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    const log = await this.messageLogService.getLog(parseInt(id), corpId);
+    const log = await this.messageLogService.getLog(parseMessagePathId(id), corpId);
     return {
       success: true,
       data: log,

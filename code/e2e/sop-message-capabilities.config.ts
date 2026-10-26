@@ -1,0 +1,9 @@
+import { defineConfig } from '@playwright/test';
+import { resolve } from 'node:path';
+export default defineConfig({
+  testDir: './tests', testMatch: 'sop-message-capabilities.spec.ts', timeout: 15_000, workers: 1, reporter: 'list',
+  outputDir: './test-results/sop-message-capabilities',
+  use: { baseURL: 'http://127.0.0.1:3111', headless: true, trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+  webServer: { command: './node_modules/.bin/vite --host 127.0.0.1 --port 3111 --strictPort',
+    cwd: resolve(__dirname, '../apps/operation-platform'), url: 'http://127.0.0.1:3111', reuseExistingServer: false, timeout: 30_000 },
+});

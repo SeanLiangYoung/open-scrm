@@ -26,10 +26,10 @@ test.describe('Sprint 3 — message-service 经网关（幂等 + 查状态）', 
     const token = await loginAccessToken(request);
 
     const sendBody = {
-      messageType: 2,
+      messageType: 5,
       targetType: 2,
       targetIds: [1],
-      content: 'Sprint3 E2E 站内通知（Mock 通道，无外部副作用）',
+      content: 'Sprint3 E2E 显式Mock模拟（无外部副作用）',
     };
 
     const key = idemKey();

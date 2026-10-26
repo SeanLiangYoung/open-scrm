@@ -32,9 +32,9 @@ pnpm test:e2e:sprint3
 
 ## 4. API 速查（经网关）
 
-- **发送**：`POST /api/v1/messages/send`  
-  - Header：`Authorization: Bearer <accessToken>`，可选 `Idempotency-Key: <128 字符内>`  
-  - Body：`messageType`（E2E 用 `2` 为 Mock 通道）、`targetType`、`targetIds`（**使用幂等键时仅 1 个**）、`content`  
+- **发送**：`POST /api/v1/messages/send`
+  - Header：`Authorization: Bearer <accessToken>`，可选 `Idempotency-Key: <128 字符内>`
+  - Body：`messageType`（E2E 用显式 `5` 为 Mock 模拟渠道，不会真实送达）、`targetType`、`targetIds`（**使用幂等键时仅 1 个**）、`content`
 - **查状态**：`GET /api/v1/messages/logs/:id`（同上 Bearer；仅本企业日志）
 
 ## 5. 旧库缺列时

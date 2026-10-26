@@ -1,0 +1,59 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-gateway-http-xXUrxK
+Build/start auth-service on free loopback port 62867
+Build/start asset-service on free loopback port 62868
+Build/start gateway-service on free loopback port 62869
+{"stage":"isolated-services-ready","pgPort":62837,"redisPort":62842,"ports":{"auth":62867,"asset":62868,"gateway":62869}}
+PASS asset and category entry points require access JWT
+PASS v1 and legacy detail routes use path IDs, not forged query IDs
+PASS safe MAX BIGINT detail remains exact through gateway
+PASS category routes take precedence and preserve tenant filtering
+PASS gateway replaces forged tenant headers
+PASS malformed paths400 preserve local row, category overflow400
+PASS foreign categories400 and malformed JSON references422 without writes
+PASS legitimate category filtering update and creation work
+PASS foreign parent and cyclic hierarchy rejected via actual DTO/controller
+PASS foreign usage404 leaves zero usage, concurrent ten usage requests count exactly ten
+PASS actual counter failure500 rolls back usage insertion
+auth-service log tail:
+✅ Auth Service is ready on port 62867
+2026-10-26 22:51:01.491 INFO 19324 [midway:bootstrap] current app started
+
+asset-service log tail:
+Asset Service is ready
+2026-10-26 22:51:04.267 INFO 19345 [midway:bootstrap] current app started
+
+gateway-service log tail:
+✅ Gateway Service is ready on port 62869
+2026-10-26 22:51:06.356 INFO 19377 [midway:bootstrap] current app started
+Rate limit error: NotFoundError: /api/v1/assets-evil/71 Not Found
+    at notFound (/Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@midwayjs+koa@3.20.16/node_modules/@midwayjs/koa/dist/framework.js:137:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async /Users/seanliang/projects/open-scrm/code/services/gateway-service/dist/middleware/proxy.middleware.js:21:24
+    at async /Users/seanliang/projects/open-scrm/code/services/gateway-service/dist/middleware/auth.middleware.js:90:13
+    at async /Users/seanliang/projects/open-scrm/code/services/gateway-service/dist/middleware/rate-limit.middleware.js:45:17
+    at async /Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@midwayjs+info@3.20.16/node_modules/@midwayjs/info/dist/middleware/info.middleware.js:35:24
+    at async /Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@midwayjs+i18n@3.20.16/node_modules/@midwayjs/i18n/dist/middleware.js:150:17
+    at async bodyParser (/Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/koa-bodyparser@4.4.1/node_modules/koa-bodyparser/index.js:78:5)
+    at async session (/Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@midwayjs+session@3.20.11/node_modules/@midwayjs/session/dist/middleware/session.js:137:17)
+    at async /Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@midwayjs+core@3.20.11/node_modules/@midwayjs/core/dist/baseFramework.js:273:40 {
+  code: '404',
+  cause: undefined,
+  status: 404
+}
+
+Verified: owned service processes exited and disposable containers are absent.
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+500 !== 404
+
+    at /Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:240:186
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async check (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:226:34)
+    at async main (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-asset-gateway-http.cjs:240:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 500,
+  expected: 404,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

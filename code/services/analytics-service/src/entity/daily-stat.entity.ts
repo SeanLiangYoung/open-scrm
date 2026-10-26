@@ -20,17 +20,18 @@ export class DailyStatEntity {
   @Column({ name: 'new_customer_count', type: 'int', default: 0, comment: '新增客户数' })
   newCustomerCount: number;
 
-  @Column({ name: 'lost_customer_count', type: 'int', default: 0, comment: '流失客户数' })
+  // Legacy column name; public canonical field is deletedCustomerCount.
+  @Column({ name: 'lost_customer_count', type: 'int', default: 0, comment: '已删除客户库存（旧列名）' })
   lostCustomerCount: number;
 
-  @Column({ name: 'active_customer_count', type: 'int', default: 0, comment: '活跃客户数' })
+  @Column({ name: 'active_customer_count', type: 'int', default: 0, comment: '正常状态客户库存（旧列名）' })
   activeCustomerCount: number;
 
   @Column({ name: 'total_customer_count', type: 'int', default: 0, comment: '累计客户数' })
   totalCustomerCount: number;
 
   // 员工相关统计
-  @Column({ name: 'active_staff_count', type: 'int', default: 0, comment: '活跃员工数' })
+  @Column({ name: 'active_staff_count', type: 'int', default: 0, comment: '启用员工库存（旧列名）' })
   activeStaffCount: number;
 
   @Column({ name: 'total_staff_count', type: 'int', default: 0, comment: '总员工数' })

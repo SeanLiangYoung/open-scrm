@@ -1,0 +1,24 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config notification-history.config.ts
+[2m[WebServer] [22m(node:96361) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 12 tests using 1 worker
+
+(node:96368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:96368) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/notification-history.spec.ts:58:5 › initial request explicitly uses safe page1/size20 without an isRead filter (416ms)
+  ✓   2 tests/notification-history.spec.ts:66:5 › second page exposes older notifications beyond the first20 (468ms)
+  ✓   3 tests/notification-history.spec.ts:73:5 › unread filter preserves numeric zero and resets page2 to page1 (900ms)
+  ✓   4 tests/notification-history.spec.ts:80:5 › read filter uses1 and all filter removes the parameter (1.7s)
+  ✓   5 tests/notification-history.spec.ts:88:5 › marking read on unread page2 reloads the same safe page and filtered total (1.1s)
+  ✓   6 tests/notification-history.spec.ts:103:5 › failed page navigation preserves the committed page and allows retry (546ms)
+  ✓   7 tests/notification-history.spec.ts:121:7 › unsafe server total -1 never drives unsafe pagination (288ms)
+  ✓   8 tests/notification-history.spec.ts:121:7 › unsafe server total 1.5 never drives unsafe pagination (286ms)
+  ✓   9 tests/notification-history.spec.ts:121:7 › unsafe server total 9007199254740992 never drives unsafe pagination (278ms)
+  ✓  10 tests/notification-history.spec.ts:131:5 › late old-filter response cannot replace a newer read filter (1.3s)
+  ✓  11 tests/notification-history.spec.ts:168:5 › marking the only unread row on the last page retreats once to the valid previous page (974ms)
+  ✓  12 tests/notification-history.spec.ts:206:5 › stale filter failure cannot report an error after the newer read filter succeeds (1.2s)
+
+  12 passed (11.2s)

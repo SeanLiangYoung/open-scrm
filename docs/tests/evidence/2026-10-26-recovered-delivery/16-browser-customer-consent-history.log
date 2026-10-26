@@ -1,0 +1,29 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config customer-consent-history.config.ts
+[2m[WebServer] [22m(node:96411) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 17 tests using 1 worker
+
+(node:96418) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:96418) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/customer-consent-history.spec.ts:91:5 › loads exact scoped path and real counts with database observation time (441ms)
+  ✓   2 tests/customer-consent-history.spec.ts:99:5 › observed zero is explicit and is not invented before loading (328ms)
+  ✓   3 tests/customer-consent-history.spec.ts:111:5 › initial failure is not zero and manual refresh recovers (767ms)
+  ✓   4 tests/customer-consent-history.spec.ts:120:5 › paging preserves full counts, exact bigint and nullable evidence (372ms)
+  ✓   5 tests/customer-consent-history.spec.ts:145:5 › grant success refreshes the read model independently of operation result (790ms)
+  ✓   6 tests/customer-consent-history.spec.ts:159:5 › zero revoke result still refreshes and does not infer state from the write count (385ms)
+  ✓   7 tests/customer-consent-history.spec.ts:170:5 › write success survives read failure with draft and stale snapshot retained (1.2s)
+  ✓   8 tests/customer-consent-history.spec.ts:186:7 › older page success cannot override a newer snapshot (663ms)
+  ✓   9 tests/customer-consent-history.spec.ts:186:7 › older page failure cannot override a newer snapshot (850ms)
+  ✓  10 tests/customer-consent-history.spec.ts:228:5 › write invalidates a pre-write pending read (1.1s)
+  ✓  11 tests/customer-consent-history.spec.ts:251:5 › unsafe customer does not read or write a rounded identifier (352ms)
+  ✓  12 tests/customer-consent-history.spec.ts:258:5 › manual history refresh never clears evidence inputs (854ms)
+  ✓  13 tests/customer-consent-history.spec.ts:270:8 › invalid snapshot is not rendered as valid: {"total":"3"} (314ms)
+  ✓  14 tests/customer-consent-history.spec.ts:270:8 › invalid snapshot is not rendered as valid: {"observedAt":"not-a-time"} (299ms)
+  ✓  15 tests/customer-consent-history.spec.ts:270:8 › invalid snapshot is not rendered as valid: {"customerId":"11"} (299ms)
+  ✓  16 tests/customer-consent-history.spec.ts:278:5 › a pending initial read does not invent a zero state (312ms)
+  ✓  17 tests/customer-consent-history.spec.ts:289:5 › failed navigation preserves the last displayed page and snapshot (381ms)
+
+  17 passed (11.6s)

@@ -1,0 +1,67 @@
+
+> @scrm/gateway-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/gateway-service
+> vitest run "src/middleware/rate-limit.middleware.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/gateway-service
+
+stderr | src/middleware/rate-limit.middleware.spec.ts > propagates downstream 404 exactly once
+Rate limit error: Error: business error
+    at /Users/seanliang/projects/open-scrm/code/services/gateway-service/src/middleware/rate-limit.middleware.spec.ts:10:47
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:633:57
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3) {
+  status: 404
+}
+
+stderr | src/middleware/rate-limit.middleware.spec.ts > propagates downstream 500 exactly once
+Rate limit error: Error: business error
+    at /Users/seanliang/projects/open-scrm/code/services/gateway-service/src/middleware/rate-limit.middleware.spec.ts:10:47
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:633:57
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:146:14
+    at file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:533:11
+    at runWithTimeout (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:39:7)
+    at runTest (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1056:17)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/seanliang/projects/open-scrm/code/node_modules/.pnpm/@vitest+runner@2.1.9/node_modules/@vitest/runner/dist/index.js:1271:3) {
+  status: 500
+}
+
+ ❯ src/middleware/rate-limit.middleware.spec.ts (5 tests | 2 failed) 14ms
+   × propagates downstream 404 exactly once 9ms
+     → expected "spy" to be called 1 times, but got 2 times
+   × propagates downstream 500 exactly once 1ms
+     → expected "spy" to be called 1 times, but got 2 times
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/middleware/rate-limit.middleware.spec.ts > propagates downstream 404 exactly once
+ FAIL  src/middleware/rate-limit.middleware.spec.ts > propagates downstream 500 exactly once
+AssertionError: expected "spy" to be called 1 times, but got 2 times
+ ❯ src/middleware/rate-limit.middleware.spec.ts:11:85
+      9| it.each([404,500])('propagates downstream %s exactly once',async statu…
+     10|   const f=fixture();const error=Object.assign(new Error('business erro…
+     11|   await expect(f.middleware.resolve()(f.ctx,next)).rejects.toBe(error)…
+       |                                                                                     ^
+     12| });
+     13| it('continues once when Redis fails',async()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  22:51:43
+   Duration  591ms (transform 46ms, setup 0ms, collect 114ms, tests 14ms, environment 0ms, prepare 80ms)
+
+/Users/seanliang/projects/open-scrm/code/services/gateway-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/gateway-service@1.0.0 test: `vitest run "src/middleware/rate-limit.middleware.spec.ts"`
+Exit status 1

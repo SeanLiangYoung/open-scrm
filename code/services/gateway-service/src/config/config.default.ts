@@ -13,10 +13,10 @@ export default {
   bodyParser: {
     enableTypes: ['json', 'form', 'text'],
     extendTypes: {
-      text: ['text/xml', 'application/xml'],
+      text: ['text/xml', 'application/xml']
     },
     textLimit: '2mb',
-    jsonLimit: '2mb',
+    jsonLimit: '2mb'
   },
 
   // JWT配置
@@ -50,6 +50,10 @@ export default {
       },
       {
         path: '/api/v1/users/*',
+        target: process.env.AUTH_SERVICE_URL || 'http://localhost:7001'
+      },
+      {
+        path: '/api/v1/staff',
         target: process.env.AUTH_SERVICE_URL || 'http://localhost:7001'
       },
       {
@@ -105,7 +109,21 @@ export default {
         target: process.env.OPERATION_SERVICE_URL || 'http://localhost:7004'
       },
       {
+        path: '/api/v1/assets/categories/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005',
+        upstreamPrefix: '/api/asset-category'
+      },
+      {
         path: '/api/v1/assets/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005',
+        upstreamPrefix: '/api/asset'
+      },
+      {
+        path: '/api/asset-category/*',
+        target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005'
+      },
+      {
+        path: '/api/asset/*',
         target: process.env.ASSET_SERVICE_URL || 'http://localhost:7005'
       },
       {
@@ -142,8 +160,7 @@ export default {
       },
       {
         path: '/api/v1/content-studio/*',
-        target:
-          process.env.CONTENT_GENERATION_SERVICE_URL || 'http://localhost:7010'
+        target: process.env.CONTENT_GENERATION_SERVICE_URL || 'http://localhost:7010'
       }
     ]
   },

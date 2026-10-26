@@ -59,7 +59,7 @@
 | Sprint 6 | S6 | 质量门禁 + 官网或移动端脚手架 |
 | Sprint 7 | S7 | 工程延续：E2E 进 CI + 群发与统一消息联调（S3-F7） |
 | Sprint 8 | S8 | 出海私域 Phase 1：RegionPack / Consent 契约落地 + Outbound Mock 通道与闸门 E2E |
-| Sprint 9 | S9 | SEA 增长 + 归因辅线：营销频控/静默、`channel_scan_touch`、analytics 漏斗占位、`pnpm test:e2e:sprint9` |
+| Sprint 9 | S9 | SEA 增长 + 归因辅线：营销频控/静默、`channel_scan_touch`、analytics OLTP归因代理指标（旧路径保留placeholder）、`pnpm test:e2e:sprint9` |
 
 ---
 
@@ -73,22 +73,22 @@
 
 | 工作项 | 类型 | 完成判定（摘要） |
 |--------|------|------------------|
-| **CI 门禁** | 工程 | ✅ `.github/workflows/ci.yml`：`code/` 下 `pnpm install` → `pnpm test:unit` → `pnpm type-check`；失败阻断合并。**说明**：全量 Playwright 仍依赖本机/Compose 起栈，未进同一 job（与下项「E2E 进 CI」理想态仍有差距）。 |
+| **CI 门禁** | 工程 | 历史最小切片为单元/类型作业；当前 [CI 配置](../../.github/workflows/ci.yml) 已补 lint / build 和隔离业务作业（临时 PostgreSQL16 / Redis，客户数据库验证及同意 HTTP 子集）。[本地门禁记录](../../docs/tests/2026-10-25-overnight-progress.md) 与 [同意 HTTP 报告](../../docs/tests/2026-10-26-consent-http.md) 已有执行证据；新增 workflow 尚未推送/远程运行，远程 CI 与合并保护状态仍待核验。全量三前端 E2E 未并入该作业。 |
 | **S3-F7 群发 × 统一消息** | 功能 | ✅ 运营群发走 `POST /api/v1/messages/send`；幂等键 `mass-task-{taskId}-tgt-{targetId}`；`operation-service` Vitest；见 [Sprint3-功能开发测试计划](./harness/Sprint3-功能开发测试计划.md) S3-F7。 |
 | **getAccessToken 并发观测（可选）** | 技术债 | 文档或脚本验证「双请求命中同一 Redis key」无风暴；或登记延期至 S8 后。 |
 
-**S7 E2E 主形态**：以 **API E2E + 现有浏览器用例在 CI 中子集重跑** 为主；全量三前端 E2E 可放在夜间或手动 job。
+**S7 E2E 目标形态**：以 **API E2E + 现有浏览器用例在 CI 中子集重跑** 为主；当前只配置上述隔离业务子集，远程执行待验，全量三前端浏览器 E2E 仍需另行运行。
 
 ### 2.5.2 Sprint 8 — 出海私域 Phase 1（契约 + Mock）
 
-**状态（2026-04-28）**：以下为一 **可跑最小切片**；与下表「理想完成判定」未逐字对齐处见 [本地启动与验证-Sprint8.md](./harness/本地启动与验证-Sprint8.md) 的 Backlog 说明。
+**状态**：2026-04-28 落地的是 **可跑最小切片**；2026-10-25 已补同意授予/撤回 API 及隔离真实 HTTP 验证。当前行为以 [消息服务契约](../../docs/services/message-service/README.md#客户营销同意记录2026-10-25) 和 [HTTP 验证报告](../../docs/tests/2026-10-26-consent-http.md) 为准；[历史 Sprint8 一页纸](./harness/本地启动与验证-Sprint8.md) 中撤回 API 的 Backlog 已由本次子集补齐，不应再解读为 API 未实现。完整出海产品与远程 CI 尚未验收。
 
 | 工作项 | 类型 | 完成判定（摘要） |
 |--------|------|------------------|
 | **RegionPack** | 契约 | ✅ `message-service` 内 **`src/catalog/region-packs.ts`**（`th-bangkok`、`de-berlin`）+ Vitest；租户绑定 `default_region_pack_id` 仍为 Backlog。 |
-| **Consent Ledger 最小表** | 契约 | ✅ 表 `consent_record` + `init-db.pg.sql` 种子（客户 1 marketing 同意）；**写入/撤回 API** 未做。 |
+| **Consent Ledger 最小表与写入** | 契约 | 表/种子保留；已补 `POST /api/v1/messages/consents/grant`、`POST /api/v1/messages/consents/revoke`，在本企业客户行锁事务内新增授权证据/撤回全部有效授权。请求形状与限制见 [当前 API 契约](../../docs/services/message-service/README.md#客户营销同意记录2026-10-25)。 |
 | **Outbound Mock 通道** | 功能 | ✅ `messageType: 5` + `consentPurpose` 营销闸门（客户 `targetType:1` + `consent_record`）；请求体 **`regionPackId` 未强制**。 |
-| **API E2E** | 测试 | ✅ `e2e/tests/sprint8-outbound.spec.ts`；`pnpm test:e2e:sprint8`。**「撤回后再发失败」** 未自动化，列为 Backlog。 |
+| **API E2E** | 测试 | 历史 `sprint8-outbound.spec.ts` 保留；新增 [consent-lifecycle.spec.ts](../e2e/tests/consent-lifecycle.spec.ts) 已在独立 PostgreSQL16 / Redis + auth / message / gateway 栈本地执行：授权两次→Mock发送成功→撤回两条→新营销请求403，**1项通过、0跳过**。入口 [overnight-consent-http.cjs](../scripts/test/overnight-consent-http.cjs)，[证据与清理边界](../../docs/tests/2026-10-26-consent-http.md)；不覆盖跨企业 HTTP 对抗、在途发送取消或真实 BSP。 |
 
 **S8 明确不在范围（除非单独开 Sprint）**：真实 WABA/LINE BSP 联调、运营端完整 AI 坐席 UI、CMP 双端落地页。
 
@@ -100,12 +100,12 @@
 |--------|------|------------------|
 | **RegionPack 策略闸门** | 功能 | ✅ 营销单聊：`consent` 闸门 → `OutboundPolicyStateService`（静默优先，Redis 日历日桶）；未知 pack **400**；静默/超 cap **429** + `code`（`silent_hours` / `frequency_cap`）；E2E `sprint9-sea-policy`（`test-e2e-policy`）。 |
 | **扫码归因 MVP** | 功能 | ✅ `channel_scan_touch` + `ingest-scan` 归因字段 + `GET .../scan-touches/latest`；integration 测试入口转发完整 body；E2E `sprint9-acquisition-attribution`。 |
-| **漏斗占位** | 分析 | ✅ `computeAttributionGapMetrics` + Vitest；`GET /api/v1/analytics/funnel-gap-placeholder`；[funnel-metrics-v0.1.md](./facts/funnel-metrics-v0.1.md)；E2E `sprint9-funnel-gap`。 |
+| **漏斗OLTP聚合** | 分析 | ✅ `FunnelGapQueryService` 查询实际数据 + `computeAttributionGapMetrics`；`GET /api/v1/analytics/funnel-gap-placeholder` 保留旧路径名；口径见 [funnel-metrics-v0.1.md](./facts/funnel-metrics-v0.1.md)；E2E `sprint9-funnel-gap`（本轮未重跑）。 |
 | **文档契约** | 契约 | ✅ Task 0 facts、[message-template-extra-locale-convention.md](./facts/message-template-extra-locale-convention.md)、[2026-04-28-cod-light-loop-states.md](./plans/2026-04-28-cod-light-loop-states.md)。 |
 
 **S9 E2E**：`pnpm test:e2e:sprint9`（`e2e/run-sprint9-api.sh`）；需 **gateway、auth、message、redis、postgres、acquisition、integration、analytics** 与表 `channel_scan_touch`。一页纸：[本地启动与验证-Sprint9.md](./harness/本地启动与验证-Sprint9.md)。
 
-**与 S3 并存**：发送 DTO 的 **`extra`** 仍写入 **`message_log.extra`**（`utm_*` 等）；S9 增加活码 touch 落库与分析占位接口；**ANA-01** 级真实聚合仍属后续 Phase。
+**与 S3 并存**：发送 DTO 的 **`extra`** 仍写入 **`message_log.extra`**（`utm_*` 等）；S9 增加活码 touch 落库。当前 **ANA-01** 切片已从 OLTP 聚合成功发送、归因键和扫码数量；客户率采用触达侧代理，完整客户级归因仍属后续 Phase。旧 `placeholder` 路径名不代表接口返回固定占位数据。
 
 <a id="backlog-s9-plus"></a>
 

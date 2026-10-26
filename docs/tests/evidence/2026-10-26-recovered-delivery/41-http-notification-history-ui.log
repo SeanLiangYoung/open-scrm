@@ -1,0 +1,31 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-notification-history-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-notification-history-ui-JOf25l
+Build/start auth-service on free loopback port 61661
+Build/start message-service on free loopback port 61662
+Build/start gateway-service on free loopback port 61663
+{"stage":"isolated-services-ready","pgPort":61619,"redisPort":61626,"ports":{"auth":61661,"message":61662,"gateway":61663,"vite":61664,"unavailable":61665}}
+PASS: actual Chromium notification history3, PG16 37-row pagination/user/expiry assertions, zero messages
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+ corp_id | user_id | is_read | expired | count 
+---------+---------+---------+---------+-------
+       1 |       1 |       0 | f       |    24
+       1 |       1 |       0 | t       |     2
+       1 |       1 |       1 | f       |     6
+       1 |   93003 |       0 | f       |     3
+     902 |   93004 |       0 | f       |     2
+(5 rows)
+
+  id   | user_id | is_read |        read_time        
+-------+---------+---------+-------------------------
+ 93125 |       1 |       1 | 2026-10-26 13:46:16.508
+(1 row)
+
+ message_count 
+---------------
+             0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.

@@ -13,7 +13,7 @@
     "build:service": "pnpm --filter \"./services/**\" build",
     "build:docker": "turbo run build --filter=\"./packages/**\" --filter=\"./services/**\"",
     "test": "bash ./scripts/test/full-test.sh",
-    "test:unit": "turbo run test --filter=@scrm/shared-utils --filter=@scrm/shared-constants --filter=@scrm/llm-wiki-client --filter=@scrm/gateway-service --filter=@scrm/auth-service --filter=@scrm/integration-service --filter=@scrm/message-service --filter=@scrm/analytics-service --filter=@scrm/operation-service --filter=@scrm/acquisition-service --filter=@scrm/content-generation-service",
+    "test:unit": "turbo run test --filter=@scrm/shared-utils --filter=@scrm/shared-constants --filter=@scrm/llm-wiki-client --filter=@scrm/gateway-service --filter=@scrm/auth-service --filter=@scrm/customer-service --filter=@scrm/integration-service --filter=@scrm/message-service --filter=@scrm/analytics-service --filter=@scrm/operation-service --filter=@scrm/acquisition-service --filter=@scrm/content-generation-service --filter=@scrm/asset-service",
     "test:e2e": "bash ./e2e/run-full-e2e.sh",
     "test:e2e:playwright": "pnpm --filter @scrm/e2e exec playwright test",
     "test:e2e:api": "PLAYWRIGHT_SKIP_WEBSERVER=1 pnpm --filter @scrm/e2e exec playwright test --project=sprint1-api --project=sprint2-integration --project=sprint3-messages --project=sprint4-analytics --project=sprint5-acquisition --project=sprint8-outbound --project=sprint9-sea-policy --project=sprint9-acquisition --project=sprint9-funnel-gap --project=sprint9-cod-mock",

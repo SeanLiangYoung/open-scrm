@@ -71,9 +71,17 @@ integration-service/
 |------|------|------|
 | GET | `/api/v1/integration/health` | 健康探测：PostgreSQL、Redis |
 | GET | `/api/v1/integration/wework/callback` | 企微回调 URL 验证（query：`msg_signature`、`timestamp`、`nonce`、`echostr`）；成功时 **text/plain** 返回解密明文 |
-| POST | `/api/v1/integration/wework/callback` | 企微推送（**text/xml**）；验签解密成功后 **text/plain** 返回 `success` |
+| POST | `/api/v1/integration/wework/callback` | 企微推送：query `msg_signature/timestamp/nonce`，**text/xml** 中的 `Encrypt` 为密文；验签解密成功后 **text/plain** 返回 `success` |
 
 实现与本地验证步骤见 **`code/docs/harness/本地启动与验证-Sprint2.md`**。
+
+### 回调协议兼容与交付边界（2026-10-25）
+
+- 按企微团队成员发布的 [XML 回调加解密参考实现](https://github.com/sbzhu/weworkapi_python/blob/master/callback_python3/WXBizMsgCrypt.py) 核对：协议 PKCS#7 填充块为 **32 字节**，AES CBC 的 IV 仍是 Key 前 **16 字节**。解密校验完整填充后缀，不只检查最后一字节。
+- POST 的签名、时间戳和 nonce 来自 URL query，不来自回复 XML 的 `MsgSignature/TimeStamp/Nonce` 节点。缺失或重复数组参数返回 400，签名不匹配返回 403。
+- 单元测试增加独立固定密文向量（20 字节填充）及控制器请求形状，避免同一错误加密器/解密器的 round-trip 掩盖不兼容。原 Sprint 2 E2E 请求同步修正。
+- 这里只完成协议验签解密，**未交付事件业务分发**，不能将 HTTP `success` 当作客户更新、归因或自动 SOP 已执行。
+- 现有配置选择仍为最新启用项，SCRM 企业映射仍由部署配置提供；尚不具备可靠多企业回调路由。真实账号验证、事件持久化/去重/重放、企业绑定是下一批事项，不自动猜测租户或使用企业 1 处理未知事件。
 
 ### 企业微信配置管理
 

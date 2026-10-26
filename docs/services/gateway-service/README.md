@@ -1,431 +1,51 @@
-# 网关服务 (Gateway Service)
-
-> 基于Midway.js的API网关服务
-
----
-
-## 📋 项目概览
-
-API网关是整个微服务架构的入口，负责路由转发、认证鉴权、限流熔断、日志记录等功能。统一处理所有前端请求，并根据路由规则转发到相应的后端微服务。
-
-### 核心功能
-
-- 🔀 **路由转发**: 根据URL规则转发请求到目标服务
-- 🔐 **认证鉴权**: JWT验证、权限检查、Token刷新
-- 🚦 **限流熔断**: 防止服务过载、熔断保护
-- 📝 **日志记录**: 统一日志格式、请求追踪
-- 🔍 **监控追踪**: 请求监控、性能追踪
-- 🛡️ **安全防护**: CORS、CSP、XSS防护
-- 📊 **负载均衡**: 多实例负载均衡
-
-### 与当前 `code/services/gateway-service` 实现一致说明
-
-- **JWT 白名单**（`src/middleware/auth.middleware.ts`）：除登录、健康检查外，包含 **`/api/v1/integration/health`** 与 **`/api/v1/integration/wework/callback`**（企微服务器回调无 Bearer Token）。
-- **请求体**：`src/config/config.default.ts` 中 **`bodyParser.extendTypes.text`** 包含 **`text/xml`**，以便将企微 POST 原文转发至 integration-service。
-
----
-
-## 🛠️ 技术栈
-
-- **框架**: Midway.js 3.x
-- **语言**: TypeScript 5.x
-- **Web层**: @midwayjs/web (Koa)
-- **JWT**: @midwayjs/jwt
-- **日志**: @midwayjs/logger + winston
-- **监控**: prom-client (Prometheus)
-- **HTTP客户端**: @midwayjs/axios
-
----
-
-## 📁 项目结构
-
-```
-gateway-service/
-├── src/
-│   ├── config/                 # 配置
-│   │   ├── config.default.ts   # 默认配置
-│   │   ├── config.local.ts     # 本地配置
-│   │   └── config.prod.ts      # 生产配置
-│   │
-│   ├── middleware/             # 中间件
-│   │   ├── AuthMiddleware.ts   # 认证中间件
-│   │   ├── RateLimitMiddleware.ts  # 限流中间件
-│   │   ├── LoggerMiddleware.ts # 日志中间件
-│   │   └── CorsMiddleware.ts   # CORS中间件
-│   │
-│   ├── filter/                 # 过滤器
-│   │   └── GlobalExceptionFilter.ts  # 全局异常过滤器
-│   │
-│   ├── interceptor/            # 拦截器
-│   │   └── ResponseInterceptor.ts    # 响应拦截器
-│   │
-│   ├── guard/                  # 守卫
-│   │   └── JwtGuard.ts         # JWT守卫
-│   │
-│   ├── service/                # 服务
-│   │   ├── ProxyService.ts     # 代理服务
-│   │   └── RouteService.ts     # 路由服务
-│   │
-│   ├── controller/             # 控制器
-│   │   └── ProxyController.ts  # 代理控制器
-│   │
-│   ├── utils/                  # 工具
-│   │   ├── JwtUtil.ts          # JWT工具
-│   │   └── RouteUtil.ts        # 路由工具
-│   │
-│   ├── Configuration.ts        # 配置类
-│   └── Bootstrap.ts            # 启动文件
-│
-├── test/                       # 测试
-├── logs/                       # 日志
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
----
-
-## 🚀 快速开始
-
-### 安装依赖
-
-```bash
-pnpm install
-```
-
-### 开发
-
-```bash
-pnpm dev
-```
-
-### 构建
-
-```bash
-pnpm build
-```
-
-### 启动
-
-```bash
-pnpm start
-```
-
----
-
-## 📝 核心功能实现
-
-### 1. 路由配置
-
-```typescript
-// config/config.default.ts
-export default {
-  gateway: {
-    routes: [
-      {
-        path: '/api/v1/auth/*',
-        target: 'http://localhost:7001',  // auth-service
-        rewrite: (path: string) => path
-      },
-      {
-        path: '/api/v1/customers/*',
-        target: 'http://localhost:7002',  // customer-service
-        rewrite: (path: string) => path
-      },
-      {
-        path: '/api/v1/acquisition/*',
-        target: 'http://localhost:7003',  // acquisition-service
-        rewrite: (path: string) => path
-      }
-    ]
-  }
-}
-```
-
-### 2. 认证中间件
-
-```typescript
-// middleware/AuthMiddleware.ts
-import { Inject, Middleware } from '@midwayjs/core';
-import { Context, NextFunction } from '@midwayjs/web';
-import { JwtService } from '@midwayjs/jwt';
-
-@Middleware()
-export class AuthMiddleware {
-  @Inject()
-  jwtService: JwtService;
-
-  resolve() {
-    return async (ctx: Context, next: NextFunction) => {
-      // 白名单路径
-      const whitelist = ['/api/v1/auth/login', '/api/v1/auth/register'];
-      if (whitelist.includes(ctx.path)) {
-        return await next();
-      }
-
-      // 获取Token
-      const token = ctx.get('authorization')?.replace('Bearer ', '');
-      if (!token) {
-        ctx.status = 401;
-        ctx.body = {
-          code: 401,
-          message: '未授权,请先登录'
-        };
-        return;
-      }
-
-      try {
-        // 验证Token
-        const payload = await this.jwtService.verify(token, {
-          secret: process.env.JWT_SECRET
-        });
-        
-        // 将用户信息挂载到ctx上
-        ctx.state.user = payload;
-        
-        await next();
-      } catch (error) {
-        ctx.status = 401;
-        ctx.body = {
-          code: 401,
-          message: 'Token无效或已过期'
-        };
-      }
-    };
-  }
-}
-```
-
-### 3. 限流中间件
-
-```typescript
-// middleware/RateLimitMiddleware.ts
-import { Inject, Middleware } from '@midwayjs/core';
-import { Context, NextFunction } from '@midwayjs/web';
-import { RedisService } from '@midwayjs/redis';
-
-@Middleware()
-export class RateLimitMiddleware {
-  @Inject()
-  redisService: RedisService;
-
-  resolve() {
-    return async (ctx: Context, next: NextFunction) => {
-      const key = `rate_limit:${ctx.ip}:${ctx.path}`;
-      const limit = 100; // 每分钟100次
-      const ttl = 60; // 60秒
-
-      // 获取当前计数
-      const current = await this.redisService.incr(key);
-      
-      if (current === 1) {
-        // 第一次请求，设置过期时间
-        await this.redisService.expire(key, ttl);
-      }
-
-      if (current > limit) {
-        ctx.status = 429;
-        ctx.body = {
-          code: 429,
-          message: '请求过于频繁,请稍后再试'
-        };
-        return;
-      }
-
-      // 设置响应头
-      ctx.set('X-RateLimit-Limit', limit.toString());
-      ctx.set('X-RateLimit-Remaining', (limit - current).toString());
-
-      await next();
-    };
-  }
-}
-```
-
-### 4. 代理服务
-
-```typescript
-// service/ProxyService.ts
-import { Inject, Provide } from '@midwayjs/core';
-import { HttpService } from '@midwayjs/axios';
-import { Context } from '@midwayjs/web';
-
-@Provide()
-export class ProxyService {
-  @Inject()
-  httpService: HttpService;
-
-  async proxy(ctx: Context, targetUrl: string) {
-    try {
-      const response = await this.httpService.request({
-        method: ctx.method as any,
-        url: targetUrl,
-        data: ctx.request.body,
-        params: ctx.query,
-        headers: {
-          ...ctx.headers,
-          host: new URL(targetUrl).host
-        }
-      });
-
-      return response.data;
-    } catch (error) {
-      throw new Error(`代理请求失败: ${error.message}`);
-    }
-  }
-}
-```
-
-### 5. 全局异常过滤器
-
-```typescript
-// filter/GlobalExceptionFilter.ts
-import { Catch, Logger } from '@midwayjs/core';
-import { Context } from '@midwayjs/web';
-
-@Catch()
-export class GlobalExceptionFilter {
-  @Logger()
-  logger;
-
-  async catch(err: Error, ctx: Context) {
-    // 记录错误日志
-    this.logger.error('Gateway Error:', err);
-
-    // 返回统一错误格式
-    ctx.status = 500;
-    ctx.body = {
-      code: 500,
-      message: err.message || '服务器内部错误',
-      timestamp: new Date().toISOString()
-    };
-  }
-}
-```
-
-### 6. 响应拦截器
-
-```typescript
-// interceptor/ResponseInterceptor.ts
-import { Interceptor, IWebMiddleware } from '@midwayjs/core';
-import { Context, NextFunction } from '@midwayjs/web';
-
-@Interceptor()
-export class ResponseInterceptor implements IWebMiddleware {
-  resolve() {
-    return async (ctx: Context, next: NextFunction) => {
-      const startTime = Date.now();
-
-      await next();
-
-      // 统一响应格式
-      if (ctx.body && typeof ctx.body === 'object' && !ctx.body.code) {
-        ctx.body = {
-          code: 200,
-          message: 'success',
-          data: ctx.body,
-          timestamp: new Date().toISOString(),
-          duration: Date.now() - startTime
-        };
-      }
-    };
-  }
-}
-```
-
----
-
-## ⚙️ 配置说明
-
-### 环境变量
-
-```bash
-# .env.local
-NODE_ENV=development
-PORT=7000
-
-# JWT
-JWT_SECRET=your-secret-key
-JWT_EXPIRE=2h
-
-# Redis
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# 服务地址
-AUTH_SERVICE_URL=http://localhost:7001
-CUSTOMER_SERVICE_URL=http://localhost:7002
-```
-
-### 日志配置
-
-```typescript
-// config/config.default.ts
-export default {
-  midwayLogger: {
-    default: {
-      level: 'info',
-      consoleLevel: 'info',
-      dir: 'logs'
-    }
-  }
-}
-```
-
----
-
-## 📊 监控指标
-
-### Prometheus指标
-
-```typescript
-// 暴露metrics端点
-import { Controller, Get } from '@midwayjs/core';
-import { register } from 'prom-client';
-
-@Controller('/metrics')
-export class MetricsController {
-  @Get('/')
-  async getMetrics() {
-    return await register.metrics();
-  }
-}
-```
-
----
-
-## 🔒 安全配置
-
-### CORS配置
-
-```typescript
-// config/config.default.ts
-export default {
-  cors: {
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
-    credentials: true
-  }
-}
-```
-
-### 安全头
-
-```typescript
-// middleware/SecurityMiddleware.ts
-ctx.set('X-Content-Type-Options', 'nosniff');
-ctx.set('X-Frame-Options', 'DENY');
-ctx.set('X-XSS-Protection', '1; mode=block');
-```
-
----
-
-## 📞 联系方式
-
-- 负责人: [待填写]
-- 开发: [待填写]
-
----
-
-**端口**: 7000  
-**最后更新**: 2025-10-28
+# Gateway Service — 网关身份与代理契约
 
+更新：2026-10-26。默认本地端口7000；Docker Compose入口为宿主17000→容器7000。当前是Midway.js 3 / Koa、JWT、Redis计数限流与HTTP代理，不把早期熔断、完整权限中心、负载均衡或防护设计当作已交付功能。
+
+## 请求处理与身份
+
+中间件按Redis限流、认证、代理顺序运行。受保护请求必须携带 `Authorization: Bearer <accessToken>`。验证签名及有效期后，`userId`、`corpId` 必须为规范十进制正安全整数，可由数字或规范字符串表示；缺失、歧义或超出范围401。
+
+用途仅接受未声明 `type` 的兼容access或显式 `type=access`；refresh、reset等用途不能成为访问身份。角色代码存在并不自动授予管理员。当前只有布尔 `true` 或数字 `1` 的 `isAdmin` 被认可，随后上下文规范化为布尔值；字符串 `"true"` / `"false"`、数字2、数组和对象等truthy值不授予管理员权限。
+
+`/api/v1/users` 前缀要求管理员，不满足时403；普通员工可访问 `GET /api/v1/staff`，由auth按当前企业和启用状态过滤。不是所有路由都已实现完整RBAC权限检查。
+
+代理的 `x-corp-id` / `x-user-id` / `x-username` / `x-is-admin` 只从验证后的 `ctx.state.user` 生成，不透传客户端伪造身份头。业务服务仍须作为可信内部端口部署；原始头不是可独立验证的认证凭证。
+
+## 登录与独立刷新
+
+登录由auth处理 `POST /api/v1/auth/login`。可选JSON数字 `corpId` 决定企业范围；未提供时只兼容全库唯一用户名，同名多企业返回400。网关不会把客户端身份头或querycorpId转换成登录企业正文。
+
+**精确** `/api/v1/auth/refresh-token` 路径跳过access前置校验，避免access过期后不能续期。认证服务仍必须验证正文refreshToken签名、有效期、refresh用途和当前用户启用状态；合法请求可不带Bearer，也不被过期access阻断。`/refresh-token/extra`没有因此开放；有效refresh用作员工目录Bearer仍401。
+
+既有白名单还包含登录/注册前缀、健康/指标探测、`/api/v1/integration/health`及企微回调 `/api/v1/integration/wework/callback`。除精确刷新外，这些既有条目使用前缀匹配。白名单中保留注册路径不代表auth已实现注册；不要从网关配置推导不存在的业务能力。
+
+## 代理与错误语义
+
+当前路由事实源为 `code/services/gateway-service/src/config/config.default.ts`。认证、用户、员工目录路由到auth；客户/标签/跟进路由到customer；SOP/群发路由到operation；消息、通知、分析、集成、素材、获客和创作中心按各服务URL配置转发。财务路由配置不等于财务业务已验证。
+
+代理保留Authorization、Content-Type和Idempotency-Key；企微 `text/xml` / `application/xml` 按原文解析后转发。业务状态和响应正文保留；目标连接拒绝返回503，其余代理错误502。普通代理超时30秒，内容工坊重请求与两条multipart素材上传入口为120秒。没有新增自动发送重试的保证。
+
+限流按IP和路径在Redis计数，超限429并返回剩余额度头；Redis异常时当前实现放行。它不是熔断、跨实例负载均衡、全路径权限或生产防滥用审计的证明。
+
+## 已验证的实际链路
+
+- [企业登录/刷新5项](../../tests/2026-10-26-tenant-login-real-http-ui.md)：实际auth/gateway、PostgreSQL16.13和真实运营登录页；同名企业范围、错误状态400/401、无Bearer与过期access刷新、refresh-as-Bearer拒绝及精确刷新路径都有证据。
+- [员工目录/通知4项](../../tests/2026-10-26-staff-real-http.md)：两个普通员工登录、企业过滤、公开字段、伪造头无效；站内通知只有正确归属的去重目标写入。
+- [客户真实浏览器3项](../../tests/2026-10-26-customer-real-ui.md)：Vite→网关→真实auth/customer→PG16，包含新建客户、跟进保存/刷新、真实失败保留草稿及实际员工选择后分配。
+- [跟进多企业真实HTTP](../../tests/2026-10-26-customer-http.md)、[分析实际HTTP11项](../../tests/2026-10-26-analytics-http.md)分别保留各自夹具、时间窗口和断言，不能混为一轮生产验收。
+
+严格admin标志与访问用途另有网关单元回归；上述真实登录使用正常签发的非管理员JWT，不宣称已在生产枚举全部畸形签名凭证。隔离脚本核验自建资源清理，没有修改已有数据库、真实外发消息、部署或远程CI结果。
+
+## 开发与配置
+
+在 `code/services/gateway-service` 使用 `pnpm dev`、`pnpm type-check`、`pnpm test`、`pnpm build`。依赖Redis；auth与gateway必须共享 `JWT_SECRET`。`APP_KEYS`用于cookie签名，服务目标使用相应 `*_SERVICE_URL`，完整变量与端口以源码和[仓库事实索引](../../../code/docs/代码现状与文档索引.md)为准。真实HTTP脚本会clean共享dist，需协调串行运行。
+
+
+## 素材路由与下游异常（2026-10-26续办）
+
+素材v1入口显式映射`/api/v1/assets/*`→`/api/asset/*`；`/api/v1/assets/categories/*`优先映射分类服务`/api/asset-category/*`。原始服务路径也可经网关鉴权访问，均不加入公开白名单。编号后缀、query、JSON正文和验证后的企业身份原样转发，query中的id不覆盖路径id。路由须匹配完整前缀段，避免近似资源名误命中。其它路由不重写。
+
+认证仅捕获签名/身份验证错误，下游404/500不再被误改401；限流只在Redis错误时放行，不重新调用已经失败的业务处理。真正超限仍429。新增实际auth→asset→PG及网关JSON验证12组、独立网关54单元与资源清理证据见[素材网关报告](../../tests/2026-10-26-asset-gateway-routing.md)。不据这些JSON请求声称multipart/真实OSS上传已经验证。
+
+素材multipart代理已补齐原始请求落盘与文件流转发，见[专项报告](../../tests/2026-10-26-multipart-proxy.md)与[真实上传验收](../../tests/2026-10-26-upload-storage-recovery.md)。101MiB封装上限在转发前校验，客户端断流不触发后端请求，维护清理失败保留下游状态；这些结论不等于真实云存储成功。

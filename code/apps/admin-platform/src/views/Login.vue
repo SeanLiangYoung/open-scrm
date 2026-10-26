@@ -15,6 +15,7 @@
         <el-form-item prop="username">
           <el-input
             v-model="form.username"
+            :disabled="loading"
             placeholder="请输入用户名"
             :prefix-icon="User"
             size="large"
@@ -23,11 +24,22 @@
         <el-form-item prop="password">
           <el-input
             v-model="form.password"
+            :disabled="loading"
             type="password"
             placeholder="请输入密码"
             :prefix-icon="Lock"
             size="large"
             show-password
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+        <el-form-item prop="corpId">
+          <el-input
+            v-model="form.corpId"
+            :disabled="loading"
+            placeholder="企业编号（同名账号需填写，可选）"
+            inputmode="numeric"
+            size="large"
             @keyup.enter="handleLogin"
           />
         </el-form-item>
@@ -53,6 +65,7 @@ import { useRouter } from 'vue-router';
 import { ElMessage, type FormInstance } from 'element-plus';
 import { User, Lock } from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
+import { apiErrorMessage } from '@/utils/error';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -62,24 +75,34 @@ const loading = ref(false);
 const form = reactive({
   username: '',
   password: '',
+  corpId: ''
 });
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
 };
 
 async function handleLogin() {
-  if (!formRef.value) return;
-  await formRef.value.validate();
-
+  if (!formRef.value || loading.value) return;
   loading.value = true;
   try {
-    await authStore.login(form.username, form.password);
+    const valid = await formRef.value.validate().catch(() => false);
+    if (!valid) return;
+    const corpId = form.corpId === '' ? undefined : Number(form.corpId);
+    if (
+      corpId !== undefined &&
+      (!/^[1-9]\d*$/.test(form.corpId) || !Number.isSafeInteger(corpId))
+    ) {
+      ElMessage.warning('企业编号必须为安全的十进制正整数');
+      return;
+    }
+    const accepted = await authStore.login(form.username, form.password, corpId);
+    if (accepted === false) return;
     ElMessage.success('登录成功');
     router.push('/');
-  } catch (err: any) {
-    ElMessage.error(err.response?.data?.message || '登录失败');
+  } catch (err: unknown) {
+    ElMessage.error(apiErrorMessage(err, '登录失败'));
   } finally {
     loading.value = false;
   }

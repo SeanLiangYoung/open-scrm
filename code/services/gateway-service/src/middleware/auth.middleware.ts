@@ -15,6 +15,11 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
 
   resolve() {
     return async (ctx: Context, next: NextFunction) => {
+      // Refresh authenticates its own signed refresh credential in auth-service.
+      // An expired access token must not prevent the client from renewing it.
+      if (ctx.path === '/api/v1/auth/refresh-token') {
+        return await next();
+      }
       // 白名单路径 - 不需要认证
       const whitelist = [
         '/api/v1/auth/login',
@@ -25,7 +30,7 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
         // 各服务经网关暴露的只读探测（无需登录）
         '/api/v1/integration/health',
         // 企微被动回调：GET/POST 由企微服务器调用，无 Bearer Token
-        '/api/v1/integration/wework/callback',
+        '/api/v1/integration/wework/callback'
       ];
 
       // 检查是否在白名单中
@@ -53,15 +58,27 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
           userId: number;
           corpId: number;
           username: string;
-          isAdmin: boolean;
+          isAdmin: boolean | number;
           roles: string[];
+          type?: string;
         };
 
+        const validIdentity = [payload.userId, payload.corpId].every(
+          value =>
+            ['number', 'string'].includes(typeof value) &&
+            /^[1-9]\d*$/.test(String(value)) &&
+            Number.isSafeInteger(Number(value))
+        );
+        if (!validIdentity || (payload.type !== undefined && payload.type !== 'access')) {
+          throw new Error('无效的访问Token身份或用途');
+        }
+
         // 将用户信息挂载到ctx上
-        ctx.state.user = payload;
+        const isAdmin = payload.isAdmin === true || payload.isAdmin === 1;
+        ctx.state.user = { ...payload, isAdmin };
 
         // 检查是否需要管理员权限
-        if (this.requiresAdmin(ctx.path) && !payload.isAdmin) {
+        if (this.requiresAdmin(ctx.path) && !isAdmin) {
           ctx.status = 403;
           ctx.body = {
             code: 403,
@@ -70,8 +87,6 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
           };
           return;
         }
-
-        await next();
       } catch (error) {
         ctx.status = 401;
         ctx.body = {
@@ -79,7 +94,10 @@ export class AuthMiddleware implements IMiddleware<Context, NextFunction> {
           message: 'Token无效或已过期',
           timestamp: new Date().toISOString()
         };
+        return;
       }
+      // Authentication has succeeded; let business errors retain their status.
+      await next();
     };
   }
 

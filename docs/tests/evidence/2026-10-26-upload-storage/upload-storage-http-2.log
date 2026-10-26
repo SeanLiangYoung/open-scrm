@@ -1,0 +1,33 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-upload-storage-http-vjzknX
+Build/start auth-service on free loopback port 63954
+Build/start asset-service on free loopback port 63955
+Build/start gateway-service on free loopback port 63956
+{"stage":"isolated-services-ready","pgPort":63906,"redisPort":63916,"ports":{"auth":63954,"asset":63955,"gateway":63956}}
+auth-service log tail:
+✅ Auth Service is ready on port 63954
+2026-10-26 23:20:28.031 INFO 40977 [midway:bootstrap] current app started
+
+asset-service log tail:
+Asset Service is ready
+2026-10-26 23:20:30.941 INFO 41082 [midway:bootstrap] current app started
+
+gateway-service log tail:
+✅ Gateway Service is ready on port 63956
+2026-10-26 23:20:33.118 INFO 41109 [midway:bootstrap] current app started
+
+Verified: owned service processes exited and disposable containers are absent.
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'68' !== 68
+
+    at /Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:262:156
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async check (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:248:34)
+    at async main (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:260:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '68',
+  expected: 68,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

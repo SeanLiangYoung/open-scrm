@@ -1,5 +1,7 @@
 module.exports = {
   root: true,
+  // Lint authored source only; service builds emit declaration files here.
+  ignorePatterns: ['**/dist/**', '**/coverage/**', '**/node_modules/**', '**/.turbo/**'],
   env: {
     node: true,
     es2021: true

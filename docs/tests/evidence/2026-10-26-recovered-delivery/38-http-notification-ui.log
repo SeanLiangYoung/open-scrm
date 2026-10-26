@@ -1,0 +1,30 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-notification-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-notification-ui-n9H3y9
+Build/start auth-service on free loopback port 59959
+Build/start message-service on free loopback port 59960
+Build/start gateway-service on free loopback port 59961
+{"stage":"isolated-services-ready","pgPort":59925,"redisPort":59938,"ports":{"auth":59959,"message":59960,"gateway":59961,"vite":59962,"unavailable":59963}}
+PASS: actual Chromium notification UI 3 passed, PostgreSQL16 recipient/read/isolation assertions, zero provider messages
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+  id   | corp_id | user_id |                 title                 |           content           | is_read 
+-------+---------+---------+---------------------------------------+-----------------------------+---------
+     1 |       1 |    9203 | overnight-notification-peer           | 真实同事通知正文            |       1
+ 92001 |       1 |    9203 | notification-foreign-boundary-fixture | Dedicated ownership fixture |       0
+(2 rows)
+
+  id  | corp_id |    username     | status 
+------+---------+-----------------+--------
+ 9203 |       1 | notify_peer     |      0
+ 9204 |     902 | notify_foreign  |      1
+ 9205 |       1 | notify_disabled |      0
+(3 rows)
+
+ message_count 
+---------------
+             0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.

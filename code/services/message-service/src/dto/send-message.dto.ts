@@ -1,4 +1,5 @@
 import { Rule, RuleType } from '@midwayjs/validate';
+import { MAX_MESSAGE_TEMPLATE_ID } from '../util/message-identity.util';
 
 /**
  * 发送消息DTO
@@ -19,7 +20,7 @@ export class SendMessageDto {
   @Rule(RuleType.string().required())
   content: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(1).max(MAX_MESSAGE_TEMPLATE_ID).strict().optional())
   templateId?: number;
 
   @Rule(RuleType.any().optional())
@@ -42,7 +43,7 @@ export class SendMessageDto {
  * 批量发送消息DTO
  */
 export class BatchSendMessageDto {
-  @Rule(RuleType.number().valid(1, 2, 3, 4).required())
+  @Rule(RuleType.number().valid(1, 2, 3, 4, 5).required())
   messageType: number;
 
   @Rule(RuleType.number().valid(1, 2, 3).required())
@@ -51,7 +52,7 @@ export class BatchSendMessageDto {
   @Rule(RuleType.array().items(RuleType.number()).min(1).required())
   targetIds: number[];
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(1).max(MAX_MESSAGE_TEMPLATE_ID).strict().optional())
   templateId?: number;
 
   @Rule(RuleType.string().optional())

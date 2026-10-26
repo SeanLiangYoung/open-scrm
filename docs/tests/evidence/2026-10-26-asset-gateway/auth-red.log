@@ -1,0 +1,44 @@
+
+> @scrm/gateway-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/gateway-service
+> vitest run "src/middleware/auth.middleware.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/gateway-service
+
+ ❯ src/middleware/auth.middleware.spec.ts (27 tests | 2 failed) 21ms
+   × authenticated downstream error propagation > preserves downstream 404 instead of reporting invalid JWT 8ms
+     → promise resolved "undefined" instead of rejecting
+   × authenticated downstream error propagation > preserves downstream 500 instead of reporting invalid JWT 1ms
+     → promise resolved "undefined" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/middleware/auth.middleware.spec.ts > authenticated downstream error propagation > preserves downstream 404 instead of reporting invalid JWT
+ FAIL  src/middleware/auth.middleware.spec.ts > authenticated downstream error propagation > preserves downstream 500 instead of reporting invalid JWT
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/middleware/auth.middleware.spec.ts:90:52
+     88|     const error = Object.assign(new Error('downstream failure'), {stat…
+     89|     const next = vi.fn(async () => { throw error; });
+     90|     await expect(t.middleware.resolve()(t.ctx,next)).rejects.toBe(erro…
+       |                                                    ^
+     91|     expect(t.ctx.status).not.toBe(401);
+     92|     expect(t.ctx.state.user).toMatchObject({userId:7,corpId:2});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 25 passed (27)
+   Start at  22:48:36
+   Duration  468ms (transform 41ms, setup 0ms, collect 116ms, tests 21ms, environment 0ms, prepare 82ms)
+
+/Users/seanliang/projects/open-scrm/code/services/gateway-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/gateway-service@1.0.0 test: `vitest run "src/middleware/auth.middleware.spec.ts"`
+Exit status 1

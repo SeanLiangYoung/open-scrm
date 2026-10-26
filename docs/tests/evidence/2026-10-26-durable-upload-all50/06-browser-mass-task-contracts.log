@@ -1,0 +1,27 @@
+/tmp/open-scrm-durable-upload-all50/bin/pnpm exec playwright test --config mass-task-contracts.config.ts
+[2m[WebServer] [22m(node:6189) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 15 tests using 1 worker
+
+(node:6448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6448) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/mass-task-contracts.spec.ts:60:5 › numeric status, target and counters display backend fields and supported actions (725ms)
+  ✓   2 tests/mass-task-contracts.spec.ts:86:5 › create submits numeric targets and supported backend fields without tenant injection (760ms)
+  ✓   3 tests/mass-task-contracts.spec.ts:111:7 › invalid recipient IDs blocked: empty (683ms)
+  ✓   4 tests/mass-task-contracts.spec.ts:111:7 › invalid recipient IDs blocked: 0 (714ms)
+  ✓   5 tests/mass-task-contracts.spec.ts:111:7 › invalid recipient IDs blocked: abc (673ms)
+  ✓   6 tests/mass-task-contracts.spec.ts:111:7 › invalid recipient IDs blocked: 1.5 (701ms)
+  ✓   7 tests/mass-task-contracts.spec.ts:111:7 › invalid recipient IDs blocked: 9007199254740992 (636ms)
+  ✓   8 tests/mass-task-contracts.spec.ts:126:5 › filters submit supported names and preserve numeric zero status (1.1s)
+  ✓   9 tests/mass-task-contracts.spec.ts:148:5 › pending mock execution uses execute contract after confirmation (615ms)
+  ✓  10 tests/mass-task-contracts.spec.ts:159:5 › pending cancellation uses ID path; dismissing execution does not write (1.1s)
+  ✓  11 tests/mass-task-contracts.spec.ts:174:7 › missing taskName is blocked before submission (663ms)
+  ✓  12 tests/mass-task-contracts.spec.ts:174:7 › missing messageContent is blocked before submission (700ms)
+  ✓  13 tests/mass-task-contracts.spec.ts:191:5 › list pagination submits page number and fixed supported page size (311ms)
+  ✓  14 tests/mass-task-contracts.spec.ts:202:7 › unsafe or ambiguous cancellation ID is rejected without a write: 9007199254740993 (312ms)
+  ✓  15 tests/mass-task-contracts.spec.ts:202:7 › unsafe or ambiguous cancellation ID is rejected without a write: 1e1 (382ms)
+
+  15 passed (12.0s)

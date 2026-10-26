@@ -1,398 +1,112 @@
-# 运营平台 (Operation Platform)
+# Operation Platform — 运营平台当前契约
 
-> 基于Vue 3 + Element Plus的客户运营平台
+更新：2026-10-26。Vue3、TypeScript、Pinia、Element Plus、Axios、ECharts与Vite5。默认本地端口3003；Vite将 `/api` 代理到 `VITE_GATEWAY_URL`（默认 `http://127.0.0.1:7000`），使用Docker网关时应匹配宿主17000。
 
----
+当前路由包含登录、看板、客户列表/详情、标签、SOP列表/编辑/执行、群发任务、渠道、消息模板、站内通知。早期社群、海报、门店等产品设计不作为当前页面或已验收能力清单。
 
-## 📋 项目概览
+## 企业登录与会话
 
-运营人员、销售人员和市场人员使用的核心工作平台，负责多渠道获客、客户运营、SOP管理、社群运营等核心业务功能。
+登录表单支持可选“企业编号（同名账号需填写）”。空值省略；只接受规范十进制正安全整数，校验后按JSON数字提交。同名账号跨企业时必须显式选择企业；错误企业/密码不回退到其他企业，失败反馈保留可编辑输入且不保存失败凭证。不提供公开候选企业列表或自动猜测。
 
-### 核心功能
+提交锁在表单验证前设置，验证及请求期间禁用输入、忽略重复提交。store只接受最新登录尝试；旧成功/失败不会覆盖新尝试，退出使进行中的旧尝试失效。登录请求401由页面处理，不走通用401重定向丢失草稿；保护资源401仍清理access并返回登录页。
 
-- 🚀 **获客管理**: 抖音/小红书内容发布、渠道活码、引流链接
-- 👥 **客户管理**: 客户列表、客户画像、客户跟进、标签管理
-- 🤖 **SOP管理**: SOP配置、SOP执行、任务管理、自动化流程
-- 💬 **社群管理**: 群管理、群SOP、群活动、防骚扰规则
-- 🏷️ **标签管理**: 标签配置、自动打标、智能分组
-- 📤 **消息群发**: 批量群发、定向推送、消息模板
-- 🎨 **海报生成**: 海报模板、一键生成、批量下载
-- 🏪 **门店管理**: 门店管理、活动管理、数据统计
-- 📚 **素材库**: 图片、视频、文案素材管理
-- 📊 **数据看板**: 个人数据、团队数据、实时统计
+运营store目前保存accessToken与user；后端已提供独立refresh API，但本页不宣称已实现自动续期或持久化refreshToken。access/refresh用途及管理员判断见[网关契约](../../services/gateway-service/README.md)。
 
----
+## 本企业员工选择与客户分配
 
-## 🛠️ 技术栈
+客户创建/编辑、SOP提醒及客户分配步骤使用 `GET /api/v1/staff`，不查询管理员全局users。控件远程搜索当前企业启用同事，第一页pageSize20；界面明确“当前搜索结果”，不声称列出全部员工。新搜索响应优先，旧结果/错误不能回滚新状态；失败提示且不静默删除已选项。
 
-- **框架**: Vue 3.3+ (Composition API)
-- **构建工具**: Vite 4.x
-- **语言**: TypeScript 5.x
-- **UI组件**: Element Plus 2.x
-- **状态管理**: Pinia 2.x
-- **路由**: Vue Router 4.x
-- **HTTP**: Axios 1.x
-- **图表**: ECharts 5.x
-- **富文本**: WangEditor 5.x
-- **海报生成**: Fabric.js 5.x
-- **二维码**: qrcode
-- **工具库**: dayjs、lodash-es
+选择状态保留精确字符串ID，提交数字DTO前检查正安全整数；不能安全转换的员工禁选或阻止相关SOP写入。已有配置不在当前页时显示缓存姓名或已配置编号，保留至用户主动更改；该显示不证明员工仍启用或归属正确，后端保存/执行时继续权威校验。
 
----
+客户字段语义：
 
-## 📁 项目结构
+- 新建未选择员工时省略 `followUserId`，保持未分配，不默认为员工1或当前员工。选择同事后提交数字 `followUserId`。
+- 编辑保留原员工时省略该字段；主动改选提交新数字ID；**清空已有选择提交 `followUserId: null`，取消分配**。没有选择且原本未分配时省略，不把无改动当清空。
+- 手机号/备注清空已有值提交null，省略表示不修改。来源只在创建时设置，编辑只读。表单姓名必填；创建正文使用 `externalUserid` / `channel`，不携带硬编码企业、旧 `source` 或不存在的持久化 `email` 字段。
 
-```
-operation-platform/
-├── src/
-│   ├── api/                    # API接口
-│   │   ├── customer-api.ts
-│   │   ├── sop-api.ts
-│   │   ├── community-api.ts
-│   │   ├── acquisition-api.ts
-│   │   └── material-api.ts
-│   │
-│   ├── components/             # 组件
-│   │   ├── common/
-│   │   │   ├── user-avatar.vue
-│   │   │   ├── data-table.vue
-│   │   │   └── tag-selector.vue
-│   │   ├── business/
-│   │   │   ├── customer-card.vue
-│   │   │   ├── sop-timeline.vue
-│   │   │   ├── poster-editor.vue
-│   │   │   └── qrcode-generator.vue
-│   │   └── layout/
-│   │       ├── main-layout.vue
-│   │       └── sidebar.vue
-│   │
-│   ├── composables/            # Hooks
-│   │   ├── use-customer.ts
-│   │   ├── use-sop.ts
-│   │   ├── use-community.ts
-│   │   ├── use-material.ts
-│   │   └── use-poster.ts
-│   │
-│   ├── views/                  # 页面
-│   │   ├── dashboard/
-│   │   │   └── index.vue
-│   │   ├── acquisition/        # 获客模块
-│   │   │   ├── channel-qrcode.vue
-│   │   │   ├── content-publish.vue
-│   │   │   └── link-management.vue
-│   │   ├── customer/           # 客户模块
-│   │   │   ├── customer-list.vue
-│   │   │   ├── customer-detail.vue
-│   │   │   └── customer-follow.vue
-│   │   ├── sop/                # SOP模块
-│   │   │   ├── sop-list.vue
-│   │   │   ├── sop-config.vue
-│   │   │   └── sop-execution.vue
-│   │   ├── community/          # 社群模块
-│   │   │   ├── community-list.vue
-│   │   │   ├── community-detail.vue
-│   │   │   └── community-sop.vue
-│   │   ├── material/           # 素材库
-│   │   │   ├── material-library.vue
-│   │   │   └── poster-generator.vue
-│   │   └── data/               # 数据看板
-│   │       └── personal-stats.vue
-│   │
-│   ├── app.vue
-│   └── main.ts
-│
-└── package.json
-```
+取消分配是更新接口的新明确语义；[员工选择初版报告](../../tests/2026-10-26-staff-selection.md)保留此前“清空仍保持”的历史快照，不应用旧描述覆盖当前源码。专用选择浏览器用例与客户PostgreSQL用例现已包含显式null取消分配；旧报告原数量不因此回写成新一轮结果。
 
----
+## SOP编辑与控制
 
-## 🚀 快速开始
+标签步骤选择已有标签，保存数字 `actionContent.tagIds`。提醒支持多名本企业员工，可与显式“提醒当前登录员工”并用，数字ID去重；客户分配步骤选择单员工，保存 `actionContent.followUserId`。客户专用打标签/分配步骤不能用于群SOP；编辑旧配置时提示明确移除或更改，不静默丢弃。
+
+消息正文、流程名、素材链接/说明以及各动作目标按实际输入校验。编辑已有SOP不能清空全部步骤；有名称且没有步骤的新草稿仍可创建。新建/原本为空的描述省略，明确清空已有描述发送null。动作加载兼容对象、JSON字符串和纯文本，将旧 `tags`、单个 `userId`、`staffId`等规范化，同时保留额外元数据。
+
+模板启用/停用为1/0。执行状态为0执行中、1完成、2暂停、3失败或取消终止。页面按钮使用这些状态，不声称能撤回已发出的下游请求。进程内调度、多副本互斥、重启恢复和exactly-once边界见[运营服务](../../services/operation-service/README.md)。
+
+## 消息与素材的显式模拟渠道（2026-10-26）
+
+新建消息/素材步骤会明确保存数字 `actionContent.messageType=5`，页面显示“模拟消息，不会真实送达”。该默认只属于用户新增的步骤，不给打标签、分配或站内提醒动作自动赋这个消息渠道。
+
+已有步骤保留其原 `messageType`，省略字段的旧配置保存后仍省略；不因改流程名或切换旧动作类型就悄悄改为模拟。非显式模拟的旧步骤显示“渠道尚未接通，保留原配置，不会真实送达”；已有显式5显示模拟提示并保留额外元数据。需要建立模拟步骤时可明确新增，不能把历史真实发送意图当作已迁移。
+
+员工提醒走站内通知API，不是因为步骤类型5就自动变成渠道5模拟消息。后端未接通渠道拒绝、重试和真实HTTP负向结果由消息服务当批证据说明；前端提示和Mock接口测试不能证明真实平台送达。历史消息成功记录不在此改写，成功统计可能包含模拟或旧占位结果，不应表述为真实送达率。
+
+专用入口（在 `code/e2e`）：
 
 ```bash
-# 安装依赖
-pnpm install
-
-# 开发
-pnpm dev
-
-# 构建
-pnpm build
+./node_modules/.bin/playwright test --config sop-message-capabilities.config.ts
 ```
 
----
+[独立配置](../../../code/e2e/sop-message-capabilities.config.ts)使用回环3111、strictPort及失败截图/trace；所有API均Mock，没有执行SOP或发送消息。新增8项先失败后通过：新消息、新素材、两类旧显式渠道、两类旧省略字段、已有显式模拟、旧步骤切换类型保留渠道意图。随后未修改旧断言的25项运营契约仍全部通过；完整运营前端eslint、类型检查及常规生产构建通过，大包体积提示保留。这是本次前端快照的33项浏览器证据，不扩大为完整后端或生产验证。
 
-## 📝 核心功能实现
+## 群发任务只执行显式Mock
 
-### 1. 客户管理Hooks
+群发页使用真实数字契约：`taskName`、`targetType`、`targetCount`、`successCount`、`failCount`；状态0待执行、1执行中、2完成、3失败、4取消。目标类型1客户、2员工、3群。
 
-```typescript
-// composables/use-customer.ts
-import { ref, computed } from 'vue'
-import type { Customer, CustomerQuery } from '@scrm/shared-types'
-import * as customerApi from '@/api/customer-api'
+目前页面只创建明确标识模拟的文本任务，固定 `taskType=1`、`messageType=5`，提示不会真实发送。旧非模拟任务可查看但无执行按钮；只有待执行任务提供取消，执行需确认，取消/关闭确认不发请求。这是本页面的边界，不代表后端全局禁止其他类型，也不代表真实渠道已经接通。
 
-export const useCustomer = () => {
-  const customerList = ref<Customer[]>([])
-  const total = ref(0)
-  const loading = ref(false)
-  
-  // 获取客户列表
-  const fetchCustomers = async (query?: CustomerQuery) => {
-    loading.value = true
-    try {
-      const res = await customerApi.getCustomerList(query)
-      customerList.value = res.data.list
-      total.value = res.data.total
-    } finally {
-      loading.value = false
-    }
-  }
-  
-  // 客户打标
-  const addTag = async (customerId: number, tagIds: number[]) => {
-    await customerApi.addCustomerTags(customerId, tagIds)
-    await fetchCustomers()
-  }
-  
-  // 客户跟进
-  const followUp = async (customerId: number, content: string) => {
-    await customerApi.createFollowUpRecord({
-      customerId,
-      content,
-      followTime: new Date()
-    })
-  }
-  
-  return {
-    customerList,
-    total,
-    loading,
-    fetchCustomers,
-    addTag,
-    followUp
-  }
-}
+创建提交数字目标数组、字符串正文；目标可用中英文逗号或空白分隔，去重并检查正安全整数。执行前同样安全转换数据库bigint任务ID。空名称/正文/目标及无效ID在请求前拒绝，分页和状态0筛选保留。尚无目标搜索、其它任务动作、模板选择或定时调度交付。
+
+## 看板快照与错误反馈
+
+客户统计的 `active` 是当前 `status=1` 正常客户库存，界面使用“正常状态客户”，不是行为活跃人数。客户统计的 `lost` 为当前status2流失库存；不要与analytics旧 `lostCustomerCount` 列混用，后者历史上记录status0已删除库存，准确字段为 `deletedCustomerCount`。
+
+日表使用 `normalCustomerCount` 等准确字段，显示统计日与实际 `snapshotObservedAt`。`snapshotAvailable:false`明确表示没有快照，不把兼容零值当观测零；已有快照缺少采集时间仍可展示，不能仅凭时间为空判定缺失。历史日回填读取聚合当时的当前状态，不能解释为该历史日的自然收盘状态。区间库存只取末日快照，不能累加；详见[分析口径](../../services/analytics-service/README.md)。
+
+SOP数量/执行中卡片采用接口总数，不用当前分页长度推断全量。来源及状态饼图明确标注“最近最多100位客户样本”。渠道、员工搜索、通知、模板、跟进等请求失败显示对应提示，保留已知错误/缺失与空列表的区别。
+
+## 证据分层
+
+- [真实客户浏览器3项](../../tests/2026-10-26-customer-real-ui.md)：实际登录、新建未分配客户、跟进保存/刷新、真实400后保留草稿，以及实际目录选同事后创建已分配客户；PG16确认两个客户、一个跟进、零消息。它没有实际执行取消分配流程，不能把新增null契约算进这3项。
+- [真实企业登录5项](../../tests/2026-10-26-tenant-login-real-http-ui.md)：4项HTTP、1项真实运营登录浏览器，同名企业/密码、非法输入400、独立刷新及用途拒绝均有证据。
+- [员工目录/通知实际HTTP4项](../../tests/2026-10-26-staff-real-http.md)：真实双企业普通员工，目录精确ID/公开字段及接收人整批校验；没有外发消息。
+- [夜间验收索引](../../tests/2026-10-26-overnight-verification.md)保留主执行者25项运营Mock契约与15项群发Mock契约的运行快照。员工选择初版12项和两端登录Mock测试分开记录；后续新增用例须按当次日志取得结果，不能靠源码数量推断已运行。
+
+复现入口：
+
+```bash
+# 仓库根：真实隔离链路，须协调共享服务dist并串行运行
+node code/scripts/test/overnight-customer-ui.cjs
+node code/scripts/test/overnight-tenant-login.cjs
+
+# code/e2e：浏览器Mock接口契约，不能当作真实后端送达证据
+./node_modules/.bin/playwright test --config operation-contracts.config.ts
+./node_modules/.bin/playwright test --config staff-selection-contracts.config.ts
+./node_modules/.bin/playwright test --config mass-task-contracts.config.ts
+./node_modules/.bin/playwright test --config tenant-login-operation.config.ts
 ```
 
-### 2. SOP配置
+源码类型/构建和已执行的隔离测试不证明生产部署、完整经营效果、全部页面企业隔离或真实渠道送达。其它管理入口及CSV等流程仍需各自验收；历史报告只证明其注明的版本、夹具和范围。
 
-```vue
-<template>
-  <div class="sop-config">
-    <el-form :model="sopForm">
-      <el-form-item label="SOP名称">
-        <el-input v-model="sopForm.name" />
-      </el-form-item>
-      
-      <el-form-item label="触发条件">
-        <el-select v-model="sopForm.triggerType">
-          <el-option label="添加好友" value="add_friend" />
-          <el-option label="客户打标" value="tag" />
-          <el-option label="进入社群" value="join_group" />
-        </el-select>
-      </el-form-item>
-      
-      <!-- SOP步骤配置 -->
-      <el-form-item label="执行步骤">
-        <sop-step-config v-model="sopForm.steps" />
-      </el-form-item>
-      
-      <el-button type="primary" @click="saveSop">保存</el-button>
-    </el-form>
-  </div>
-</template>
+## 本地命令
 
-<script setup lang="ts">
-import { ref } from 'vue'
-import type { SopConfig } from '@scrm/shared-types'
+在 `code/apps/operation-platform` 使用 `pnpm dev`、`pnpm lint`、`pnpm type-check`、`pnpm build`。类型检查使用vue-tsc，构建使用Vite；既有大包体积提醒保留，没有通过关闭规则或提示宣称全面就绪。
 
-const sopForm = ref<SopConfig>({
-  name: '',
-  triggerType: 'add_friend',
-  steps: []
-})
+### 客户详情营销授权证据（2026-10-26）
 
-const saveSop = async () => {
-  // 保存SOP配置
-}
-</script>
-```
+客户详情可登记已有营销授权证据，政策版本、证据渠道和语言地区默认空，必须按实际证据填写。仅向现有consent grant/revoke接口提交当前安全客户编号及白名单字段，不发送企业或操作者。撤回显示实际撤回条数，包含0；失败保留草稿。页面通过当前企业客户的只读分页接口展示已有证据、有效/撤回条数及实际观测时间；缺少或失败的读取不伪装成零条。多次读取与写入使用最新请求保护，写成功后读失败仍保留真实操作结果。该状态仅表示系统已登记的证据，不能据此宣称完整历史或合规。
 
-### 3. 海报生成
+原授权操作Mock浏览器10项与隔离真实UI4项已通过；只读历史新增17项Mock、6项真实PG快照检查、14组原生HTTP和5项真实UI独立证据。真实SQL确认A授权撤回、B授权保持、跨企业操作404，以及显式Mock5营销记录。类型5成功只表示模拟流程完成。详见[验证报告](../../tests/2026-10-26-customer-consent-ui.md)。
 
-```typescript
-// composables/use-poster.ts
-import { fabric } from 'fabric'
-import { ref } from 'vue'
+### 消息日志人工排查（2026-10-26）
 
-export const usePoster = () => {
-  const canvas = ref<fabric.Canvas | null>(null)
-  
-  // 初始化画布
-  const initCanvas = (el: HTMLCanvasElement) => {
-    canvas.value = new fabric.Canvas(el, {
-      width: 750,
-      height: 1334
-    })
-  }
-  
-  // 添加背景图
-  const addBackground = (url: string) => {
-    fabric.Image.fromURL(url, (img) => {
-      img.set({
-        scaleX: 750 / img.width!,
-        scaleY: 1334 / img.height!
-      })
-      canvas.value?.setBackgroundImage(img, canvas.value.renderAll.bind(canvas.value))
-    })
-  }
-  
-  // 添加二维码
-  const addQRCode = async (url: string, x: number, y: number) => {
-    // 生成二维码并添加到画布
-  }
-  
-  // 导出图片
-  const exportImage = (): string => {
-    return canvas.value?.toDataURL({
-      format: 'png',
-      quality: 1
-    }) || ''
-  }
-  
-  return {
-    initCanvas,
-    addBackground,
-    addQRCode,
-    exportImage
-  }
-}
-```
+消息中心新增 `/message-logs`：按状态/渠道筛选、分页与展开原日志内容，显示记录成功/记录失败/待处理、重试次数和最近失败原因。`sendStatus=0` 正常提交；日志状态包含历史占位/模拟结果，不代表第三方送达。仅失败 Mock5 提供确认后的单条人工重试，提交安全正整数编号；成功、待处理、未接通渠道均无重试入口，不安全 bigint 禁止写入。HTTP200 的业务 failed、total0 或矛盾结果不会显示成功，返回结果后刷新列表。后端成功重试保留旧 failReason，列名因此采用“最近失败原因”。
 
-### 4. 渠道活码
+验证分层：独立模拟 API 浏览器 14/14；实际 Chromium→Vite→gateway→auth/message→临时 PostgreSQL16/Redis 双企业链路 4/4，SQL 核验原6行无新增、归属与重试结果，cleanup 全通过。仅 Mock 成功，没有真实送达。完整命令、首轮定位错误、截图与限制见[消息日志真实 UI 报告](../../tests/2026-10-26-message-logs-real-ui.md)。
 
-```vue
-<template>
-  <div class="channel-qrcode">
-    <el-form :model="qrcodeForm">
-      <el-form-item label="活码名称">
-        <el-input v-model="qrcodeForm.name" />
-      </el-form-item>
-      
-      <el-form-item label="渠道来源">
-        <el-select v-model="qrcodeForm.channel">
-          <el-option label="抖音" value="douyin" />
-          <el-option label="小红书" value="xiaohongshu" />
-          <el-option label="线下门店" value="store" />
-        </el-select>
-      </el-form-item>
-      
-      <el-form-item label="分配员工">
-        <el-select v-model="qrcodeForm.staffIds" multiple>
-          <el-option 
-            v-for="staff in staffList"
-            :key="staff.id"
-            :label="staff.name"
-            :value="staff.id"
-          />
-        </el-select>
-      </el-form-item>
-      
-      <el-form-item label="欢迎语">
-        <el-input 
-          v-model="qrcodeForm.welcomeMsg" 
-          type="textarea"
-          rows="4"
-        />
-      </el-form-item>
-    </el-form>
-    
-    <!-- 生成的二维码预览 -->
-    <div v-if="qrcodeUrl" class="qrcode-preview">
-      <img :src="qrcodeUrl" alt="活码">
-      <el-button @click="downloadQRCode">下载二维码</el-button>
-    </div>
-  </div>
-</template>
-```
+### 通知历史、观测趋势与标签维护（2026-10-26）
 
----
+通知按20条分页并筛选全部/未读/已读，角标仅计未过期未读；请求失败保留上次已确认页，迟到响应不覆盖当前页。看板只读取已存储日表，缺日显示缺少观测、已存零显示0；库存是采集值，消息记录数不是送达数，历史事件日时区未获证明。打开看板不会隐式写入日聚合。
 
-## 🎨 UI组件示例
-
-### 客户卡片
-
-```vue
-<!-- components/business/customer-card.vue -->
-<template>
-  <el-card class="customer-card">
-    <div class="customer-header">
-      <user-avatar :src="customer.avatar" :name="customer.name" />
-      <div class="customer-info">
-        <h3>{{ customer.name }}</h3>
-        <span class="customer-mobile">{{ customer.mobile }}</span>
-      </div>
-    </div>
-    
-    <div class="customer-tags">
-      <el-tag 
-        v-for="tag in customer.tags"
-        :key="tag.id"
-        size="small"
-      >
-        {{ tag.name }}
-      </el-tag>
-    </div>
-    
-    <div class="customer-stats">
-      <div class="stat-item">
-        <span class="label">添加时间</span>
-        <span class="value">{{ formatDate(customer.addTime) }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="label">跟进次数</span>
-        <span class="value">{{ customer.followCount }}</span>
-      </div>
-    </div>
-  </el-card>
-</template>
-```
-
----
-
-## 📊 数据看板
-
-### 个人数据统计
-
-```typescript
-// composables/use-personal-stats.ts
-export const usePersonalStats = () => {
-  const stats = ref({
-    todayAddCount: 0,      // 今日新增客户
-    totalCustomerCount: 0, // 客户总数
-    sopTaskCount: 0,       // 待执行SOP
-    followUpCount: 0       // 待跟进客户
-  })
-  
-  const fetchStats = async () => {
-    const res = await statsApi.getPersonalStats()
-    stats.value = res.data
-  }
-  
-  return { stats, fetchStats }
-}
-```
-
----
-
-## 📞 联系方式
-
-- 负责人: [待填写]
-- 产品: [待填写]
-- 开发: [待填写]
-
----
-
-**端口**: 3003  
-**最后更新**: 2025-10-28
-
+标签编辑只提交可编辑白名单，保留现有类型、排序、自动标记与启用状态，父级仅显示；企业及主键不由表单指定。服务检查同企业父级、批量整体保存及完整客户标签集合，按企业事务锁防止同名并发写入；这不修复历史脏数据，也不约束绕过服务的手工SQL。详见标签、通知历史和观测日趋势专属验证报告。

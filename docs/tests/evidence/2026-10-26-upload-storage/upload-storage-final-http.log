@@ -1,0 +1,16 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-upload-storage-http-izJ8xK
+Build/start auth-service on free loopback port 62755
+Build/start asset-service on free loopback port 62756
+Build/start gateway-service on free loopback port 62757
+{"stage":"isolated-services-ready","pgPort":62639,"redisPort":62652,"ports":{"auth":62755,"asset":62756,"gateway":62757}}
+PASS binary multipart upload via v1 preserves bytes metadata and verified tenant
+PASS legacy multipart route also stores a unique exact object
+PASS unauthenticated multipart401 never contacts storage
+PASS strict metadata and multi-file400 reject before OSS
+PASS foreign category400 and per-type file size413 reject before OSS
+PASS database insert failure compensates exactly its uploaded UUID object
+PASS ambiguous OSS failure after local store deletes only its own key
+PASS compensation failure retains explicit reconciliation evidence without hiding primary failure
+PASS chunked actual multipart wire cap413 rejects before upstream side effects
+PASS all success/failure upload temp files and gateway spools are reclaimed
+Verified: owned service processes exited and disposable containers are absent.

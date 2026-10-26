@@ -1,0 +1,85 @@
+/opt/hostedtoolcache/node/20.20.2/x64/bin/node scripts/test/overnight-runtime-boot.cjs --oss-fixture
+Artifacts: /home/runner/work/_temp/open-scrm-runtime-boot-gvEN2D
+Clean build/start acquisition-service 42175
+acquisition-service: git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/acquisition-service/dist failed
+
+
+Clean build/start integration-service 36065
+integration-service: git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/integration-service/dist failed
+
+
+Clean build/start analytics-service 37893
+Clean build/start asset-service 32867
+asset-service: git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/asset-service/dist failed
+
+
+Clean build/start content-generation-service 42757
+content-generation-service: git check-ignore /home/runner/work/open-scrm/open-scrm/code/services/content-generation-service/dist failed
+
+
+{
+  "profile": "inert-oss-fixture",
+  "metadataTotals": {
+    "entities": 3,
+    "columns": 45
+  },
+  "services": [
+    {
+      "name": "acquisition-service",
+      "startup": "failed",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "integration-service",
+      "startup": "failed",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "analytics-service",
+      "startup": "passed",
+      "healthStatus": 200,
+      "readyStatus": 200,
+      "guard": {
+        "selfCheckPassed": true,
+        "blockedSelfChecks": 14,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "asset-service",
+      "startup": "failed",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    },
+    {
+      "name": "content-generation-service",
+      "startup": "failed",
+      "guard": {
+        "selfCheckPassed": false,
+        "blockedSelfChecks": 0,
+        "runtimeBlocked": []
+      }
+    }
+  ]
+}
+Verified owned processes stopped and disposable containers absent.
+AssertionError [ERR_ASSERTION]: Five-service boot verification incomplete; see individual service states
+    at main (/home/runner/work/open-scrm/open-scrm/code/scripts/test/overnight-runtime-boot.cjs:262:5)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '=='
+}

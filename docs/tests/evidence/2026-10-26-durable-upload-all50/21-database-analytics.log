@@ -1,0 +1,16 @@
+bash scripts/test/overnight-analytics-postgres.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+{
+  "scope": "PostgreSQL16 + analytics TypeORM/service, no HTTP",
+  "passed": 7,
+  "checks": [
+    "PostgreSQL16 and real analytics metadata initialize",
+    "missing day explicitly reports no snapshot rather than observed zero",
+    "existing snapshot carries availability, canonical counts and actual observation",
+    "date and enterprise filters do not leak another enterprise snapshot",
+    "range sums events but selects only the last inventory snapshot",
+    "customer attribution counts distinct actual own customers, not foreign or missing references",
+    "opposite enterprise customer attribution also excludes another enterprise customer ID"
+  ]
+}

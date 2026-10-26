@@ -1,8 +1,23 @@
-import { Controller, Post, Get, Put, Del, Query, Body, Inject, Files, Fields } from '@midwayjs/core';
+import { multipartUploadMetadata, cleanupUploadTemp, uploadTempPath } from '../util/asset-upload';
+import { httpError } from '@midwayjs/core';
+import { assetId } from '../util/asset-identity';
+import {
+  Controller,
+  Post,
+  Get,
+  Put,
+  Del,
+  Param,
+  Query,
+  Body,
+  Inject,
+  Files,
+  Fields
+} from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { AssetService } from '../service/asset.service';
-import { CreateAssetDto, UpdateAssetDto, QueryAssetDto, RecordAssetUsageDto } from '../dto/asset.dto';
+import { UpdateAssetDto, QueryAssetDto, RecordAssetUsageDto } from '../dto/asset.dto';
 import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/asset')
@@ -17,56 +32,43 @@ export class AssetController {
   async uploadAsset(@Files() files: any, @Fields() fields: any) {
     const { corpId, userId } = getTenantContext(this.ctx);
 
-    if (!files || files.length === 0) {
-      return {
-        success: false,
-        message: '请选择要上传的文件',
-      };
-    }
-
-    const file = files[0];
-    const dto: CreateAssetDto = {
-      name: fields.name || file.filename,
-      type: parseInt(fields.type),
-      categoryId: fields.categoryId ? parseInt(fields.categoryId) : undefined,
-      tags: fields.tags ? JSON.parse(fields.tags) : undefined,
-    };
-
     try {
+      if (!Array.isArray(files) || files.length !== 1) {
+        throw new httpError.BadRequestError('请上传一个文件');
+      }
+      const file = files[0];
+      const dto = multipartUploadMetadata(fields, file.filename);
       const asset = await this.assetService.uploadAsset(corpId, file, dto, userId);
-      return {
-        success: true,
-        data: asset,
-        message: '上传成功',
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        message: error.message || '上传失败',
-      };
+      return { success: true, data: asset, message: '上传成功' };
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      if (status && status >= 400 && status < 500) throw error;
+      return { success: false, message: (error as Error).message || '上传失败' };
+    } finally {
+      if (Array.isArray(files)) for (const file of files) cleanupUploadTemp(uploadTempPath(file));
     }
   }
 
   @Put('/:id')
   @Validate()
-  async updateAsset(@Query('id') id: string, @Body() dto: UpdateAssetDto) {
+  async updateAsset(@Param('id') id: string, @Body() dto: UpdateAssetDto) {
     const { corpId } = getTenantContext(this.ctx);
 
-    await this.assetService.updateAsset(corpId, parseInt(id), dto);
+    await this.assetService.updateAsset(corpId, assetId(id), dto);
     return {
       success: true,
-      message: '更新成功',
+      message: '更新成功'
     };
   }
 
   @Del('/:id')
-  async deleteAsset(@Query('id') id: string) {
+  async deleteAsset(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    await this.assetService.deleteAsset(corpId, parseInt(id));
+    await this.assetService.deleteAsset(corpId, assetId(id));
     return {
       success: true,
-      message: '删除成功',
+      message: '删除成功'
     };
   }
 
@@ -78,18 +80,18 @@ export class AssetController {
     const result = await this.assetService.queryAssets(corpId, query);
     return {
       success: true,
-      data: result,
+      data: result
     };
   }
 
   @Get('/:id')
-  async getAsset(@Query('id') id: string) {
+  async getAsset(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    const asset = await this.assetService.getAssetById(corpId, parseInt(id));
+    const asset = await this.assetService.getAssetById(corpId, assetId(id));
     return {
       success: true,
-      data: asset,
+      data: asset
     };
   }
 
@@ -101,8 +103,7 @@ export class AssetController {
     await this.assetService.recordUsage(corpId, dto, userId);
     return {
       success: true,
-      message: '记录成功',
+      message: '记录成功'
     };
   }
 }
-

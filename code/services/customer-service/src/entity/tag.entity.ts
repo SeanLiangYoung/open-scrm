@@ -15,7 +15,7 @@ export class TagEntity {
   tagType: number;
 
   @Column({ name: 'tag_color', type: 'varchar', length: 10, nullable: true, comment: '标签颜色' })
-  tagColor: string;
+  tagColor: string | null;
 
   @Column({ name: 'parent_id', type: 'int', unsigned: true, default: 0 })
   parentId: number;

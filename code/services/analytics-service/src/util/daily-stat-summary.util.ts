@@ -3,6 +3,7 @@
  */
 export type DailyStatRowInput = {
   statDate: Date | string;
+  updateTime?: Date | string;
   newCustomerCount: number;
   lostCustomerCount: number;
   activeCustomerCount: number;
@@ -20,7 +21,6 @@ export type DailyStatRangeSummary = {
   /** 区间内可累加的指标 */
   additive: {
     newCustomerCount: number;
-    lostCustomerCount: number;
     messageSendCount: number;
     messageSuccessCount: number;
     messageFailCount: number;
@@ -31,6 +31,10 @@ export type DailyStatRangeSummary = {
   snapshotAtEnd: {
     statDate: string;
     totalCustomerCount: number;
+    normalCustomerCount: number;
+    deletedCustomerCount: number;
+    enabledStaffCount: number;
+    snapshotObservedAt: Date | string | null;
     activeCustomerCount: number;
     activeStaffCount: number;
     totalStaffCount: number;
@@ -50,7 +54,6 @@ export function summarizeDailyStatRange(rows: DailyStatRowInput[]): DailyStatRan
     return {
       additive: {
         newCustomerCount: 0,
-        lostCustomerCount: 0,
         messageSendCount: 0,
         messageSuccessCount: 0,
         messageFailCount: 0,
@@ -66,7 +69,6 @@ export function summarizeDailyStatRange(rows: DailyStatRowInput[]): DailyStatRan
   const additive = sorted.reduce(
     (acc, r) => ({
       newCustomerCount: acc.newCustomerCount + (r.newCustomerCount || 0),
-      lostCustomerCount: acc.lostCustomerCount + (r.lostCustomerCount || 0),
       messageSendCount: acc.messageSendCount + (r.messageSendCount || 0),
       messageSuccessCount: acc.messageSuccessCount + (r.messageSuccessCount || 0),
       messageFailCount: acc.messageFailCount + (r.messageFailCount || 0),
@@ -75,7 +77,6 @@ export function summarizeDailyStatRange(rows: DailyStatRowInput[]): DailyStatRan
     }),
     {
       newCustomerCount: 0,
-      lostCustomerCount: 0,
       messageSendCount: 0,
       messageSuccessCount: 0,
       messageFailCount: 0,
@@ -90,6 +91,10 @@ export function summarizeDailyStatRange(rows: DailyStatRowInput[]): DailyStatRan
     snapshotAtEnd: {
       statDate: dayKey(end.statDate),
       totalCustomerCount: end.totalCustomerCount,
+      normalCustomerCount: end.activeCustomerCount,
+      deletedCustomerCount: end.lostCustomerCount,
+      enabledStaffCount: end.activeStaffCount,
+      snapshotObservedAt: end.updateTime ?? null,
       activeCustomerCount: end.activeCustomerCount,
       activeStaffCount: end.activeStaffCount,
       totalStaffCount: end.totalStaffCount,

@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Query, Param, Inject } from '@midwayjs/core';
+import { channelId } from '../util/channel-id.util';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
@@ -45,7 +46,7 @@ export class AcquisitionApiController {
   @Get('/channel-codes/:id')
   async getOne(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const code = await this.channelCodeService.getById(corpId, parseInt(id, 10));
+    const code = await this.channelCodeService.getById(corpId, channelId(id));
     if (!code) {
       this.ctx.status = 404;
       return { success: false, message: '活码不存在' };
@@ -64,7 +65,7 @@ export class AcquisitionApiController {
   @Get('/channel-codes/:id/scan-touches/latest')
   async latestScanTouch(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const row = await this.channelCodeService.getLatestScanTouch(corpId, parseInt(id, 10));
+    const row = await this.channelCodeService.getLatestScanTouch(corpId, channelId(id));
     return {
       success: true,
       data: row,
@@ -75,7 +76,7 @@ export class AcquisitionApiController {
   @Validate()
   async ingestScan(@Param('id') id: string, @Body() dto: IngestChannelScanDto) {
     const { corpId } = getTenantContext(this.ctx);
-    const data = await this.channelCodeService.recordScanEvent(corpId, parseInt(id, 10), dto);
+    const data = await this.channelCodeService.recordScanEvent(corpId, channelId(id), dto);
     return {
       success: true,
       data,

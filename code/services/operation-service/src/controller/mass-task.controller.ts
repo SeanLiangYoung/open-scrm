@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, Param, Query, Inject } from '@midwayjs/core';
+import { Controller, Post, Get, Body, Param, Query, Inject, httpError } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { MassTaskService } from '../service/mass-task.service';
@@ -59,7 +59,11 @@ export class MassTaskController {
   async cancelTask(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    const result = await this.massTaskService.cancelTask(parseInt(id), corpId);
+    const taskId = Number(id);
+    if (typeof id !== 'string' || !/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(taskId)) {
+      throw new httpError.BadRequestError('taskId 必须为安全的十进制正整数');
+    }
+    const result = await this.massTaskService.cancelTask(taskId, corpId);
     return {
       success: true,
       data: result,

@@ -68,7 +68,15 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { Odometer, User, UserFilled, Key, Setting, Monitor, EditPen } from '@element-plus/icons-vue';
+import {
+  Odometer,
+  User,
+  UserFilled,
+  Key,
+  Setting,
+  Monitor,
+  EditPen
+} from '@element-plus/icons-vue';
 import { useAuthStore } from '@/stores/auth';
 
 const route = useRoute();
@@ -82,7 +90,7 @@ const pageTitle = computed(() => {
     '/roles': '角色权限',
     '/settings': '系统设置',
     '/monitor': '服务监控',
-    '/content-studio': '创作中心',
+    '/content-studio': '创作中心'
   };
   if (route.path.startsWith('/content-studio/')) {
     return '创作中心 · 编辑';

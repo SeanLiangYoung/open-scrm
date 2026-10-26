@@ -49,4 +49,19 @@ describe('summarizeDailyStatRange', () => {
     expect(r.snapshotAtEnd?.activeStaffCount).toBe(2);
     expect(r.snapshotAtEnd?.totalStaffCount).toBe(8);
   });
+
+  it('does not add the same deleted customer snapshot across seven days', () => {
+    const rows = Array.from({ length: 7 }, (_, i) => ({
+      statDate: `2026-04-0${i + 1}`, newCustomerCount: 0,
+      lostCustomerCount: 1, activeCustomerCount: 9, totalCustomerCount: 10,
+      activeStaffCount: 2, totalStaffCount: 3,
+      messageSendCount: 0, messageSuccessCount: 0, messageFailCount: 0,
+      sopExecuteCount: 0, sopSuccessCount: 0,
+    }));
+    const result = summarizeDailyStatRange(rows);
+    expect(result.additive).not.toHaveProperty('lostCustomerCount');
+    expect(result.snapshotAtEnd).toMatchObject({
+      deletedCustomerCount: 1, normalCustomerCount: 9, enabledStaffCount: 2,
+    });
+  });
 });

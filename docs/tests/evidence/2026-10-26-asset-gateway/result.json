@@ -1,0 +1,43 @@
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-gateway-http-7FgY49",
+  "ports": {
+    "auth": 63691,
+    "asset": 63692,
+    "gateway": 63693
+  },
+  "pgPort": 63675,
+  "redisPort": 63678,
+  "checks": [
+    "asset and category entry points require access JWT",
+    "v1 and legacy detail routes use path IDs, not forged query IDs",
+    "safe MAX BIGINT detail remains exact through gateway",
+    "category routes take precedence and preserve tenant filtering",
+    "gateway replaces forged tenant headers",
+    "malformed paths400 preserve local row, category overflow400",
+    "foreign categories400 and malformed JSON references422 without writes",
+    "legitimate category filtering update and creation work",
+    "foreign parent and cyclic hierarchy rejected via actual DTO/controller",
+    "foreign usage404 leaves zero usage, concurrent ten usage requests count exactly ten",
+    "actual counter failure500 rolls back usage insertion",
+    "referenced category deletion400 and unrelated prefix404"
+  ],
+  "checkCount": 12,
+  "runtimeExternalAttempts": 0,
+  "ossCalls": 0,
+  "expectedUsageRows": 10,
+  "testsPassed": true,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "childPids": [
+      20259,
+      20279,
+      20295
+    ],
+    "containerIds": [
+      "de7d1cb6ba12ea0b2f051fdcc16fe414a9f85976b502748102fd74a301697de7",
+      "26be521d50efb506dece5f72a277872a2ffbca75b86440696965bce8e92135f4"
+    ]
+  },
+  "passed": true
+}

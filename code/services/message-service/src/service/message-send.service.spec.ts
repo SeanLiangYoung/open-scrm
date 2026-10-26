@@ -29,6 +29,7 @@ describe('MessageSendService.sendMessage 幂等', () => {
       id: 42,
       corpId: 1,
       sendStatus: 1,
+      messageType: 5,
       content: 'hello',
       failReason: null,
       externalId: null,
@@ -39,7 +40,7 @@ describe('MessageSendService.sendMessage 幂等', () => {
     const svc = makeService({ findOne, create, save });
 
     const result = await svc.sendMessage(1, {
-      messageType: 2,
+      messageType: 5,
       targetType: 1,
       targetIds: [99],
       content: 'x',
@@ -63,7 +64,7 @@ describe('MessageSendService.sendMessage 幂等', () => {
     });
     await expect(
       svc.sendMessage(1, {
-        messageType: 2,
+        messageType: 5,
         targetType: 1,
         targetIds: [1, 2],
         content: 'x',
@@ -77,6 +78,7 @@ describe('MessageSendService.sendMessage 幂等', () => {
       id: 7,
       corpId: 1,
       sendStatus: 1,
+      messageType: 5,
       content: 'done',
       failReason: null,
       externalId: null,
@@ -96,7 +98,7 @@ describe('MessageSendService.sendMessage 幂等', () => {
     const svc = makeService({ findOne, create, save });
 
     const result = await svc.sendMessage(1, {
-      messageType: 2,
+      messageType: 5,
       targetType: 1,
       targetIds: [5],
       content: 'c',

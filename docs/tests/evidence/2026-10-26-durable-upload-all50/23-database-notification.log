@@ -1,0 +1,15 @@
+bash scripts/test/overnight-notification-postgres.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+{
+  "scope": "PostgreSQL16 + notification TypeORM/service; no HTTP or external delivery",
+  "passed": 6,
+  "checks": [
+    "PostgreSQL16 and real notification metadata initialize",
+    "enabled own recipients are deduplicated with optional data preserved",
+    "foreign, disabled and missing recipients reject entire mixed batches without writes",
+    "empty, malformed and unsafe recipient batches reject without writes",
+    "second-row database failure leaves no first-row notification",
+    "shared recipient lock blocks disable until complete batch commit"
+  ]
+}

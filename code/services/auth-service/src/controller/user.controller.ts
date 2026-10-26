@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Put, Del, Body, Param, Query, Inject } from '@midwayjs/core';
 import { UserService } from '../service/user.service';
 import { Validate, Rule, RuleType } from '@midwayjs/validate';
+import { adminUserId } from '../util/admin-user-validation';
 
-class CreateUserDto {
+export class CreateUserDto {
   @Rule(RuleType.string().required())
   username: string;
 
@@ -22,7 +23,7 @@ class CreateUserDto {
   email?: string;
 }
 
-class UpdateUserDto {
+export class UpdateUserDto {
   @Rule(RuleType.string().optional())
   realName?: string;
 
@@ -34,6 +35,20 @@ class UpdateUserDto {
 
   @Rule(RuleType.number().optional().valid(0, 1))
   status?: number;
+}
+
+export class ResetPasswordDto {
+  @Rule(RuleType.string().min(8).required())
+  newPassword: string;
+}
+
+export class AssignRolesDto {
+  @Rule(
+    RuleType.array()
+      .items(RuleType.number().strict().integer().min(1).max(2_147_483_647))
+      .required()
+  )
+  roleIds: number[];
 }
 
 @Controller('/api/v1/users')
@@ -53,42 +68,39 @@ export class UserController {
     @Query('pageSize') pageSize = 20,
     @Query('keyword') keyword?: string
   ) {
-    return await this.userService.listUsers(
-      Number(page),
-      Number(pageSize),
-      keyword
-    );
+    return await this.userService.listUsers(Number(page), Number(pageSize), keyword);
   }
 
   @Get('/:id')
-  async getUser(@Param('id') id: number) {
-    return await this.userService.getUserById(Number(id));
+  async getUser(@Param('id') id: string) {
+    return await this.userService.getUserById(this.pathId(id));
   }
 
   @Put('/:id')
   @Validate()
-  async updateUser(@Param('id') id: number, @Body() dto: UpdateUserDto) {
-    return await this.userService.updateUser(Number(id), dto);
+  async updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    return await this.userService.updateUser(this.pathId(id), dto);
   }
 
   @Del('/:id')
-  async deleteUser(@Param('id') id: number) {
-    return await this.userService.deleteUser(Number(id));
+  async deleteUser(@Param('id') id: string) {
+    return await this.userService.deleteUser(this.pathId(id));
   }
 
   @Post('/:id/reset-password')
-  async resetPassword(
-    @Param('id') id: number,
-    @Body('newPassword') newPassword: string
-  ) {
-    return await this.userService.resetPassword(Number(id), newPassword);
+  @Validate({ errorStatus: 400 })
+  async resetPassword(@Param('id') id: string, @Body() dto: ResetPasswordDto) {
+    return await this.userService.resetPassword(this.pathId(id), dto.newPassword);
   }
 
   @Post('/:id/roles')
-  async assignRoles(
-    @Param('id') id: number,
-    @Body('roleIds') roleIds: number[]
-  ) {
-    return await this.userService.assignRoles(Number(id), roleIds);
+  @Validate({ errorStatus: 400 })
+  async assignRoles(@Param('id') id: string, @Body() dto: AssignRolesDto) {
+    return await this.userService.assignRoles(this.pathId(id), dto.roleIds);
+  }
+  private pathId(value: string): number {
+    // Keep the route value a string: reflection must not coerce 2e0 into 2 first.
+    if (typeof value !== 'string') return adminUserId(undefined);
+    return adminUserId(value);
   }
 }

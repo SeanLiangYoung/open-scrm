@@ -1,0 +1,10 @@
+import { describe,it,expect,vi } from 'vitest';
+import { ContentSourceController } from './content-source.controller';
+import { GenerationController } from './generation.controller';
+const entries=['source-get','source-update','source-delete','compose','generate','job-get','variant-get','variant-update','push','batch-push'] as const;
+function setup(){const c=new ContentSourceController(),g=new GenerationController();const ctx={get:(k:string)=>({'x-corp-id':'1','x-user-id':'9'}[k]||''),headers:{'x-corp-id':'1','x-user-id':'9'},state:{}};c.ctx=g.ctx=ctx as any;const source={getSource:vi.fn(),updateSource:vi.fn(),deleteSource:vi.fn()},compose=vi.fn(),gen={startGeneration:vi.fn(),getJob:vi.fn(),getVariant:vi.fn(),updateVariant:vi.fn(),pushVariantDraft:vi.fn(),batchPushDrafts:vi.fn()};c.contentSourceService=source as any;c.contentComposeService={compose} as any;g.generationService=gen as any;const spies=[...Object.values(source),compose,...Object.values(gen)];
+ const call=(kind:typeof entries[number],id:string)=>kind==='source-get'?c.get(id):kind==='source-update'?c.update(id,{title:'safe'}):kind==='source-delete'?c.remove(id):kind==='compose'?c.compose(id,{}):kind==='generate'?g.generate(id,{channels:['tweet']}):kind==='job-get'?g.getJob(id):kind==='variant-get'?g.getVariant(id):kind==='variant-update'?g.updateVariant(id,{title:'safe'}):kind==='push'?g.pushDraft(id,{platform:'x',accountId:1,contentType:1}):g.pushDrafts(id,{items:[]});return{call,spies};}
+describe('Studio canonical path identity',()=>{
+ for(const entry of entries){it.each(['1e0','0x1',' 1','01','1tail','0','-1','1.5','9007199254740993'])(`${entry} invalid %s rejects400 before service/outbound`,async id=>{const t=setup();await expect(t.call(entry,id)).rejects.toMatchObject({status:400});t.spies.forEach(s=>expect(s).not.toHaveBeenCalled())});
+ it(`${entry} keeps safe bigint max beyond int32`,async()=>{const t=setup();await t.call(entry,String(Number.MAX_SAFE_INTEGER));const spy=t.spies.find(s=>s.mock.calls.length)!;expect(spy.mock.calls[0][0]).toBe(1);expect(spy.mock.calls[0][1]).toBe(Number.MAX_SAFE_INTEGER)});}
+});

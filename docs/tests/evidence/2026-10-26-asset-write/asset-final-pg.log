@@ -1,0 +1,15 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-asset-write-pg-98GQ9g
+PASS PG16 actual metadata and BIGINT safeMAX lookup
+PASS invalid asset/category paths reject before SQL updates
+PASS foreign and missing categories reject without changing local asset
+PASS valid category update preserves omitted name and foreign target rejects
+PASS foreign parent and hierarchy cycles reject atomically
+PASS root creation and local parent update work
+PASS referenced categories refuse deletion while empty category can be deleted
+PASS foreign/missing usage does not persist orphan rows
+PASS 30 concurrent usage writes preserve exact count and receipts
+PASS usage insert failure rolls back with count unchanged
+PASS counter failure rolls back newly inserted usage
+PASS concurrent opposite parent changes cannot commit a cycle
+PASS category deletion blocks concurrent reassignment then rejects without orphan
+Owned PostgreSQL removed and absence confirmed.

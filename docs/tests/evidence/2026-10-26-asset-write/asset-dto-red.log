@@ -1,0 +1,69 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run "src/dto/asset-reference.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/dto/asset-reference.spec.ts (14 tests | 9 failed) 21ms
+   × rejects invalid JSON category 0 9ms
+     → expected undefined to be defined
+   × rejects invalid JSON category -1 2ms
+     → expected undefined to be defined
+   × rejects invalid JSON category 1.5 1ms
+     → expected undefined to be defined
+   × rejects invalid JSON category 2147483648 0ms
+     → expected undefined to be defined
+   × rejects invalid JSON category "1" 1ms
+     → expected undefined to be defined
+   × rejects invalid JSON usage asset 0 1ms
+     → expected undefined to be defined
+   × rejects invalid JSON usage asset -1 1ms
+     → expected undefined to be defined
+   × rejects invalid JSON usage asset 1.5 1ms
+     → expected undefined to be defined
+   × rejects invalid JSON usage asset "1" 1ms
+     → expected undefined to be defined
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON category 0
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON category -1
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON category 1.5
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON category 2147483648
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON category "1"
+AssertionError: expected undefined to be defined
+ ❯ src/dto/asset-reference.spec.ts:7:90
+      5| for (const value of [0, -1, 1.5, 2147483648, '1', null]) {
+      6|   it(`rejects invalid JSON category ${JSON.stringify(value)}`, () => {
+      7|     expect(getSchema(CreateAssetDto).validate({name:'x',type:1,categor…
+       |                                                                                          ^
+      8|     expect(getSchema(UpdateAssetDto).validate({categoryId:value}).erro…
+      9|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON usage asset 0
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON usage asset -1
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON usage asset 1.5
+ FAIL  src/dto/asset-reference.spec.ts > rejects invalid JSON usage asset "1"
+AssertionError: expected undefined to be defined
+ ❯ src/dto/asset-reference.spec.ts:13:94
+     11| for (const value of [0, -1, 1.5, Number.MAX_SAFE_INTEGER+1, '1', null]…
+     12|   it(`rejects invalid JSON usage asset ${JSON.stringify(value)}`, () =…
+     13|     expect(getSchema(RecordAssetUsageDto).validate({assetId:value,useT…
+       |                                                                                              ^
+     14|   });
+     15| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ Test Files  1 failed (1)
+      Tests  9 failed | 5 passed (14)
+   Start at  22:41:04
+   Duration  557ms (transform 50ms, setup 0ms, collect 182ms, tests 21ms, environment 0ms, prepare 87ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run "src/dto/asset-reference.spec.ts"`
+Exit status 1

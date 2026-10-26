@@ -1,4 +1,5 @@
-import { Controller, Post, Get, Put, Del, Query, Body, Inject } from '@midwayjs/core';
+import { categoryId } from '../util/asset-identity';
+import { Controller, Post, Get, Put, Del, Param, Body, Inject } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { AssetCategoryService } from '../service/asset-category.service';
@@ -22,30 +23,30 @@ export class AssetCategoryController {
     return {
       success: true,
       data: category,
-      message: '创建成功',
+      message: '创建成功'
     };
   }
 
   @Put('/:id')
   @Validate()
-  async updateCategory(@Query('id') id: string, @Body() dto: UpdateCategoryDto) {
+  async updateCategory(@Param('id') id: string, @Body() dto: UpdateCategoryDto) {
     const { corpId } = getTenantContext(this.ctx);
 
-    await this.assetCategoryService.updateCategory(corpId, parseInt(id), dto);
+    await this.assetCategoryService.updateCategory(corpId, categoryId(id), dto);
     return {
       success: true,
-      message: '更新成功',
+      message: '更新成功'
     };
   }
 
   @Del('/:id')
-  async deleteCategory(@Query('id') id: string) {
+  async deleteCategory(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
 
-    await this.assetCategoryService.deleteCategory(corpId, parseInt(id));
+    await this.assetCategoryService.deleteCategory(corpId, categoryId(id));
     return {
       success: true,
-      message: '删除成功',
+      message: '删除成功'
     };
   }
 
@@ -56,7 +57,7 @@ export class AssetCategoryController {
     const tree = await this.assetCategoryService.getCategoryTree(corpId);
     return {
       success: true,
-      data: tree,
+      data: tree
     };
   }
 
@@ -67,8 +68,7 @@ export class AssetCategoryController {
     const list = await this.assetCategoryService.getCategoryList(corpId);
     return {
       success: true,
-      data: list,
+      data: list
     };
   }
 }
-

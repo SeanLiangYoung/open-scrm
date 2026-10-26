@@ -1,5 +1,5 @@
 <template>
-  <div class="content-studio-editor" v-loading="loading">
+  <div v-loading="loading" class="content-studio-editor">
     <el-steps :active="activeStep" finish-status="success" align-center class="wizard-steps">
       <el-step title="选材" description="搜索并勾选 wiki 记录" />
       <el-step title="合成核心稿" description="LLM 生成标题与正文" />
@@ -25,7 +25,7 @@
           style="margin-bottom: 12px"
         />
         <el-input v-model="kbSearchQuery" placeholder="搜索 llm-wiki" />
-        <el-button style="margin-top: 8px" @click="searchKb" :loading="kbSearching">检索</el-button>
+        <el-button style="margin-top: 8px" :loading="kbSearching" @click="searchKb">检索</el-button>
         <el-empty v-if="!kbHits.length" description="暂无命中" />
         <el-checkbox-group v-model="selectedKbPaths" style="width: 100%">
           <div v-for="hit in kbHits" :key="hit.path" class="kb-hit">
@@ -53,7 +53,9 @@
 
       <!-- Step 2: 合成 -->
       <div v-show="activeStep === 1">
-        <p class="step-hint">基于已选 {{ selectedKbPaths.length }} 条 wiki 记录，由 LLM 合成核心标题、摘要与正文。</p>
+        <p class="step-hint">
+          基于已选 {{ selectedKbPaths.length }} 条 wiki 记录，由 LLM 合成核心标题、摘要与正文。
+        </p>
         <el-form label-width="100px">
           <el-form-item label="语气">
             <el-input v-model="form.tone" placeholder="如：专业、轻松" />
@@ -62,7 +64,12 @@
             <el-input v-model="form.targetAudience" placeholder="如：创作者、运营" />
           </el-form-item>
           <el-form-item label="补充意图">
-            <el-input v-model="composeInstruction" type="textarea" :rows="2" placeholder="可选：希望强调的角度" />
+            <el-input
+              v-model="composeInstruction"
+              type="textarea"
+              :rows="2"
+              placeholder="可选：希望强调的角度"
+            />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" :loading="composing" @click="runCompose">
@@ -99,7 +106,14 @@
             <el-input v-model="form.body" type="textarea" :rows="10" />
           </el-form-item>
           <el-form-item label="关键词">
-            <el-select v-model="form.keywords" multiple filterable allow-create default-first-option style="width: 100%" />
+            <el-select
+              v-model="form.keywords"
+              multiple
+              filterable
+              allow-create
+              default-first-option
+              style="width: 100%"
+            />
           </el-form-item>
           <el-form-item>
             <el-button type="primary" :loading="saving" @click="saveFinalizedSource">
@@ -148,20 +162,28 @@
             <el-input v-model="variant.body" type="textarea" :rows="10" />
             <div v-if="citations(variant).length" class="citations">
               <div class="citations-title">引用来源</div>
-              <el-tag v-for="c in citations(variant)" :key="c.path" size="small" style="margin: 4px">
+              <el-tag
+                v-for="c in citations(variant)"
+                :key="c.path"
+                size="small"
+                style="margin: 4px"
+              >
                 {{ c.title }} · {{ c.path }}
               </el-tag>
             </div>
             <el-form label-width="90px" style="margin-top: 12px">
               <el-form-item label="平台">
-                <el-input :model-value="platformLabel(variantPushPlan(variant.id).platform)" disabled />
+                <el-input
+                  :model-value="platformLabel(variantPushPlan(variant.id).platform)"
+                  disabled
+                />
               </el-form-item>
               <el-form-item label="发布账号">
                 <el-select
                   v-model="variantPushPlan(variant.id).accountId"
                   style="width: 100%"
                   placeholder="选择平台账号"
-                  @visible-change="visible => visible && loadAccountsForVariant(variant)"
+                  @visible-change="(visible: boolean) => visible && loadAccountsForVariant(variant)"
                 >
                   <el-option
                     v-for="account in accountsForPlatform(variantPushPlan(variant.id).platform)"
@@ -218,7 +240,12 @@
 import { onMounted, reactive, ref, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { contentStudioApi, type ContentSource, type ContentVariant, type KbCitation } from '@/api/contentStudio';
+import {
+  contentStudioApi,
+  type ContentSource,
+  type ContentVariant,
+  type KbCitation
+} from '@/api/contentStudio';
 
 interface Citation extends KbCitation {}
 
@@ -240,14 +267,14 @@ const CHANNEL_PLATFORM: Record<string, string> = {
   wechat_article: 'wechat',
   short_video_script: 'douyin',
   long_video_script: 'douyin',
-  douyin_caption: 'douyin',
+  douyin_caption: 'douyin'
 };
 
 const PLATFORM_LABELS: Record<string, string> = {
   xiaohongshu: '小红书',
   douyin: '抖音',
   wechat: '微信公众号',
-  twitter: 'X / Twitter',
+  twitter: 'X / Twitter'
 };
 
 const route = useRoute();
@@ -271,7 +298,15 @@ const composeInstruction = ref('');
 const composeStatus = ref<ContentSource['composeStatus']>('draft');
 const activeStep = ref(0);
 const variants = ref<ContentVariant[]>([]);
-const drafts = ref<Array<{ id: number; title?: string | null; platform: string; status: number; platformContentId?: string | null }>>([]);
+const drafts = ref<
+  Array<{
+    id: number;
+    title?: string | null;
+    platform: string;
+    status: number;
+    platformContentId?: string | null;
+  }>
+>([]);
 const activeVariantTab = ref('');
 const selectedChannels = ref(['tweet', 'xhs_graphic']);
 const variantPushPlans = reactive<Record<number, VariantPushPlan>>({});
@@ -285,17 +320,18 @@ const form = reactive({
   tone: '',
   targetAudience: '',
   kbEnabled: true,
-  kbQuery: '',
+  kbQuery: ''
 });
 
 const publishingDraftId = ref<number | null>(null);
 
-const canBatchPublish = computed(() =>
-  variants.value.length > 0 &&
-  variants.value.every(v => {
-    const plan = variantPushPlans[v.id];
-    return plan?.accountId != null && plan.accountId > 0;
-  })
+const canBatchPublish = computed(
+  () =>
+    variants.value.length > 0 &&
+    variants.value.every(v => {
+      const plan = variantPushPlans[v.id];
+      return plan?.accountId != null && plan.accountId > 0;
+    })
 );
 
 function platformForChannel(channel: string): string {
@@ -312,7 +348,7 @@ function variantPushPlan(variantId: number): VariantPushPlan {
     variantPushPlans[variantId] = {
       platform: platformForChannel(variant?.channel ?? ''),
       accountId: null,
-      contentType: 1,
+      contentType: 1
     };
   }
   return variantPushPlans[variantId];
@@ -360,7 +396,7 @@ function draftStatusLabel(status: number) {
     0: '草稿',
     1: '已发布',
     2: '失败',
-    3: '发布中',
+    3: '发布中'
   };
   return map[status] ?? String(status);
 }
@@ -395,7 +431,7 @@ async function saveSelectedPaths() {
   const kbCitations = buildSelectedCitations();
   await contentStudioApi.updateSource(sourceId, {
     kbSelectedPaths: [...selectedKbPaths.value],
-    kbCitations,
+    kbCitations
   });
 }
 
@@ -444,7 +480,7 @@ async function saveFinalizedSource() {
   try {
     await contentStudioApi.updateSource(sourceId, {
       ...form,
-      composeStatus: 'finalized',
+      composeStatus: 'finalized'
     });
     composeStatus.value = 'finalized';
     ElMessage.success('定稿已保存');
@@ -465,7 +501,7 @@ async function searchKb() {
     const res = await contentStudioApi.kbSearch({
       query: kbSearchQuery.value,
       topK: 5,
-      includeContent: false,
+      includeContent: false
     });
     kbHits.value = res.data?.citations ?? res.data?.results ?? [];
     syncCitationMapFromHits(kbHits.value);
@@ -488,7 +524,7 @@ async function runCompose() {
       paths: [...selectedKbPaths.value],
       tone: form.tone || undefined,
       targetAudience: form.targetAudience || undefined,
-      instruction: composeInstruction.value || undefined,
+      instruction: composeInstruction.value || undefined
     });
     const data = res.data as ContentSource & { citations?: Citation[] };
     form.title = data.title ?? form.title;
@@ -546,7 +582,7 @@ async function runGenerate() {
     const res = await contentStudioApi.generate(sourceId, {
       channels: selectedChannels.value,
       kbEnabled: form.kbEnabled,
-      kbQuery: form.kbQuery || undefined,
+      kbQuery: form.kbQuery || undefined
     });
     const jobId = res.data?.jobId ?? res.data?.data?.jobId;
     const status = res.data?.status ?? res.data?.data?.status;
@@ -630,7 +666,7 @@ async function batchPushAndPublish() {
         variantId: variant.id,
         platform: plan.platform,
         accountId: plan.accountId as number,
-        contentType: plan.contentType,
+        contentType: plan.contentType
       };
     });
     const pushRes = await contentStudioApi.pushDrafts(sourceId, { items });

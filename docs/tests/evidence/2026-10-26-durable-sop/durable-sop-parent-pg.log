@@ -1,0 +1,38 @@
+DURABLE_SOP_OWNED_CONTAINER 4820b6a854cf8f964d37b7ea3f19a1d7f895993151cb5d0f285c8063712bb16f
+PASS migration terminates legacy running and paused rows once, preserving progress/logs
+PASS invalid persisted template still creates failed execution history without dispatch
+PASS 365-day absolute deadline and immutable snapshot persist; no long Node timer
+PASS waiting worker OS restart preserves deadline and fires only after due
+PASS row saved without local kick is picked up by two OS workers only once
+PASS already-running independent workers compete for newly inserted due work
+PASS expired pre-action claim is recovered and stale token cannot record progress
+PASS after-marker OS crash fails unknown outcome closed, no replay
+PASS after-receipt OS crash fails unknown outcome closed, no replay
+PASS pause/resume during in-flight action retains ownership and never dispatches twice
+PASS late final success preserves pause, then resume completes without replay
+PASS cancel in-flight preserves terminal status while recording confirmed progress
+PASS paused action failure cannot resume/replay and retains original evidence
+PASS migration reapplied after new data preserves completed pause and action failure evidence
+PASS pause/cancel before due and other-tenant control never dispatch
+{
+  "scope": "current-source PG16 + actual OS worker restart/claims, controlled DB receipt side effects; no real sends",
+  "passed": 15,
+  "checks": [
+    "migration terminates legacy running and paused rows once, preserving progress/logs",
+    "invalid persisted template still creates failed execution history without dispatch",
+    "365-day absolute deadline and immutable snapshot persist; no long Node timer",
+    "waiting worker OS restart preserves deadline and fires only after due",
+    "row saved without local kick is picked up by two OS workers only once",
+    "already-running independent workers compete for newly inserted due work",
+    "expired pre-action claim is recovered and stale token cannot record progress",
+    "after-marker OS crash fails unknown outcome closed, no replay",
+    "after-receipt OS crash fails unknown outcome closed, no replay",
+    "pause/resume during in-flight action retains ownership and never dispatches twice",
+    "late final success preserves pause, then resume completes without replay",
+    "cancel in-flight preserves terminal status while recording confirmed progress",
+    "paused action failure cannot resume/replay and retains original evidence",
+    "migration reapplied after new data preserves completed pause and action failure evidence",
+    "pause/cancel before due and other-tenant control never dispatch"
+  ]
+}
+DURABLE_SOP_CLEANUP container=4820b6a854cf8f964d37b7ea3f19a1d7f895993151cb5d0f285c8063712bb16f passed=true

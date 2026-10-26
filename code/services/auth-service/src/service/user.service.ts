@@ -1,9 +1,10 @@
-import { Inject, Provide } from '@midwayjs/core';
+import { Inject, Provide, httpError } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, Like } from 'typeorm';
 import { UserEntity } from '../entity/user.entity';
 import { RoleEntity } from '../entity/role.entity';
 import { PasswordUtil } from '../util/password.util';
+import { adminNewPassword, adminRoleIds, adminUserId } from '../util/admin-user-validation';
 
 @Provide()
 export class UserService {
@@ -25,7 +26,7 @@ export class UserService {
     email?: string;
   }) {
     const existing = await this.userRepo.findOne({
-      where: { username: data.username, corpId: data.corpId },
+      where: { username: data.username, corpId: data.corpId }
     });
     if (existing) {
       throw new Error('用户名已存在');
@@ -37,7 +38,7 @@ export class UserService {
       ...data,
       password: hashedPassword,
       status: 1,
-      isAdmin: 0,
+      isAdmin: 0
     });
 
     const saved = await this.userRepo.save(user);
@@ -56,7 +57,7 @@ export class UserService {
       relations: ['roles'],
       skip: (page - 1) * pageSize,
       take: pageSize,
-      order: { id: 'DESC' },
+      order: { id: 'DESC' }
     });
 
     return {
@@ -64,14 +65,15 @@ export class UserService {
       total,
       page,
       pageSize,
-      totalPages: Math.ceil(total / pageSize),
+      totalPages: Math.ceil(total / pageSize)
     };
   }
 
   async getUserById(id: number) {
+    id = adminUserId(id);
     const user = await this.userRepo.findOne({
       where: { id },
-      relations: ['roles'],
+      relations: ['roles']
     });
     if (!user) {
       throw new Error('用户不存在');
@@ -83,6 +85,7 @@ export class UserService {
     id: number,
     data: { realName?: string; mobile?: string; email?: string; status?: number }
   ) {
+    id = adminUserId(id);
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new Error('用户不存在');
@@ -92,6 +95,7 @@ export class UserService {
   }
 
   async deleteUser(id: number) {
+    id = adminUserId(id);
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new Error('用户不存在');
@@ -104,6 +108,8 @@ export class UserService {
   }
 
   async resetPassword(id: number, newPassword: string) {
+    id = adminUserId(id);
+    newPassword = adminNewPassword(newPassword);
     const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new Error('用户不存在');
@@ -114,17 +120,33 @@ export class UserService {
   }
 
   async assignRoles(userId: number, roleIds: number[]) {
-    const user = await this.userRepo.findOne({
-      where: { id: userId },
-      relations: ['roles'],
+    userId = adminUserId(userId);
+    const ids = adminRoleIds(roleIds);
+    return this.userRepo.manager.transaction(async manager => {
+      const users = manager.getRepository(UserEntity);
+      const rolesRepository = manager.getRepository(RoleEntity);
+      // Serialize replacement/clear for this user without locking nullable joins.
+      const user = await users.findOne({
+        where: { id: userId },
+        lock: { mode: 'pessimistic_write' }
+      });
+      if (!user) throw new Error('用户不存在');
+      // Global administrator semantics are retained: no new corp filter is imposed.
+      // Lock all selected role rows until the full relation update commits.
+      const roles = ids.length
+        ? await rolesRepository
+            .createQueryBuilder('role')
+            .where('role.id IN (:...ids)', { ids })
+            .orderBy('role.id', 'ASC')
+            .setLock('pessimistic_read')
+            .getMany()
+        : [];
+      const existing = new Set(roles.map(role => String(role.id)));
+      if (ids.some(id => !existing.has(String(id))))
+        throw new httpError.BadRequestError('角色必须全部存在，未更新任何角色');
+      user.roles = roles;
+      await users.save(user);
+      return users.findOne({ where: { id: userId }, relations: ['roles'] });
     });
-    if (!user) {
-      throw new Error('用户不存在');
-    }
-
-    const roles = await this.roleRepo.findByIds(roleIds);
-    user.roles = roles;
-    await this.userRepo.save(user);
-    return await this.getUserById(userId);
   }
 }

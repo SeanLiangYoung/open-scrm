@@ -11,7 +11,7 @@
         </div>
       </template>
 
-      <el-table :data="sources" v-loading="loading" stripe>
+      <el-table v-loading="loading" :data="sources" stripe>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="title" label="标题" min-width="200" />
         <el-table-column prop="kbEnabled" label="知识库" width="100">
@@ -62,7 +62,7 @@ async function createSource() {
     const res = await contentStudioApi.createSource({
       title: '新建内容源',
       body: '',
-      kbEnabled: true,
+      kbEnabled: true
     });
     router.push(`/content-studio/${res.data.id}`);
   } catch (error: unknown) {

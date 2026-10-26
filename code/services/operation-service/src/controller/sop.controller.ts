@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Put, Del, Body, Param, Query, Inject } from '@midwayjs/core';
+import { Controller, Post, Get, Put, Del, Body, Param, Query, Inject, httpError } from '@midwayjs/core';
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { SopTemplateService } from '../service/sop-template.service';
@@ -14,7 +14,6 @@ import {
   QuerySopExecutionDto,
   ControlExecutionDto,
 } from '../dto/sop-execution.dto';
-import { getTenantContext } from '@scrm/server-common';
 
 /**
  * SOP控制器
@@ -36,7 +35,7 @@ export class SopController {
   @Post('/template')
   @Validate()
   async createTemplate(@Body() dto: CreateSopTemplateDto) {
-    const { corpId, userId } = getTenantContext(this.ctx);
+    const { corpId, userId } = this.requestIdentity();
 
     const template = await this.sopTemplateService.createTemplate(corpId, userId, dto);
     return {
@@ -52,9 +51,9 @@ export class SopController {
   @Put('/template/:id')
   @Validate()
   async updateTemplate(@Param('id') id: string, @Body() dto: UpdateSopTemplateDto) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
-    const template = await this.sopTemplateService.updateTemplate(parseInt(id), corpId, dto);
+    const template = await this.sopTemplateService.updateTemplate(this.pathId(id), corpId, dto);
     return {
       success: true,
       data: template,
@@ -67,9 +66,9 @@ export class SopController {
    */
   @Del('/template/:id')
   async deleteTemplate(@Param('id') id: string) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
-    await this.sopTemplateService.deleteTemplate(parseInt(id), corpId);
+    await this.sopTemplateService.deleteTemplate(this.pathId(id), corpId);
     return {
       success: true,
       message: 'SOP模板删除成功',
@@ -81,9 +80,9 @@ export class SopController {
    */
   @Get('/template/:id')
   async getTemplate(@Param('id') id: string) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
-    const template = await this.sopTemplateService.getTemplate(parseInt(id), corpId);
+    const template = await this.sopTemplateService.getTemplate(this.pathId(id), corpId);
     return {
       success: true,
       data: template,
@@ -96,7 +95,7 @@ export class SopController {
   @Get('/templates')
   @Validate()
   async queryTemplates(@Query() query: QuerySopTemplateDto) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
     const result = await this.sopTemplateService.queryTemplates(corpId, query);
     return {
@@ -109,9 +108,10 @@ export class SopController {
    * 批量创建步骤
    */
   @Post('/steps/batch')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async batchCreateSteps(@Body() dto: BatchCreateStepsDto) {
-    const steps = await this.sopTemplateService.batchCreateSteps(dto);
+    const { corpId } = this.requestIdentity();
+    const steps = await this.sopTemplateService.batchCreateSteps(dto, corpId);
     return {
       success: true,
       data: steps,
@@ -124,7 +124,8 @@ export class SopController {
    */
   @Get('/steps/:templateId')
   async getSteps(@Param('templateId') templateId: string) {
-    const steps = await this.sopTemplateService.getSteps(parseInt(templateId));
+    const { corpId } = this.requestIdentity();
+    const steps = await this.sopTemplateService.getSteps(this.pathId(templateId), corpId);
     return {
       success: true,
       data: steps,
@@ -135,9 +136,9 @@ export class SopController {
    * 触发SOP执行
    */
   @Post('/execute')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async triggerExecution(@Body() dto: TriggerSopExecutionDto) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
     const result = await this.sopExecutionService.triggerExecution(corpId, dto);
     return {
@@ -151,9 +152,9 @@ export class SopController {
    * 查询执行记录
    */
   @Get('/executions')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async queryExecutions(@Query() query: QuerySopExecutionDto) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
     const result = await this.sopExecutionService.queryExecutions(corpId, query);
     return {
@@ -166,9 +167,9 @@ export class SopController {
    * 控制执行（暂停/恢复/取消）
    */
   @Post('/execution/control')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async controlExecution(@Body() dto: ControlExecutionDto) {
-    const { corpId } = getTenantContext(this.ctx);
+    const { corpId } = this.requestIdentity();
 
     const result = await this.sopExecutionService.controlExecution(
       corpId,
@@ -181,5 +182,27 @@ export class SopController {
       message: '操作成功',
     };
   }
+  private requestIdentity() {
+    const corpHeader = this.ctx.get('x-corp-id');
+    const source = corpHeader
+      ? { corpId: corpHeader, userId: this.ctx.get('x-user-id') }
+      : this.ctx.state?.user;
+    if (!source || ![source.corpId, source.userId].every((value: unknown) =>
+      ['string', 'number'].includes(typeof value) &&
+      /^[1-9]\d*$/.test(String(value)) && Number.isSafeInteger(Number(value))
+    )) {
+      throw new httpError.UnauthorizedError('缺少有效企业与操作者身份，请通过网关访问');
+    }
+    return { corpId: Number(source.corpId), userId: Number(source.userId) };
+  }
+
+  private pathId(value: string): number {
+    const id = Number(value);
+    if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || (!Number.isSafeInteger(id) || id > 2_147_483_647)) {
+      throw new httpError.BadRequestError('模板编号必须为INT32范围内的十进制正整数');
+    }
+    return id;
+  }
+
 }
 

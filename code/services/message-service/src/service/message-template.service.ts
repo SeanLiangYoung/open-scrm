@@ -1,3 +1,4 @@
+import { requireMessageNumber, requireTemplateNumber } from '../util/message-identity.util';
 import { Provide, Inject } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository } from 'typeorm';
@@ -38,6 +39,8 @@ export class MessageTemplateService {
    * 更新模板
    */
   async updateTemplate(id: number, corpId: number, dto: UpdateMessageTemplateDto): Promise<MessageTemplateEntity> {
+    requireTemplateNumber(id);
+    requireMessageNumber(corpId);
     const template = await this.templateRepository.findOne({
       where: { id, corpId },
     });
@@ -63,6 +66,8 @@ export class MessageTemplateService {
    * 删除模板
    */
   async deleteTemplate(id: number, corpId: number): Promise<void> {
+    requireTemplateNumber(id);
+    requireMessageNumber(corpId);
     const result = await this.templateRepository.delete({ id, corpId });
     
     if (result.affected === 0) {
@@ -74,6 +79,8 @@ export class MessageTemplateService {
    * 获取模板详情
    */
   async getTemplate(id: number, corpId: number): Promise<MessageTemplateEntity | null> {
+    requireTemplateNumber(id);
+    requireMessageNumber(corpId);
     return await this.templateRepository.findOne({
       where: { id, corpId },
     });

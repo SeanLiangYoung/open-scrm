@@ -5,12 +5,20 @@ import { Validate, Rule, RuleType } from '@midwayjs/validate';
 /**
  * 登录DTO
  */
-class LoginDto {
+export class LoginDto {
   @Rule(RuleType.string().required())
   username: string;
 
   @Rule(RuleType.string().required())
   password: string;
+
+  @Rule(RuleType.number().integer().min(1).max(Number.MAX_SAFE_INTEGER).strict().optional())
+  corpId?: number;
+}
+
+export class RefreshTokenDto {
+  @Rule(RuleType.string().strict().required())
+  refreshToken: string;
 }
 
 /**
@@ -22,14 +30,15 @@ export class AuthController {
   authService: AuthService;
 
   @Post('/login')
-  @Validate()
+  @Validate({ errorStatus: 400 })
   async login(@Body() dto: LoginDto) {
-    return await this.authService.login(dto.username, dto.password);
+    return await this.authService.login(dto.username, dto.password, dto.corpId);
   }
 
   @Post('/refresh-token')
-  async refreshToken(@Body('refreshToken') refreshToken: string) {
-    return await this.authService.refreshToken(refreshToken);
+  @Validate({ errorStatus: 400 })
+  async refreshToken(@Body() dto: RefreshTokenDto) {
+    return await this.authService.refreshToken(dto.refreshToken);
   }
 
   @Post('/verify-token')

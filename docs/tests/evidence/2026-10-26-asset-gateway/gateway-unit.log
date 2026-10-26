@@ -1,0 +1,19 @@
+
+> @scrm/gateway-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/gateway-service
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/gateway-service
+
+ ✓ src/utils/route-match.spec.ts (4 tests) 4ms
+ ✓ src/middleware/proxy.middleware.spec.ts (3 tests) 6ms
+ ✓ src/middleware/rate-limit.middleware.spec.ts (5 tests) 10ms
+ ✓ src/middleware/asset-routing.spec.ts (15 tests) 11ms
+ ✓ src/middleware/auth.middleware.spec.ts (27 tests) 24ms
+
+ Test Files  5 passed (5)
+      Tests  54 passed (54)
+   Start at  22:52:15
+   Duration  617ms (transform 154ms, setup 0ms, collect 581ms, tests 54ms, environment 1ms, prepare 480ms)
+

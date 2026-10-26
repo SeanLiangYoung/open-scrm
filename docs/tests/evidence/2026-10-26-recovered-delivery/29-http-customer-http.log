@@ -1,0 +1,20 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-customer-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-customer-http-Vauk8Z
+Build/start auth-service on free loopback port 56802
+Build/start customer-service on free loopback port 56803
+Build/start gateway-service on free loopback port 56804
+{"stage":"isolated-services-ready","pgPort":56774,"redisPort":56786,"ports":{"auth":56802,"customer":56803,"gateway":56804}}
+PASS: follow-up gateway HTTP Playwright 1 passed, 8 named steps, two real tenant logins
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+ corp_id | customer_id | user_id | follow_type |  next_follow_time   
+---------+-------------+---------+-------------+---------------------
+     902 |        9101 |    9102 |           1 | 
+       1 |        9101 |       1 |           1 | 
+       1 |        9101 |       1 |           4 | 2028-02-29 08:00:00
+     902 |        9102 |    9102 |           1 | 
+(4 rows)
+Verified: owned service processes exited and disposable containers are absent.

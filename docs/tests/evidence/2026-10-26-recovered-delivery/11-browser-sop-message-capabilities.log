@@ -1,0 +1,20 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config sop-message-capabilities.config.ts
+[2m[WebServer] [22m(node:95870) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 8 tests using 1 worker
+
+(node:95877) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95877) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 tests/sop-message-capabilities.spec.ts:34:5 › new message is visibly Mock and explicitly submits numeric messageType five (620ms)
+  ✓  2 tests/sop-message-capabilities.spec.ts:39:5 › new material is visibly Mock and explicitly submits numeric messageType five (811ms)
+  ✓  3 tests/sop-message-capabilities.spec.ts:47:8 › legacy explicit message channel remains unchanged and warns not connected (422ms)
+  ✓  4 tests/sop-message-capabilities.spec.ts:47:8 › legacy explicit material channel remains unchanged and warns not connected (419ms)
+  ✓  5 tests/sop-message-capabilities.spec.ts:52:36 › legacy omitted channel on step 1 stays absent instead of silently becoming Mock (400ms)
+  ✓  6 tests/sop-message-capabilities.spec.ts:52:36 › legacy omitted channel on step 3 stays absent instead of silently becoming Mock (429ms)
+  ✓  7 tests/sop-message-capabilities.spec.ts:60:5 › existing explicit Mock stays Mock and preserves metadata (430ms)
+  ✓  8 tests/sop-message-capabilities.spec.ts:66:5 › changing a legacy message to material retains its explicit channel intent (820ms)
+
+  8 passed (5.6s)

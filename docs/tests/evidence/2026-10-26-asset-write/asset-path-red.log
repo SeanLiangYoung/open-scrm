@@ -1,0 +1,319 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/controller/asset-path-boundary.spec.ts (62 tests | 57 failed) 43ms
+   × asset paths use canonical exact IDs > getAsset binds id from URL path rather than query 10ms
+     → expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+   × asset paths use canonical exact IDs > getAsset rejects 0 before service 2ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects -1 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 01 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 1e0 before service 0ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 0x1 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 1.5 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 1tail before service 0ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects  1 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects +1 before service 0ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > getAsset rejects 9007199254740992 before service 1ms
+     → promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset binds id from URL path rather than query 1ms
+     → expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+   × asset paths use canonical exact IDs > updateAsset rejects 0 before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects -1 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 01 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 1e0 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 0x1 before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 1.5 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 1tail before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects  1 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects +1 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateAsset rejects 9007199254740992 before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset binds id from URL path rather than query 0ms
+     → expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+   × asset paths use canonical exact IDs > deleteAsset rejects 0 before service 1ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects -1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 01 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 1e0 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 0x1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 1.5 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 1tail before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects  1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects +1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteAsset rejects 9007199254740992 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory binds id from URL path rather than query 1ms
+     → expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+   × asset paths use canonical exact IDs > updateCategory rejects 0 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects -1 before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 01 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 1e0 before service 2ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 0x1 before service 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 1.5 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 1tail before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects  1 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects +1 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects 9007199254740992 before service 0ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > updateCategory rejects int32 overflow 1ms
+     → promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory binds id from URL path rather than query 0ms
+     → expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+   × asset paths use canonical exact IDs > deleteCategory rejects 0 before service 1ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects -1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 01 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 1e0 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 0x1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 1.5 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 1tail before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects  1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects +1 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects 9007199254740992 before service 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+   × asset paths use canonical exact IDs > deleteCategory rejects int32 overflow 0ms
+     → promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 57 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset binds id from URL path rather than query
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset binds id from URL path rather than query
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset binds id from URL path rather than query
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory binds id from URL path rather than query
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory binds id from URL path rather than query
+AssertionError: expected { type: 'query', propertyData: 'id' } to match object { type: 'param', propertyData: 'id' }
+
+- Expected
++ Received
+
+  Object {
+    "propertyData": "id",
+-   "type": "param",
++   "type": "query",
+  }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:22:27
+     20|       const params = getClassMetadata(INJECT_CUSTOM_PARAM, Class)[meth…
+     21|       const id = params.find((p: any) => p.parameterIndex === 0);
+     22|       expect(id.metadata).toMatchObject({ type: 'param', propertyData:…
+       |                           ^
+     23|     });
+     24|     function fixture() {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/57]⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects -1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 01 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 1e0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 0x1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 1.5 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 1tail before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects  1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects +1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > getAsset rejects 9007199254740992 before service
+AssertionError: promise resolved "{ success: true, data: { id: 1 } }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "data": Object {
++     "id": 1,
++   },
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:31:30
+     29|     it.each(invalid)(`${method} rejects %s before service`, async id =…
+     30|       const f = fixture();
+     31|       await expect(f.call(id)).rejects.toMatchObject({ status: 400 });
+       |                              ^
+     32|       expect(f.invoke).not.toHaveBeenCalled();
+     33|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/57]⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects -1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 01 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 1e0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 0x1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 1.5 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 1tail before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects  1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects +1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateAsset rejects 9007199254740992 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects -1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 01 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 1e0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 0x1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 1.5 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 1tail before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects  1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects +1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects 9007199254740992 before service
+AssertionError: promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "message": "更新成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:31:30
+     29|     it.each(invalid)(`${method} rejects %s before service`, async id =…
+     30|       const f = fixture();
+     31|       await expect(f.call(id)).rejects.toMatchObject({ status: 400 });
+       |                              ^
+     32|       expect(f.invoke).not.toHaveBeenCalled();
+     33|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/57]⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects -1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 01 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 1e0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 0x1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 1.5 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 1tail before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects  1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects +1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteAsset rejects 9007199254740992 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects -1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 01 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 1e0 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 0x1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 1.5 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 1tail before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects  1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects +1 before service
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects 9007199254740992 before service
+AssertionError: promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "message": "删除成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:31:30
+     29|     it.each(invalid)(`${method} rejects %s before service`, async id =…
+     30|       const f = fixture();
+     31|       await expect(f.call(id)).rejects.toMatchObject({ status: 400 });
+       |                              ^
+     32|       expect(f.invoke).not.toHaveBeenCalled();
+     33|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/57]⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > updateCategory rejects int32 overflow
+AssertionError: promise resolved "{ success: true, message: '更新成功' }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "message": "更新成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:39:61
+     37|     });
+     38|     if (max === 2147483647) it(`${method} rejects int32 overflow`, asy…
+     39|       const f = fixture(); await expect(f.call('2147483648')).rejects.…
+       |                                                             ^
+     40|       expect(f.invoke).not.toHaveBeenCalled();
+     41|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/57]⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > asset paths use canonical exact IDs > deleteCategory rejects int32 overflow
+AssertionError: promise resolved "{ success: true, message: '删除成功' }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "message": "删除成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:39:61
+     37|     });
+     38|     if (max === 2147483647) it(`${method} rejects int32 overflow`, asy…
+     39|       const f = fixture(); await expect(f.call('2147483648')).rejects.…
+       |                                                             ^
+     40|       expect(f.invoke).not.toHaveBeenCalled();
+     41|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/57]⎯
+
+ Test Files  1 failed (1)
+      Tests  57 failed | 5 passed (62)
+   Start at  22:36:47
+   Duration  612ms (transform 60ms, setup 0ms, collect 195ms, tests 43ms, environment 0ms, prepare 74ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run`
+Exit status 1

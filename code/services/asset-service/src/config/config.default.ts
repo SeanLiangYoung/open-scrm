@@ -8,7 +8,7 @@ export default {
 
   // Koa配置
   koa: {
-    port: 7005,
+    port: 7005
   },
 
   // TypeORM配置
@@ -24,9 +24,9 @@ export default {
         synchronize: false,
         logging: process.env.NODE_ENV === 'local',
         entities: ['**/entity/*.entity{.ts,.js}'],
-        timezone: '+08:00',
-      },
-    },
+        timezone: '+08:00'
+      }
+    }
   },
 
   // Redis配置
@@ -35,8 +35,8 @@ export default {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD || '',
-      db: parseInt(process.env.REDIS_DB || '0'),
-    },
+      db: parseInt(process.env.REDIS_DB || '0')
+    }
   },
 
   // OSS配置
@@ -46,8 +46,8 @@ export default {
       accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET || '',
       bucket: process.env.OSS_BUCKET || '',
       endpoint: process.env.OSS_ENDPOINT || '',
-      timeout: 60000,
-    },
+      timeout: 60000
+    }
   },
 
   // 文件上传配置
@@ -55,7 +55,7 @@ export default {
     mode: 'file',
     fileSize: '100mb',
     tmpdir: join(tmpdir(), 'midway-upload-temp'),
-    cleanTimeout: 5 * 60 * 1000,
+    cleanTimeout: 5 * 60 * 1000
   },
 
   // 素材服务配置
@@ -63,22 +63,25 @@ export default {
     // 支持的文件类型
     allowedTypes: {
       image: ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
-      video: ['video/mp4', 'video/avi', 'video/mov'],
-      file: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+      video: ['video/mp4', 'video/avi', 'video/mov', 'video/x-msvideo', 'video/quicktime'],
+      file: [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ]
     },
-    
+
     // 文件大小限制（字节）
     maxSize: {
       image: 10 * 1024 * 1024, // 10MB
       video: 100 * 1024 * 1024, // 100MB
-      file: 50 * 1024 * 1024, // 50MB
+      file: 50 * 1024 * 1024 // 50MB
     },
-    
+
     // OSS路径前缀
     ossPrefix: process.env.OSS_PREFIX || 'scrm-assets',
-    
-    // CDN域名
-    cdnDomain: process.env.CDN_DOMAIN || '',
-  },
-} as MidwayConfig;
 
+    // CDN域名
+    cdnDomain: process.env.CDN_DOMAIN || ''
+  }
+} as MidwayConfig;

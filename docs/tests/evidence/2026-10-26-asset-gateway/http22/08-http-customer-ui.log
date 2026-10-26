@@ -1,0 +1,28 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-customer-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-customer-ui-QEfd7M
+Build/start auth-service on free loopback port 50504
+Build/start customer-service on free loopback port 50505
+Build/start gateway-service on free loopback port 50506
+{"stage":"isolated-services-ready","pgPort":50476,"redisPort":50481,"ports":{"auth":50504,"customer":50505,"gateway":50506,"vite":50507,"unavailable":50508}}
+PASS: real Chromium customer UI 3 passed, PostgreSQL16 ownership/time assertions, zero messages
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+ id | corp_id |              name              | channel |   mobile    | follow_user_id 
+----+---------+--------------------------------+---------+-------------+----------------
+  9 |       1 | overnight-customer-ui-created  | wechat  | 13800006666 |               
+ 10 |       1 | overnight-customer-ui-assigned | wechat  |             |           9103
+(2 rows)
+
+ corp_id | customer_id | user_id | follow_type |      content       |  next_follow_time   
+---------+-------------+---------+-------------+--------------------+---------------------
+       1 |           9 |       1 |           2 | 真实浏览器跟进记录 | 2026-11-02 01:45:00
+(1 row)
+
+ message_count 
+---------------
+             0
+(1 row)
+Verified: owned service processes exited and disposable containers are absent.

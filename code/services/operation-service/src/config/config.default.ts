@@ -54,8 +54,8 @@ export default {
     // SOP执行配置
     sop: {
       maxConcurrent: 10, // 最大并发执行数
-      retryTimes: 3, // 重试次数
-      retryDelay: 60000, // 重试延迟(ms)
+      pollMs: 1000, // bounded database polling; never a step-length timer
+      leaseMs: 90000, // renewed while downstream action is in flight
     },
     
     // 群发任务配置

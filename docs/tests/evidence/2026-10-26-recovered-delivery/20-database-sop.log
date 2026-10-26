@@ -1,0 +1,14 @@
+bash scripts/test/overnight-sop-postgres.sh
+PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+NOTICE:  column "idempotency_key" of relation "message_log" already exists, skipping
+{
+  "scope": "PostgreSQL16 + TypeORM SOP transaction (no HTTP)",
+  "passed": 5,
+  "checks": [
+    "PostgreSQL16 confirmed",
+    "database save failure rolls back deletion and preserves original step ID/content",
+    "cross-tenant replacement rejects before any mutation",
+    "normal replacement commits and ignores nested ownership/row IDs",
+    "concurrent replacements serialize into one complete batch"
+  ]
+}

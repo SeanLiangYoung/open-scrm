@@ -81,6 +81,19 @@ CREATE INDEX IF NOT EXISTS idx_customer_corp ON customer (corp_id);
 CREATE INDEX IF NOT EXISTS idx_customer_follow ON customer (follow_user_id);
 CREATE INDEX IF NOT EXISTS idx_customer_status ON customer (status);
 
+CREATE TABLE IF NOT EXISTS customer_follow_up (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  customer_id BIGINT NOT NULL,
+  user_id BIGINT NOT NULL,
+  follow_type SMALLINT NOT NULL DEFAULT 1,
+  content TEXT NOT NULL,
+  next_follow_time TIMESTAMP NULL,
+  create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_customer_follow_up_corp_customer_time
+  ON customer_follow_up (corp_id, customer_id, create_time DESC);
+
 CREATE TABLE IF NOT EXISTS customer_tag (
   id SERIAL PRIMARY KEY,
   corp_id BIGINT NOT NULL,
@@ -147,10 +160,18 @@ CREATE TABLE IF NOT EXISTS sop_execution (
   complete_time TIMESTAMP NULL,
   error_message VARCHAR(500),
   execution_log JSONB,
+  steps_snapshot JSONB,
+  next_run_at TIMESTAMPTZ,
+  lease_token VARCHAR(36),
+  lease_until TIMESTAMPTZ,
+  action_started_at TIMESTAMPTZ,
   create_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   update_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_sop_exec_template ON sop_execution (template_id);
+
+CREATE INDEX IF NOT EXISTS idx_sop_execution_due ON sop_execution (next_run_at,id) WHERE status=0;
+CREATE INDEX IF NOT EXISTS idx_sop_execution_lease ON sop_execution (lease_until,id) WHERE action_started_at IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS mass_task (
   id BIGSERIAL PRIMARY KEY,
@@ -209,6 +230,20 @@ CREATE TABLE IF NOT EXISTS channel_scan_touch (
 );
 CREATE INDEX IF NOT EXISTS idx_channel_scan_touch_code_time
   ON channel_scan_touch (corp_id, channel_code_id, create_time DESC);
+
+-- Apply before deploying transactional channel scan ingestion. Safe to apply twice.
+CREATE TABLE IF NOT EXISTS channel_scan_event (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  channel_code_id INT NOT NULL,
+  external_event_id VARCHAR(128) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_channel_scan_event_identity
+  ON channel_scan_event (corp_id, channel_code_id, external_event_id);
+CREATE INDEX IF NOT EXISTS idx_channel_scan_event_expiry
+  ON channel_scan_event (expires_at);
+
 
 CREATE TABLE IF NOT EXISTS platform_account (
   id SERIAL PRIMARY KEY,

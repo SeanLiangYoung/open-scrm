@@ -1,0 +1,49 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/verify-reliability.selfcheck.cjs
+CHECK CLI rejects unknown, duplicate, missing and invalid group flags
+CHECK customer UI permits only the specific read-only consent dependency
+CHECK registry has only reviewed existing 50 stages
+SKIPPED static/skip (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed/01-static-skip.log
+FAILED static/bad (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed/02-static-bad.log
+PASSED static/ok (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed/03-static-ok.log
+FAILED static/laterbad (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed/04-static-laterbad.log
+CHECK serial results separate pass/fail/skip, preserve first child exit and continue
+SKIPPED static/skip (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/skip/01-static-skip.log
+CHECK a missing prerequisite never reports success
+FAILED static/child (54ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/child/01-static-child.log
+CHECK actual fake child output and original exit propagate without shell/tee
+FAILED static/missing (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/spawn/01-static-missing.log
+CHECK spawn failure becomes failed with retained error
+FAILED static/interrupt (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/interrupt/01-static-interrupt.log
+SKIPPED static/unstarted (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/interrupt/02-static-unstarted.log
+CHECK interruption is failed and remaining stages are explicitly skipped
+FAILED static/signal (92ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/real-signal/01-static-signal.log
+SKIPPED static/after-signal (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/real-signal/02-static-after-signal.log
+CHECK real fake-child interruption waits for cleanup and skips later work
+CHECK PNPM_EXEC launcher preserves literal paths and propagates to nested pnpm
+CHECK bare PNPM_EXEC resolves PATH before constructing launcher
+PASSED http/customer-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/01-http-customer-http.log
+PASSED http/consent-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/02-http-consent-http.log
+PASSED http/operation-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/03-http-operation-http.log
+PASSED http/staff-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/04-http-staff-http.log
+PASSED http/message-retry-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/05-http-message-retry-http.log
+PASSED http/message-capability-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/06-http-message-capability-http.log
+PASSED http/analytics-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/07-http-analytics-http.log
+SKIPPED http/customer-ui (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/08-http-customer-ui.log
+SKIPPED http/tenant-login (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/09-http-tenant-login.log
+SKIPPED http/notification-ui (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/10-http-notification-ui.log
+SKIPPED http/message-logs-ui (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/11-http-message-logs-ui.log
+SKIPPED http/customer-consent-ui (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/12-http-customer-consent-ui.log
+SKIPPED http/notification-history-ui (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/13-http-notification-history-ui.log
+PASSED http/consent-read-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/14-http-consent-read-http.log
+SKIPPED http/consent-read-ui (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/15-http-consent-read-ui.log
+SKIPPED http/observed-dashboard-ui (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/16-http-observed-dashboard-ui.log
+SKIPPED http/tag-integrity-http (1ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/17-http-tag-integrity-http.log
+PASSED http/message-template-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/18-http-message-template-http.log
+PASSED http/sop-action-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/19-http-sop-action-http.log
+PASSED http/notification-identifiers-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/20-http-notification-identifiers-http.log
+PASSED http/customer-input-http (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/21-http-customer-input-http.log
+PASSED http/runtime-boot-oss-fixture (0ms): /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ/mixed-browser-results/22-http-runtime-boot-oss-fixture.log
+CHECK missing Chromium skips browser stages but allows API-only HTTP stages
+CHECK static dependency probing never invokes Docker
+CHECK unknown CLI flag exits 2 without starting project commands
+{"scope":"runner selfcheck only; fake child commands, no project suites/DB/services","passed":14,"failed":0,"reportDir":"/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/scrm-runner-selfcheck-Sx88jJ"}

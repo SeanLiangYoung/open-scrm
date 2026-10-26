@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=local mw dev",
     "start": "cross-env NODE_ENV=production node ./bootstrap.js",
-    "build": "mw build",
+    "build": "mw build --clean",
     "test": "vitest run",
     "type-check": "tsc --noEmit"
   },

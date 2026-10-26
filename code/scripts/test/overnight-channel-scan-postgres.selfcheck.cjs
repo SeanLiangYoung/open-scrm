@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {ownedContainerAbsence}=require('./overnight-channel-scan-postgres.cjs');
+let cases=0;
+assert.equal(ownedContainerAbsence(undefined,()=>{throw Error('must not invoke docker')}).passed,true);cases++;
+assert.equal(ownedContainerAbsence('owned',()=>({status:0,stdout:''})).passed,true);cases++;
+assert.equal(ownedContainerAbsence('owned',()=>({status:0,stdout:'owned\n'})).passed,false);cases++;
+assert.equal(ownedContainerAbsence('owned',()=>({status:1,stderr:'daemon unavailable',stdout:''})).passed,false);cases++;
+assert.equal(ownedContainerAbsence('owned',()=>({status:null,error:Error('docker missing')})).passed,false);cases++;
+ownedContainerAbsence('owned',(exe,args)=>{assert.equal(exe,'docker');assert.deepEqual(args,['ps','-a','--no-trunc','--filter','id=owned','--format','{{.ID}}']);return{status:0,stdout:''}});cases++;
+console.log(`${cases}/${cases} cleanup self-checks passed; no Docker or network calls`);

@@ -1,0 +1,8 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-observed-dashboard-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-observed-dashboard-ui-6UxL1q
+Build/start auth-service on free loopback port 53878
+Build/start analytics-service on free loopback port 53879
+Build/start gateway-service on free loopback port 53880
+{"stage":"isolated-services-ready","pgPort":53854,"redisPort":53861,"ports":{"auth":53878,"analytics":53879,"gateway":53880,"vite":53881,"unavailable":53882}}
+PASS observed dashboard: HTTP6 + actual UI2, complete raw daily/source snapshots unchanged
+Verified: owned service processes exited and disposable containers are absent.

@@ -1,0 +1,8 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-message-logs-ui.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-message-logs-ui-3yqzyu
+Build/start auth-service on free loopback port 53251
+Build/start message-service on free loopback port 53252
+Build/start gateway-service on free loopback port 53253
+{"stage":"isolated-services-ready","pgPort":53204,"redisPort":53211,"ports":{"auth":53251,"message":53252,"gateway":53253,"vite":53254,"unavailable":53255}}
+PASS: real Chromium message logs UI 4 passed with PostgreSQL ownership/retry assertions; only Mock succeeded.
+Verified: owned service processes exited and disposable containers are absent.

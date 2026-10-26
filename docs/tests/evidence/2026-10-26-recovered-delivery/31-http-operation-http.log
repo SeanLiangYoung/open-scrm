@@ -1,0 +1,36 @@
+/Users/seanliang/.nvm/versions/node/v24.21.0/bin/node scripts/test/overnight-operation-http.cjs
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-operation-http-VnsvKJ
+Build/start auth-service on free loopback port 57454
+Build/start message-service on free loopback port 57455
+Build/start operation-service on free loopback port 57456
+Verified: all 4 operation entities initialize on PostgreSQL16; production dist excludes specs
+Build/start gateway-service on free loopback port 57457
+{"stage":"isolated-services-ready","pgPort":57398,"redisPort":57415,"ports":{"auth":57454,"message":57455,"operation":57456,"gateway":57457,"messageGuard":57458}}
+PASS: operation HTTP Playwright 5 passed, exact PG16 database assertions, 5 Mock-only dispatches and one controlled failure
+version                                             
+------------------------------------------------------------------------------------------------
+ PostgreSQL 16.13 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+        task_name         | status | success_count | fail_count | message_type 
+--------------------------+--------+---------------+------------+--------------
+ overnight-operation-mock |      2 |             2 |          0 |            5
+(1 row)
+
+      template_name       | status | current_step 
+--------------------------+--------+--------------
+ overnight-immediate-mock |      1 |            1
+ overnight-control-mock   |      3 |            0
+ overnight-group-mock     |      1 |            2
+ overnight-failed-mock    |      3 |            0
+(4 rows)
+
+ corp_id | message_type | target_type | send_status | target_id 
+---------+--------------+-------------+-------------+-----------
+       1 |            5 |           1 |           1 |      9001
+       1 |            5 |           1 |           1 |      9003
+       1 |            5 |           1 |           1 |      9001
+       1 |            5 |           3 |           1 |      9004
+       1 |            5 |           3 |           1 |      9004
+(5 rows)
+Verified: owned service processes exited and disposable containers are absent.

@@ -1,0 +1,23 @@
+/tmp/open-scrm-delivery-all-50/bin/pnpm exec playwright test --config tenant-login-operation.config.ts
+[2m[WebServer] [22m(node:95836) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[2m[WebServer] [22m(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 11 tests using 1 worker
+
+(node:95843) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:95843) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/tenant-login-contracts.spec.ts:22:5 › unique username login omits optional enterprise ID and persists only successful response (787ms)
+  ✓   2 tests/tenant-login-contracts.spec.ts:43:5 › specified canonical enterprise ID is submitted as a number (342ms)
+  ✓   3 tests/tenant-login-contracts.spec.ts:64:7 › invalid enterprise ID is blocked before login: 0 (320ms)
+  ✓   4 tests/tenant-login-contracts.spec.ts:64:7 › invalid enterprise ID is blocked before login: 1e1 (315ms)
+  ✓   5 tests/tenant-login-contracts.spec.ts:64:7 › invalid enterprise ID is blocked before login: 9007199254740993 (322ms)
+  ✓   6 tests/tenant-login-contracts.spec.ts:64:7 › invalid enterprise ID is blocked before login:  2  (309ms)
+  ✓   7 tests/tenant-login-contracts.spec.ts:80:5 › ambiguous account response retains editable fields and never persists tokens (433ms)
+  ✓   8 tests/tenant-login-contracts.spec.ts:107:5 › wrong password 401 remains in place and preserves enterprise and credentials without persisting a token (346ms)
+  ✓   9 tests/tenant-login-contracts.spec.ts:127:5 › protected resource 401 continues to clear authentication and redirect to login (483ms)
+  ✓  10 tests/tenant-login-contracts.spec.ts:148:5 › late protected 401 from the previous enterprise preserves the new login (482ms)
+  ✓  11 tests/tenant-login-contracts.spec.ts:200:5 › pending login disables inputs and ignores repeated Enter events before the held response (424ms)
+
+  11 passed (6.4s)

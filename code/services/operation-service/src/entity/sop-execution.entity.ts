@@ -50,6 +50,21 @@ export class SopExecutionEntity {
   @Column({ name: 'execution_log', type: 'json', nullable: true, comment: '执行日志JSON' })
   executionLog: any;
 
+  @Column({ name: 'steps_snapshot', type: 'jsonb', nullable: true })
+  stepsSnapshot: any[];
+
+  @Column({ name: 'next_run_at', type: 'timestamptz', nullable: true })
+  nextRunAt: Date | null;
+
+  @Column({ name: 'lease_token', type: 'varchar', length: 36, nullable: true })
+  leaseToken: string | null;
+
+  @Column({ name: 'lease_until', type: 'timestamptz', nullable: true })
+  leaseUntil: Date | null;
+
+  @Column({ name: 'action_started_at', type: 'timestamptz', nullable: true })
+  actionStartedAt: Date | null;
+
   @CreateDateColumn({ name: 'create_time' })
   createTime: Date;
 

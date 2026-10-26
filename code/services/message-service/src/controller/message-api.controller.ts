@@ -2,6 +2,8 @@ import { Controller, Post, Get, Body, Headers, Param, Inject } from '@midwayjs/c
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { getTenantContext } from '@scrm/server-common';
+import { parseMessagePathId } from '../util/message-identity.util';
+import { TemplateReferenceInputMiddleware } from '../middleware/template-reference-input.middleware';
 import { SendMessageDto } from '../dto/send-message.dto';
 import { MessageSendService } from '../service/message-send.service';
 import { MessageLogService } from '../service/message-log.service';
@@ -31,7 +33,7 @@ export class MessageApiController {
   @Inject()
   outboundPolicyStateService!: OutboundPolicyStateService;
 
-  @Post('/send')
+  @Post('/send', { middleware: [TemplateReferenceInputMiddleware] })
   @Validate()
   async send(
     @Headers('idempotency-key') headerKey: string | undefined,
@@ -56,6 +58,7 @@ export class MessageApiController {
       keyFromHeader !== null ? { ...dto, idempotencyKey: keyFromHeader } : dto;
 
     const { corpId } = getTenantContext(this.ctx);
+    await this.messageSendService.assertSendAvailable(corpId, merged);
 
     const consentBlock = await resolveMarketingConsentGate(
       corpId,
@@ -86,7 +89,7 @@ export class MessageApiController {
   @Get('/logs/:id')
   async getLog(@Param('id') id: string) {
     const { corpId } = getTenantContext(this.ctx);
-    const log = await this.messageLogService.getLog(parseInt(id, 10), corpId);
+    const log = await this.messageLogService.getLog(parseMessagePathId(id), corpId);
     return {
       success: true,
       data: log,
