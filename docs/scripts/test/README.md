@@ -195,3 +195,7 @@ Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 
 **最后更新**: 2025-10-28
 
+
+## 素材写入隔离验证
+
+`node code/scripts/test/overnight-asset-write-postgres.cjs`（仓库根目录）使用当前TS、实际TypeORM与自有PG16，验证企业引用、层级、并发使用计数和故障回滚；不需要OSS，结束严格核验容器删除。素材单元已纳入workspace `test:unit`，专属PG已加入CI；远程执行结果另查。

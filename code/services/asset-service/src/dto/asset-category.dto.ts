@@ -4,7 +4,7 @@ export class CreateCategoryDto {
   @Rule(RuleType.string().required())
   name: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(0).max(2147483647).strict().optional())
   parentId?: number;
 
   @Rule(RuleType.number().optional())
@@ -15,10 +15,9 @@ export class UpdateCategoryDto {
   @Rule(RuleType.string().optional())
   name?: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(0).max(2147483647).strict().optional())
   parentId?: number;
 
   @Rule(RuleType.number().optional())
   sort?: number;
 }
-

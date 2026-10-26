@@ -1,0 +1,274 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ✓ src/controller/asset-path-boundary.spec.ts (62 tests) 17ms
+ ❯ src/service/asset-write-integrity.spec.ts (17 tests | 15 failed) 29ms
+   × asset writes enforce tenant references > rejects a missing or foreign category before changing an asset 8ms
+     → promise resolved "undefined" instead of rejecting
+   × asset writes enforce tenant references > checks upload category before reading a file or calling OSS 5ms
+     → expected TypeError: The "path" argument must be of… { code: '…' } to match object { status: 400 }
+(1 matching property omitted from actual)
+   × asset writes enforce tenant references > rejects invalid direct asset ID 0 2ms
+     → promise resolved "{ id: 7, corpId: 1 }" instead of rejecting
+   × asset writes enforce tenant references > rejects invalid direct asset ID -1 1ms
+     → promise resolved "{ id: 7, corpId: 1 }" instead of rejecting
+   × asset writes enforce tenant references > rejects invalid direct asset ID 1.5 1ms
+     → promise resolved "{ id: 7, corpId: 1 }" instead of rejecting
+   × asset writes enforce tenant references > rejects invalid direct asset ID 9007199254740992 1ms
+     → promise resolved "{ id: 7, corpId: 1 }" instead of rejecting
+   × asset writes enforce tenant references > rejects a missing target before an update 1ms
+     → promise resolved "undefined" instead of rejecting
+   × category hierarchy integrity > rejects an absent or foreign parent before creation 1ms
+     → promise resolved "{ corpId: 1, name: 'child', …(2) }" instead of rejecting
+   × category hierarchy integrity > rejects self-parenting 1ms
+     → promise resolved "undefined" instead of rejecting
+   × category hierarchy integrity > rejects cycles through descendants 1ms
+     → promise resolved "undefined" instead of rejecting
+   × category hierarchy integrity > refuses deletion while children exist 1ms
+     → promise resolved "undefined" instead of rejecting
+   × category hierarchy integrity > refuses deletion while assets reference the category 1ms
+     → promise resolved "undefined" instead of rejecting
+   × usage and counter share one transaction > rejects a missing or foreign asset without saving usage 1ms
+     → promise resolved "undefined" instead of rejecting
+   × usage and counter share one transaction > locks the local asset and saves usage plus increment through transaction repositories 1ms
+     → expected "spy" to be called 1 times, but got 0 times
+   × usage and counter share one transaction > fails if the counter row was not updated 1ms
+     → promise resolved "undefined" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 15 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects a missing or foreign category before changing an asset
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:24:81
+     22| describe('asset writes enforce tenant references', () => {
+     23|   it('rejects a missing or foreign category before changing an asset',…
+     24|     const f=fixture(); await expect(f.service.updateAsset(1,7,{ catego…
+       |                                                                                 ^
+     25|     expect(f.assets.update).not.toHaveBeenCalled(); expect(f.categorie…
+     26|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > checks upload category before reading a file or calling OSS
+AssertionError: expected TypeError: The "path" argument must be of… { code: '…' } to match object { status: 400 }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+- Object {
+-   "status": 400,
+- }
++ [TypeError: The "path" argument must be of type string or an instance of Buffer or URL. Received undefined]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects invalid direct asset ID 0
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects invalid direct asset ID -1
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects invalid direct asset ID 1.5
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects invalid direct asset ID 9007199254740992
+AssertionError: promise resolved "{ id: 7, corpId: 1 }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "corpId": 1,
++   "id": 7,
++ }
+
+ ❯ src/service/asset-write-integrity.spec.ts:37:65
+     35|   });
+     36|   it.each([0,-1,1.5,Number.MAX_SAFE_INTEGER+1])('rejects invalid direc…
+     37|     const f=fixture(); await expect(f.service.getAssetById(1,id)).reje…
+       |                                                                 ^
+     38|     expect(f.assets.findOne).not.toHaveBeenCalled();
+     39|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > asset writes enforce tenant references > rejects a missing target before an update
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:42:55
+     40|   it('rejects a missing target before an update', async () => {
+     41|     const f=fixture(); f.assets.findOne.mockResolvedValue(null);
+     42|     await expect(f.service.updateAsset(1,7,{name:'x'})).rejects.toMatc…
+       |                                                       ^
+     43|   });
+     44| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > category hierarchy integrity > rejects an absent or foreign parent before creation
+AssertionError: promise resolved "{ corpId: 1, name: 'child', …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "corpId": 1,
++   "name": "child",
++   "parentId": 88,
++   "sort": 0,
++ }
+
+ ❯ src/service/asset-write-integrity.spec.ts:47:99
+     45| describe('category hierarchy integrity', () => {
+     46|   it('rejects an absent or foreign parent before creation', async () =…
+     47|     const f=fixture(); await expect(f.categoryService.createCategory(1…
+       |                                                                                                   ^
+     48|   });
+     49|   it('preserves root category parentId=0', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > category hierarchy integrity > rejects self-parenting
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:54:68
+     52|   it('rejects self-parenting', async () => {
+     53|     const f=fixture(); f.categories.findOne.mockResolvedValue({id:7,pa…
+     54|     await expect(f.categoryService.updateCategory(1,7,{parentId:7})).r…
+       |                                                                    ^
+     55|   });
+     56|   it('rejects cycles through descendants', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > category hierarchy integrity > rejects cycles through descendants
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:58:68
+     56|   it('rejects cycles through descendants', async () => {
+     57|     const f=fixture(); f.categories.findOne.mockImplementation(({where…
+     58|     await expect(f.categoryService.updateCategory(1,7,{parentId:8})).r…
+       |                                                                    ^
+     59|   });
+     60|   it('refuses deletion while children exist', async () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > category hierarchy integrity > refuses deletion while children exist
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:62:55
+     60|   it('refuses deletion while children exist', async () => {
+     61|     const f=fixture(); f.categories.findOne.mockResolvedValue({id:7,pa…
+     62|     await expect(f.categoryService.deleteCategory(1,7)).rejects.toMatc…
+       |                                                       ^
+     63|   });
+     64|   it('refuses deletion while assets reference the category', async () …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > category hierarchy integrity > refuses deletion while assets reference the category
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:66:55
+     64|   it('refuses deletion while assets reference the category', async () …
+     65|     const f=fixture(); f.categories.findOne.mockResolvedValue({id:7,pa…
+     66|     await expect(f.categoryService.deleteCategory(1,7)).rejects.toMatc…
+       |                                                       ^
+     67|   });
+     68| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > usage and counter share one transaction > rejects a missing or foreign asset without saving usage
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:72:75
+     70|   it('rejects a missing or foreign asset without saving usage', async …
+     71|     const f=fixture();f.assets.findOne.mockResolvedValue(null);
+     72|     await expect(f.service.recordUsage(1,{assetId:99,useType:'message'…
+       |                                                                           ^
+     73|   });
+     74|   it('locks the local asset and saves usage plus increment through tra…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > usage and counter share one transaction > locks the local asset and saves usage plus increment through transaction repositories
+AssertionError: expected "spy" to be called 1 times, but got 0 times
+ ❯ src/service/asset-write-integrity.spec.ts:76:27
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/15]⎯
+
+ FAIL  src/service/asset-write-integrity.spec.ts > usage and counter share one transaction > fails if the counter row was not updated
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected: 
+[Error: rejected promise]
+
++ Received: 
+undefined
+
+ ❯ src/service/asset-write-integrity.spec.ts:80:141
+     78|   });
+     79|   it('fails if the counter row was not updated', async () => {
+     80|     const f=fixture();f.assets.increment.mockResolvedValue({affected:0…
+       |                                                                                                                                             ^
+     81|   });
+     82| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/15]⎯
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  15 failed | 64 passed (79)
+   Start at  22:37:57
+   Duration  737ms (transform 128ms, setup 0ms, collect 571ms, tests 46ms, environment 0ms, prepare 161ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run`
+Exit status 1

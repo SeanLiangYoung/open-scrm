@@ -7,7 +7,7 @@ export class CreateAssetDto {
   @Rule(RuleType.number().valid(1, 2, 3).required())
   type: number; // 1-图片 2-视频 3-文件
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(1).max(2147483647).strict().optional())
   categoryId?: number;
 
   @Rule(RuleType.array().items(RuleType.string()).optional())
@@ -18,7 +18,7 @@ export class UpdateAssetDto {
   @Rule(RuleType.string().optional())
   name?: string;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(1).max(2147483647).strict().optional())
   categoryId?: number;
 
   @Rule(RuleType.array().items(RuleType.string()).optional())
@@ -32,7 +32,7 @@ export class QueryAssetDto {
   @Rule(RuleType.number().optional())
   type?: number;
 
-  @Rule(RuleType.number().optional())
+  @Rule(RuleType.number().integer().min(1).max(2147483647).optional())
   categoryId?: number;
 
   @Rule(RuleType.number().min(1).optional())
@@ -43,7 +43,7 @@ export class QueryAssetDto {
 }
 
 export class RecordAssetUsageDto {
-  @Rule(RuleType.number().required())
+  @Rule(RuleType.number().integer().min(1).max(Number.MAX_SAFE_INTEGER).strict().required())
   assetId: number;
 
   @Rule(RuleType.string().required())
@@ -52,4 +52,3 @@ export class RecordAssetUsageDto {
   @Rule(RuleType.number().optional())
   refId?: number;
 }
-

@@ -1,0 +1,61 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/controller/asset-path-boundary.spec.ts (68 tests | 6 failed) 31ms
+   × multipart category identity is checked before upload > rejects 1e0 8ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+   × multipart category identity is checked before upload > rejects 1tail 1ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+   × multipart category identity is checked before upload > rejects 01 1ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+   × multipart category identity is checked before upload > rejects -1 1ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+   × multipart category identity is checked before upload > rejects 0 1ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+   × multipart category identity is checked before upload > rejects 2147483648 1ms
+     → promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+ ✓ src/service/asset-write-integrity.spec.ts (17 tests) 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects 1e0
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects 1tail
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects 01
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects -1
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects 0
+ FAIL  src/controller/asset-path-boundary.spec.ts > multipart category identity is checked before upload > rejects 2147483648
+AssertionError: promise resolved "{ success: true, data: undefined, …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "data": undefined,
++   "message": "上传成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-path-boundary.spec.ts:49:85
+     47|     const uploadAsset = vi.fn();
+     48|     const controller = Object.assign(new AssetController(), { ctx, ass…
+     49|     await expect(controller.uploadAsset([{filename:'x.png'}], {type:'1…
+       |                                                                                     ^
+     50|     expect(uploadAsset).not.toHaveBeenCalled();
+     51|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  6 failed | 79 passed (85)
+   Start at  22:39:12
+   Duration  845ms (transform 149ms, setup 0ms, collect 647ms, tests 53ms, environment 0ms, prepare 169ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run`
+Exit status 1
