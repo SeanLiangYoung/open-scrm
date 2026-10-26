@@ -1,0 +1,33 @@
+Artifacts: /var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-upload-storage-http-DQI66U
+Build/start auth-service on free loopback port 61131
+Build/start asset-service on free loopback port 61132
+Build/start gateway-service on free loopback port 61133
+{"stage":"isolated-services-ready","pgPort":61086,"redisPort":61099,"ports":{"auth":61131,"asset":61132,"gateway":61133}}
+auth-service log tail:
+✅ Auth Service is ready on port 61131
+2026-10-26 23:18:28.253 INFO 5417 [midway:bootstrap] current app started
+
+asset-service log tail:
+Asset Service is ready
+2026-10-26 23:18:31.367 INFO 7439 [midway:bootstrap] current app started
+
+gateway-service log tail:
+✅ Gateway Service is ready on port 61133
+2026-10-26 23:18:33.793 INFO 9170 [midway:bootstrap] current app started
+
+Verified: owned service processes exited and disposable containers are absent.
+AssertionError [ERR_ASSERTION]: {"status":200,"body":{"success":false,"message":"The \"path\" argument must be of type string or an instance of Buffer or URL. Received undefined"}}
+
+false !== true
+
+    at /Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:262:59
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async check (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:248:34)
+    at async main (/Users/seanliang/projects/open-scrm/code/scripts/test/overnight-upload-storage-http.cjs:260:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

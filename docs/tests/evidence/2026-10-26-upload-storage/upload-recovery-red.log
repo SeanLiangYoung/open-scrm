@@ -1,0 +1,195 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run "src/service/asset-upload-recovery.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/service/asset-upload-recovery.spec.ts (9 tests | 7 failed) 30ms
+   × uses distinct object keys even in the same millisecond 7ms
+     → expected 'test-assets/1/1/123.png' not to be 'test-assets/1/1/123.png' // Object.is equality
+   × compensates an object when persistence fails before commit 3ms
+     → expected "spy" to be called with arguments: [ 'test-assets/1/1/1793027591410.png' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   × cleans the unique key when OSS times out after a possible write 2ms
+     → expected "spy" to be called with arguments: [ 'test-assets/1/1/1793027591413.png' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   × retains primary error and reconciliation key if compensation fails 3ms
+     → expected "error" to be called with arguments: [ …(2) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   × does not delete possibly committed object after ambiguous COMMIT failure 2ms
+     → expected "error" to be called with arguments: [ …(2) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+   × rejects configured oversize before OSS 4ms
+     → promise resolved "{ corpId: 1, name: 'a', type: 1, …(7) }" instead of rejecting
+   × rejects MIME outside configured asset type before OSS 2ms
+     → promise resolved "{ corpId: 1, name: 'a', type: 1, …(7) }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > uses distinct object keys even in the same millisecond
+AssertionError: expected 'test-assets/1/1/123.png' not to be 'test-assets/1/1/123.png' // Object.is equality
+ ❯ src/service/asset-upload-recovery.spec.ts:29:37
+     27|  const f=fixture(),g=fixture();vi.spyOn(Date,'now').mockReturnValue(12…
+     28|  await f.service.uploadAsset(1,f.file,{name:'a',type:1});await g.servi…
+     29|  expect(f.put.mock.calls[0][0]).not.toBe(g.put.mock.calls[0][0]);
+       |                                     ^
+     30| });
+     31| it('compensates an object when persistence fails before commit',async(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > compensates an object when persistence fails before commit
+AssertionError: expected "spy" to be called with arguments: [ 'test-assets/1/1/1793027591410.png' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/service/asset-upload-recovery.spec.ts:34:19
+     32|  const f=fixture(),error=new Error('database rejected write');f.save.m…
+     33|  await expect(f.service.uploadAsset(1,f.file,{name:'a',type:1})).rejec…
+     34|  expect(f.remove).toHaveBeenCalledWith(f.put.mock.calls[0][0]);expect(…
+       |                   ^
+     35| });
+     36| it('cleans the unique key when OSS times out after a possible write',a…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > cleans the unique key when OSS times out after a possible write
+AssertionError: expected "spy" to be called with arguments: [ 'test-assets/1/1/1793027591413.png' ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/service/asset-upload-recovery.spec.ts:38:103
+     36| it('cleans the unique key when OSS times out after a possible write',a…
+     37|  const f=fixture(),error=new Error('upload timeout');f.put.mockRejecte…
+     38|  await expect(f.service.uploadAsset(1,f.file,{name:'a',type:1})).rejec…
+       |                                                                                                       ^
+     39| });
+     40| it('retains primary error and reconciliation key if compensation fails…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > retains primary error and reconciliation key if compensation fails
+AssertionError: expected "error" to be called with arguments: [ …(2) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/service/asset-upload-recovery.spec.ts:44:14
+     42|  const log=vi.spyOn(console,'error').mockImplementation(()=>{});
+     43|  await expect(f.service.uploadAsset(1,f.file,{name:'a',type:1})).rejec…
+     44|  expect(log).toHaveBeenCalledWith('asset-upload-reconciliation-require…
+       |              ^
+     45| });
+     46| it('does not delete possibly committed object after ambiguous COMMIT f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > does not delete possibly committed object after ambiguous COMMIT failure
+AssertionError: expected "error" to be called with arguments: [ …(2) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ src/service/asset-upload-recovery.spec.ts:50:14
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > rejects configured oversize before OSS
+AssertionError: promise resolved "{ corpId: 1, name: 'a', type: 1, …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "categoryId": undefined,
++   "corpId": 1,
++   "createUserId": undefined,
++   "fileSize": 11,
++   "fileUrl": "http://local.invalid/test-assets/1/1/1793027591422.png",
++   "id": "71",
++   "mimeType": "image/png",
++   "name": "a",
++   "tags": undefined,
++   "type": 1,
++ }
+
+ ❯ src/service/asset-upload-recovery.spec.ts:57:128
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > rejects MIME outside configured asset type before OSS
+AssertionError: promise resolved "{ corpId: 1, name: 'a', type: 1, …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "categoryId": undefined,
++   "corpId": 1,
++   "createUserId": undefined,
++   "fileSize": 4,
++   "fileUrl": "http://local.invalid/test-assets/1/1/1793027591426.pdf",
++   "id": "71",
++   "mimeType": "application/pdf",
++   "name": "a",
++   "tags": undefined,
++   "type": 1,
++ }
+
+ ❯ src/service/asset-upload-recovery.spec.ts:60:111
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 2 passed (9)
+   Start at  23:13:10
+   Duration  801ms (transform 69ms, setup 0ms, collect 405ms, tests 30ms, environment 0ms, prepare 91ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run "src/service/asset-upload-recovery.spec.ts"`
+Exit status 1

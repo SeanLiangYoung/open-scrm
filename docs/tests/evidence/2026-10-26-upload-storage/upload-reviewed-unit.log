@@ -1,0 +1,19 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ✓ src/dto/asset-reference.spec.ts (14 tests) 10ms
+ ✓ src/controller/asset-upload-input.spec.ts (12 tests) 14ms
+ ✓ src/controller/asset-path-boundary.spec.ts (68 tests) 21ms
+ ✓ src/service/asset-write-integrity.spec.ts (17 tests) 20ms
+ ✓ src/service/asset-upload-recovery.spec.ts (12 tests) 39ms
+
+ Test Files  5 passed (5)
+      Tests  123 passed (123)
+   Start at  23:24:03
+   Duration  854ms (transform 270ms, setup 0ms, collect 1.59s, tests 104ms, environment 1ms, prepare 527ms)
+

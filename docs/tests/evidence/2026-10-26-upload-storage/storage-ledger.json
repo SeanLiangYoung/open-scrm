@@ -1,0 +1,58 @@
+{
+  "events": [
+    {
+      "method": "PUT",
+      "key": "/scrm-assets/1/1/f1cf2049-0e5d-4963-8651-b13d9bce731b.png",
+      "length": 68,
+      "digest": "c9798a8a49fddb100af23c309d7544bd8d68cecf5181c918eea4c0e3f113e452"
+    },
+    {
+      "method": "PUT",
+      "key": "/scrm-assets/1/1/2187195b-4731-4e3c-a849-32da44a23871.png",
+      "length": 68,
+      "digest": "c9798a8a49fddb100af23c309d7544bd8d68cecf5181c918eea4c0e3f113e452"
+    },
+    {
+      "method": "PUT",
+      "key": "/scrm-assets/1/1/2bd11ab1-32e0-4d80-bfc8-632a598dafdc.png",
+      "length": 68,
+      "digest": "c9798a8a49fddb100af23c309d7544bd8d68cecf5181c918eea4c0e3f113e452"
+    },
+    {
+      "method": "DELETE",
+      "key": "/scrm-assets/1/1/2bd11ab1-32e0-4d80-bfc8-632a598dafdc.png",
+      "length": 0,
+      "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "PUT",
+      "key": "/scrm-assets/1/1/2500525a-ad6a-4ea3-90fe-ecb2cd36877e.png",
+      "length": 68,
+      "digest": "c9798a8a49fddb100af23c309d7544bd8d68cecf5181c918eea4c0e3f113e452"
+    },
+    {
+      "method": "DELETE",
+      "key": "/scrm-assets/1/1/2500525a-ad6a-4ea3-90fe-ecb2cd36877e.png",
+      "length": 0,
+      "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "method": "PUT",
+      "key": "/scrm-assets/1/1/38564d81-0fe9-42ba-94f7-7624be41ba5b.png",
+      "length": 68,
+      "digest": "c9798a8a49fddb100af23c309d7544bd8d68cecf5181c918eea4c0e3f113e452"
+    },
+    {
+      "method": "DELETE",
+      "key": "/scrm-assets/1/1/38564d81-0fe9-42ba-94f7-7624be41ba5b.png",
+      "length": 0,
+      "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "retainedKeys": [
+    "/scrm-assets/1/1/f1cf2049-0e5d-4963-8651-b13d9bce731b.png",
+    "/scrm-assets/1/1/2187195b-4731-4e3c-a849-32da44a23871.png",
+    "/scrm-assets/1/1/38564d81-0fe9-42ba-94f7-7624be41ba5b.png"
+  ],
+  "expectedUnreconciledFixtureKey": "/scrm-assets/1/1/38564d81-0fe9-42ba-94f7-7624be41ba5b.png"
+}

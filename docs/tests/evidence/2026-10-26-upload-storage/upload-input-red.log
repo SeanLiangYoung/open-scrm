@@ -1,0 +1,119 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run "src/controller/asset-upload-input.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/controller/asset-upload-input.spec.ts (12 tests | 11 failed) 22ms
+   × rejects malformed multipart metadata {"type":"1e0"} before upload 9ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"1tail"} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"0x1"} before upload 2ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":["1","2"]} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"1","tags":"bad json"} before upload 2ms
+     → expected SyntaxError: Unexpected token 'b', "bad j… to match object { status: 400 }
+   × rejects malformed multipart metadata {"type":"1","tags":"{}"} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"1","tags":"[1]"} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"1","corpId":"2"} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects malformed multipart metadata {"type":"1","name":["a","b"]} before upload 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × rejects multiple files instead of silently discarding the rest 1ms
+     → promise resolved "{ success: true, …(2) }" instead of rejecting
+   × propagates payload-size413 rather than reporting HTTP success 1ms
+     → promise resolved "{ success: false, message: 'too large' }" instead of rejecting
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1e0"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1tail"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"0x1"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":["1","2"]} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1","tags":"{}"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1","tags":"[1]"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1","corpId":"2"} before upload
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1","name":["a","b"]} before upload
+AssertionError: promise resolved "{ success: true, …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "data": Object {
++     "id": "71",
++   },
++   "message": "上传成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-upload-input.spec.ts:12:63
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects malformed multipart metadata {"type":"1","tags":"bad json"} before upload
+AssertionError: expected SyntaxError: Unexpected token 'b', "bad j… to match object { status: 400 }
+
+- Expected
++ Received
+
+- Object {
+-   "status": 400,
+- }
++ [SyntaxError: Unexpected token 'b', "bad json" is not valid JSON]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  src/controller/asset-upload-input.spec.ts > rejects multiple files instead of silently discarding the rest
+AssertionError: promise resolved "{ success: true, …(2) }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "data": Object {
++     "id": "71",
++   },
++   "message": "上传成功",
++   "success": true,
++ }
+
+ ❯ src/controller/asset-upload-input.spec.ts:14:149
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  src/controller/asset-upload-input.spec.ts > propagates payload-size413 rather than reporting HTTP success
+AssertionError: promise resolved "{ success: false, message: 'too large' }" instead of rejecting
+
+- Expected
++ Received
+
+- [Error: rejected promise]
++ Object {
++   "message": "too large",
++   "success": false,
++ }
+
+ ❯ src/controller/asset-upload-input.spec.ts:16:227
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 1 passed (12)
+   Start at  23:14:14
+   Duration  616ms (transform 58ms, setup 0ms, collect 191ms, tests 22ms, environment 0ms, prepare 74ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run "src/controller/asset-upload-input.spec.ts"`
+Exit status 1

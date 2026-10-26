@@ -1,4 +1,6 @@
-import { assetId, categoryId } from '../util/asset-identity';
+import { multipartUploadMetadata, cleanupUploadTemp, uploadTempPath } from '../util/asset-upload';
+import { httpError } from '@midwayjs/core';
+import { assetId } from '../util/asset-identity';
 import {
   Controller,
   Post,
@@ -15,12 +17,7 @@ import {
 import { Context } from '@midwayjs/koa';
 import { Validate } from '@midwayjs/validate';
 import { AssetService } from '../service/asset.service';
-import {
-  CreateAssetDto,
-  UpdateAssetDto,
-  QueryAssetDto,
-  RecordAssetUsageDto
-} from '../dto/asset.dto';
+import { UpdateAssetDto, QueryAssetDto, RecordAssetUsageDto } from '../dto/asset.dto';
 import { getTenantContext } from '@scrm/server-common';
 
 @Controller('/api/asset')
@@ -35,36 +32,20 @@ export class AssetController {
   async uploadAsset(@Files() files: any, @Fields() fields: any) {
     const { corpId, userId } = getTenantContext(this.ctx);
 
-    if (!files || files.length === 0) {
-      return {
-        success: false,
-        message: '请选择要上传的文件'
-      };
-    }
-
-    const file = files[0];
-    const dto: CreateAssetDto = {
-      name: fields.name || file.filename,
-      type: parseInt(fields.type),
-      categoryId:
-        fields.categoryId !== undefined && fields.categoryId !== ''
-          ? categoryId(fields.categoryId)
-          : undefined,
-      tags: fields.tags ? JSON.parse(fields.tags) : undefined
-    };
-
     try {
+      if (!Array.isArray(files) || files.length !== 1) {
+        throw new httpError.BadRequestError('请上传一个文件');
+      }
+      const file = files[0];
+      const dto = multipartUploadMetadata(fields, file.filename);
       const asset = await this.assetService.uploadAsset(corpId, file, dto, userId);
-      return {
-        success: true,
-        data: asset,
-        message: '上传成功'
-      };
-    } catch (error: any) {
-      return {
-        success: false,
-        message: error.message || '上传失败'
-      };
+      return { success: true, data: asset, message: '上传成功' };
+    } catch (error) {
+      const status = (error as { status?: number }).status;
+      if (status && status >= 400 && status < 500) throw error;
+      return { success: false, message: (error as Error).message || '上传失败' };
+    } finally {
+      if (Array.isArray(files)) for (const file of files) cleanupUploadTemp(uploadTempPath(file));
     }
   }
 

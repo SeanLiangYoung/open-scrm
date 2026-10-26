@@ -1,0 +1,44 @@
+{
+  "artifactDir": "/var/folders/qr/cp9jfqqs75j5_2r78cqsp9980000gn/T/open-scrm-upload-storage-http-izJ8xK",
+  "ports": {
+    "auth": 62755,
+    "asset": 62756,
+    "gateway": 62757
+  },
+  "pgPort": 62639,
+  "redisPort": 62652,
+  "expectedUnreconciledFixtureKey": "/scrm-assets/1/1/38564d81-0fe9-42ba-94f7-7624be41ba5b.png",
+  "checks": [
+    "binary multipart upload via v1 preserves bytes metadata and verified tenant",
+    "legacy multipart route also stores a unique exact object",
+    "unauthenticated multipart401 never contacts storage",
+    "strict metadata and multi-file400 reject before OSS",
+    "foreign category400 and per-type file size413 reject before OSS",
+    "database insert failure compensates exactly its uploaded UUID object",
+    "ambiguous OSS failure after local store deletes only its own key",
+    "compensation failure retains explicit reconciliation evidence without hiding primary failure",
+    "chunked actual multipart wire cap413 rejects before upstream side effects",
+    "all success/failure upload temp files and gateway spools are reclaimed"
+  ],
+  "checkCount": 10,
+  "initialRows": 3,
+  "expectedRows": 5,
+  "localObjectsRetained": 3,
+  "runtimeExternalAttempts": 0,
+  "storagePort": 62758,
+  "testsPassed": true,
+  "cleanup": {
+    "passed": true,
+    "errors": [],
+    "childPids": [
+      74351,
+      74407,
+      74420
+    ],
+    "containerIds": [
+      "ac61776cd63fd71a7bb54a96395962c0b6efbf4376465603ba66224f1118198f",
+      "07db52d168a474e88b70b66d86c066b87c59810a036ad2ab9f2558759943c80e"
+    ]
+  },
+  "passed": true
+}

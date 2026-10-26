@@ -1,0 +1,43 @@
+
+> @scrm/asset-service@1.0.0 test /Users/seanliang/projects/open-scrm/code/services/asset-service
+> vitest run "src/service/asset-upload-recovery.spec.ts"
+
+[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
+
+ RUN  v2.1.9 /Users/seanliang/projects/open-scrm/code/services/asset-service
+
+ ❯ src/service/asset-upload-recovery.spec.ts (12 tests | 2 failed) 44ms
+   × retains configured supported video extension clip.avi 14ms
+     → promise rejected "BadRequestError: 文件类型不受支持 { …(2) }" instead of resolving
+   × retains configured supported video extension clip.mov 2ms
+     → promise rejected "BadRequestError: 文件类型不受支持 { …(2) }" instead of resolving
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/service/asset-upload-recovery.spec.ts > retains configured supported video extension clip.avi
+ FAIL  src/service/asset-upload-recovery.spec.ts > retains configured supported video extension clip.mov
+AssertionError: promise rejected "BadRequestError: 文件类型不受支持 { …(2) }" instead of resolving
+ ❯ src/service/asset-upload-recovery.spec.ts:68:91
+     66|  const f=fixture();const config=(await import('../config/config.defaul…
+     67|  f.service.assetConfig.allowedTypes=config.asset.allowedTypes;
+     68|  await expect(f.service.uploadAsset(1,{...f.file,filename,mimeType},{n…
+       |                                                                                           ^
+     69| });
+     70| 
+
+Caused by: BadRequestError: 文件类型不受支持
+ ❯ AssetService.uploadAsset src/service/asset.service.ts:68:46
+ ❯ src/service/asset-upload-recovery.spec.ts:68:25
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { code: '400', status: 400 }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 10 passed (12)
+   Start at  23:23:13
+   Duration  866ms (transform 88ms, setup 0ms, collect 412ms, tests 44ms, environment 0ms, prepare 73ms)
+
+/Users/seanliang/projects/open-scrm/code/services/asset-service:
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @scrm/asset-service@1.0.0 test: `vitest run "src/service/asset-upload-recovery.spec.ts"`
+Exit status 1

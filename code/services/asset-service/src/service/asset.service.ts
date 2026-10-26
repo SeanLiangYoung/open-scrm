@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+import { validateUploadMetadata, cleanupUploadTemp, uploadTempPath } from '../util/asset-upload';
 import { assetId as assetIdentity, categoryId } from '../util/asset-identity';
 import { AssetCategoryEntity } from '../entity/asset-category.entity';
 import { Provide, Inject, Config, httpError } from '@midwayjs/core';
@@ -43,51 +45,83 @@ export class AssetService {
     dto: CreateAssetDto,
     userId?: number
   ): Promise<AssetEntity> {
-    if (dto.categoryId !== undefined) {
-      await this.requireCategory(this.categoryRepository, corpId, dto.categoryId);
-    }
-    // 读取文件信息
-    const fileBuffer = fs.readFileSync(file.filepath);
-    const fileSize = fileBuffer.length;
-    const mimeType = mime.lookup(file.filename) || file.mimeType;
-
-    // 生成OSS路径
-    const ext = path.extname(file.filename);
-    const timestamp = Date.now();
-    const ossPath = `${this.assetConfig.ossPrefix}/${corpId}/${dto.type}/${timestamp}${ext}`;
-
-    // 上传到OSS
-    const result = await this.ossService.put(ossPath, fileBuffer);
-
-    // 创建素材记录
-    const asset = this.assetRepository.create({
-      corpId,
-      name: dto.name,
-      type: dto.type,
-      categoryId: dto.categoryId,
-      fileUrl: result.url,
-      fileSize,
-      mimeType,
-      tags: dto.tags,
-      createUserId: userId
-    });
-
-    await this.assetRepository.manager.transaction(async manager => {
+    const filepath = uploadTempPath(file);
+    let ossPath: string | undefined;
+    let putAttempted = false;
+    let callbackCompleted = false;
+    try {
+      validateUploadMetadata(dto);
       if (dto.categoryId !== undefined) {
-        await this.requireCategory(
-          manager.getRepository(AssetCategoryEntity),
-          corpId,
-          dto.categoryId,
-          true
-        );
+        await this.requireCategory(this.categoryRepository, corpId, dto.categoryId);
       }
-      await manager.getRepository(AssetEntity).save(asset);
-    });
-
-    // 清理临时文件
-    fs.unlinkSync(file.filepath);
-
-    return asset;
+      if (!filepath) throw new httpError.BadRequestError('上传文件不可用');
+      const kind = ({ 1: 'image', 2: 'video', 3: 'file' } as const)[dto.type as 1 | 2 | 3];
+      const limit = this.assetConfig?.maxSize?.[kind];
+      const allowed = this.assetConfig?.allowedTypes?.[kind];
+      if (!Number.isSafeInteger(limit) || limit <= 0 || !Array.isArray(allowed)) {
+        throw new Error('素材上传配置不可用');
+      }
+      if (fs.statSync(filepath).size > limit) {
+        throw new httpError.PayloadTooLargeError('文件超过该类型大小限制');
+      }
+      const mimeType = mime.lookup(file.filename) || file.mimeType;
+      if (!allowed.includes(mimeType)) throw new httpError.BadRequestError('文件类型不受支持');
+      const fileBuffer = fs.readFileSync(filepath);
+      if (fileBuffer.length > limit)
+        throw new httpError.PayloadTooLargeError('文件超过该类型大小限制');
+      const ext = path.extname(file.filename);
+      ossPath = `${this.assetConfig.ossPrefix}/${corpId}/${dto.type}/${randomUUID()}${ext}`;
+      putAttempted = true;
+      const result = await this.ossService.put(ossPath, fileBuffer);
+      const asset = this.assetRepository.create({
+        corpId,
+        name: dto.name,
+        type: dto.type,
+        categoryId: dto.categoryId,
+        fileUrl: result.url,
+        fileSize: fileBuffer.length,
+        mimeType,
+        tags: dto.tags,
+        createUserId: userId
+      });
+      await this.assetRepository.manager.transaction(async manager => {
+        if (dto.categoryId !== undefined) {
+          await this.requireCategory(
+            manager.getRepository(AssetCategoryEntity),
+            corpId,
+            dto.categoryId,
+            true
+          );
+        }
+        await manager.getRepository(AssetEntity).save(asset);
+        callbackCompleted = true;
+      });
+      return asset;
+    } catch (error) {
+      if (putAttempted && ossPath) {
+        if (callbackCompleted) {
+          // An errored COMMIT response may still represent a committed row.
+          console.error('asset-upload-reconciliation-required', {
+            corpId,
+            ossPath,
+            reason: 'commit-unknown'
+          });
+        } else {
+          try {
+            await this.ossService.delete(ossPath);
+          } catch {
+            console.error('asset-upload-reconciliation-required', {
+              corpId,
+              ossPath,
+              reason: 'compensation-failed'
+            });
+          }
+        }
+      }
+      throw error;
+    } finally {
+      cleanupUploadTemp(filepath);
+    }
   }
 
   async updateAsset(corpId: number, assetId: number, dto: UpdateAssetDto): Promise<void> {
