@@ -223,6 +223,20 @@ CREATE TABLE IF NOT EXISTS channel_scan_touch (
 CREATE INDEX IF NOT EXISTS idx_channel_scan_touch_code_time
   ON channel_scan_touch (corp_id, channel_code_id, create_time DESC);
 
+-- Apply before deploying transactional channel scan ingestion. Safe to apply twice.
+CREATE TABLE IF NOT EXISTS channel_scan_event (
+  id BIGSERIAL PRIMARY KEY,
+  corp_id BIGINT NOT NULL,
+  channel_code_id INT NOT NULL,
+  external_event_id VARCHAR(128) NOT NULL,
+  expires_at TIMESTAMPTZ NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_channel_scan_event_identity
+  ON channel_scan_event (corp_id, channel_code_id, external_event_id);
+CREATE INDEX IF NOT EXISTS idx_channel_scan_event_expiry
+  ON channel_scan_event (expires_at);
+
+
 CREATE TABLE IF NOT EXISTS platform_account (
   id SERIAL PRIMARY KEY,
   corp_id BIGINT NOT NULL,
