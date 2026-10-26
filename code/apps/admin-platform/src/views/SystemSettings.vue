@@ -44,7 +44,8 @@
           </el-select>
         </el-form-item>
         <el-form-item label="登录失败锁定">
-          <el-input-number v-model="securityForm.maxLoginAttempts" :min="3" :max="10" /> 次后锁定账号
+          <el-input-number v-model="securityForm.maxLoginAttempts" :min="3" :max="10" />
+          次后锁定账号
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="saveSecurity">保存</el-button>
@@ -63,15 +64,19 @@ const corpForm = reactive({
   contact: '管理员',
   phone: '400-800-1234',
   email: 'admin@open-scrm.com',
-  address: '',
+  address: ''
 });
 
 const securityForm = reactive({
   passwordPolicy: 'strong',
   sessionTimeout: 120,
-  maxLoginAttempts: 5,
+  maxLoginAttempts: 5
 });
 
-function saveCorp() { ElMessage.success('企业信息保存成功'); }
-function saveSecurity() { ElMessage.success('安全设置保存成功'); }
+function saveCorp() {
+  ElMessage.success('企业信息保存成功');
+}
+function saveSecurity() {
+  ElMessage.success('安全设置保存成功');
+}
 </script>

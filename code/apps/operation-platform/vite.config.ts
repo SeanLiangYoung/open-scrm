@@ -4,15 +4,14 @@ import { resolve } from 'path';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
-  const gatewayTarget =
-    env.VITE_GATEWAY_URL || 'http://127.0.0.1:7000';
+  const gatewayTarget = env.VITE_GATEWAY_URL || 'http://127.0.0.1:7000';
 
   return {
     plugins: [vue()],
     resolve: {
       alias: {
-        '@': resolve(__dirname, 'src'),
-      },
+        '@': resolve(__dirname, 'src')
+      }
     },
     server: {
       host: '127.0.0.1',
@@ -21,9 +20,9 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': {
           target: gatewayTarget,
-          changeOrigin: true,
-        },
-      },
-    },
+          changeOrigin: true
+        }
+      }
+    }
   };
 });

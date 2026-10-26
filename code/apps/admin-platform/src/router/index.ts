@@ -8,7 +8,7 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: () => import('@/views/Login.vue'),
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false }
     },
     {
       path: '/',
@@ -18,41 +18,41 @@ const router = createRouter({
         {
           path: '',
           name: 'Dashboard',
-          component: () => import('@/views/Dashboard.vue'),
+          component: () => import('@/views/Dashboard.vue')
         },
         {
           path: 'users',
           name: 'Users',
-          component: () => import('@/views/Users.vue'),
+          component: () => import('@/views/Users.vue')
         },
         {
           path: 'roles',
           name: 'Roles',
-          component: () => import('@/views/Roles.vue'),
+          component: () => import('@/views/Roles.vue')
         },
         {
           path: 'settings',
           name: 'Settings',
-          component: () => import('@/views/SystemSettings.vue'),
+          component: () => import('@/views/SystemSettings.vue')
         },
         {
           path: 'monitor',
           name: 'Monitor',
-          component: () => import('@/views/ServiceMonitor.vue'),
+          component: () => import('@/views/ServiceMonitor.vue')
         },
         {
           path: 'content-studio',
           name: 'ContentStudio',
-          component: () => import('@/views/content-studio/ContentStudioList.vue'),
+          component: () => import('@/views/content-studio/ContentStudioList.vue')
         },
         {
           path: 'content-studio/:sourceId',
           name: 'ContentStudioEditor',
-          component: () => import('@/views/content-studio/ContentStudioEditor.vue'),
-        },
-      ],
-    },
-  ],
+          component: () => import('@/views/content-studio/ContentStudioEditor.vue')
+        }
+      ]
+    }
+  ]
 });
 
 router.beforeEach((to, _from, next) => {
