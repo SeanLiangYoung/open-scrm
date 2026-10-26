@@ -1,4 +1,4 @@
-import { Provide, Inject, Config } from '@midwayjs/core';
+import { Provide, Inject, Config, httpError } from '@midwayjs/core';
 import { InjectEntityModel } from '@midwayjs/typeorm';
 import { Repository, In } from 'typeorm';
 import { Context } from '@midwayjs/koa';
@@ -23,13 +23,28 @@ export class NotificationService {
    * 创建通知
    */
   async createNotification(corpId: number, dto: CreateNotificationDto) {
-    const userIds = Array.isArray(dto.userIds) ? dto.userIds : [dto.userIds];
-    const expireDays = dto.expireDays || this.notificationConfig.defaultExpireDays || 30;
-    const expireTime = new Date();
-    expireTime.setDate(expireTime.getDate() + expireDays);
-
-    const notifications = userIds.map(userId => 
-      this.notificationRepository.create({
+    const requested = Array.isArray(dto.userIds) ? dto.userIds : [dto.userIds];
+    if (!Number.isSafeInteger(corpId) || corpId < 1 || requested.length === 0 ||
+      !requested.every(id => typeof id === 'number' && Number.isSafeInteger(id) && id > 0)) {
+      throw new httpError.BadRequestError('企业与通知接收人必须为有效的正安全整数，接收人不能为空');
+    }
+    const userIds = [...new Set(requested)];
+    return this.notificationRepository.manager.transaction(async manager => {
+      // Shared user table is authoritative. Hold all enabled recipients stable
+      // until the whole notification batch commits; no per-recipient writes.
+      const employees: Array<{ id: string | number }> = await manager.query(
+        'SELECT id FROM "user" WHERE corp_id = $1 AND status = 1 AND id = ANY($2::bigint[]) ORDER BY id FOR SHARE',
+        [corpId, userIds]
+      );
+      const enabledIds = new Set(employees.map(employee => String(employee.id)));
+      if (userIds.some(id => !enabledIds.has(String(id)))) {
+        throw new httpError.BadRequestError('通知接收人必须全部属于本企业且为启用员工');
+      }
+      const expireDays = dto.expireDays || this.notificationConfig.defaultExpireDays || 30;
+      const expireTime = new Date();
+      expireTime.setDate(expireTime.getDate() + expireDays);
+      const repository = manager.getRepository(NotificationEntity);
+      const notifications = userIds.map(userId => repository.create({
         corpId,
         userId,
         notificationType: dto.notificationType,
@@ -38,15 +53,10 @@ export class NotificationService {
         linkUrl: dto.linkUrl,
         extra: dto.extra,
         expireTime,
-      })
-    );
-
-    await this.notificationRepository.save(notifications);
-
-    return {
-      success: true,
-      count: notifications.length,
-    };
+      }));
+      await repository.save(notifications);
+      return { success: true, count: notifications.length };
+    });
   }
 
   /**
@@ -155,13 +165,12 @@ export class NotificationService {
    * 获取未读数量
    */
   async getUnreadCount(userId: number, corpId: number): Promise<number> {
-    return await this.notificationRepository.count({
-      where: {
-        userId,
-        corpId,
-        isRead: 0,
-      },
-    });
+    return await this.notificationRepository.createQueryBuilder('notification')
+      .where('notification.userId = :userId', { userId })
+      .andWhere('notification.corpId = :corpId', { corpId })
+      .andWhere('notification.isRead = :isRead', { isRead: 0 })
+      .andWhere('(notification.expireTime IS NULL OR notification.expireTime > NOW())')
+      .getCount();
   }
 
   /**
